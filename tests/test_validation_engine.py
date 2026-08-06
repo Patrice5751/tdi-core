@@ -5,6 +5,8 @@ from tdi.analysis.structure_analysis import Structure, StructureAnalysis
 from tdi.analysis.trend_analysis import Trend, TrendAnalysis
 from tdi.engines.validation_engine import ValidationEngine
 from tdi.models.trade import Side
+from tdi.analysis.validation_result import ValidationResult
+
 
 
 def make_analysis(
@@ -118,3 +120,19 @@ def test_validation_rejects_wrong_side_alignment() -> None:
 
     assert result.score == 0
     assert result.valid is False
+
+def test_validation_contains_alignment():
+    validation = ValidationResult(
+        score=90,
+        trend_ok=True,
+        momentum_ok=True,
+        structure_ok=True,
+        alignment_ok=True,
+        rr_ok=True,
+        risk_ok=True,
+        atr_ok=False,
+        valid=True,
+        reasons=[],
+    )
+
+    assert validation.alignment_ok is True

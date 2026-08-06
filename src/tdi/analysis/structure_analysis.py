@@ -14,3 +14,6 @@ class StructureAnalysis:
     confidence: int
     entry_zone: bool
     reason: list[str]
+
+    support: float | None = None
+    resistance: float | None = None

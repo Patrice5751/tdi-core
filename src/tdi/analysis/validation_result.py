@@ -16,3 +16,6 @@ class ValidationResult:
     valid: bool
 
     reasons: list[str]
+
+    alignment_ok: bool
+    

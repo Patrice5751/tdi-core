@@ -5,6 +5,13 @@ from tdi.analysis.structure_analysis import Structure
 from tdi.analysis.trend_analysis import Trend
 from tdi.analysis.validation_result import ValidationResult
 from tdi.models.trade import Side
+from tdi.specifications.minimum_rr import MinimumRRSpecification
+from tdi.specifications.trend_alignment import (
+    TrendAlignmentSpecification,
+)
+from tdi.specifications.momentum_valid import (
+    MomentumValidSpecification,
+)
 
 from config.trading_rules import (
     MIN_RR,
@@ -57,7 +64,7 @@ class ValidationEngine:
             score += VALIDATION_STRUCTURE_SCORE
 
         # Validation du ratio Risk/Reward
-        rr_ok = risk.rr >= MIN_RR
+        rr_ok = MinimumRRSpecification().is_satisfied_by(risk)
 
         if rr_ok:
             reasons.append(
@@ -95,6 +102,7 @@ class ValidationEngine:
             trend_ok=trend_ok,
             momentum_ok=momentum_ok,
             structure_ok=structure_ok,
+            alignment_ok=False,
             rr_ok=rr_ok,
             risk_ok=risk_ok,
             atr_ok=atr_ok,
@@ -108,14 +116,12 @@ class ValidationEngine:
         side: Side,
         reasons: list[str],
     ) -> bool:
-
-        expected_trend = (
-            Trend.BULLISH
-            if side == Side.BUY
-            else Trend.BEARISH
+        trend_ok = TrendAlignmentSpecification().is_satisfied_by(
+            trend=trend,
+            side=side,
         )
 
-        if trend == expected_trend:
+        if trend_ok:
             reasons.append("Tendance alignée avec le trade")
             return True
 
@@ -128,14 +134,12 @@ class ValidationEngine:
         side: Side,
         reasons: list[str],
     ) -> bool:
-
-        expected_momentum = (
-            Momentum.BULLISH
-            if side == Side.BUY
-            else Momentum.BEARISH
+        momentum_ok = MomentumValidSpecification().is_satisfied_by(
+            momentum=momentum,
+            side=side,
         )
 
-        if momentum == expected_momentum:
+        if momentum_ok:
             reasons.append("Momentum aligné avec le trade")
             return True
 
@@ -162,3 +166,16 @@ class ValidationEngine:
 
         reasons.append("Structure ou zone d'entrée non valide")
         return False
+
+        return ValidationResult(
+            score=score,
+            trend_ok=trend_ok,
+            momentum_ok=momentum_ok,
+            structure_ok=structure_ok,
+            alignment_ok=False,
+            rr_ok=rr_ok,
+            risk_ok=risk_ok,
+            atr_ok=atr_ok,
+            valid=valid,
+            reasons=reasons,
+        )     

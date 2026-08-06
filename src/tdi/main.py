@@ -1,16 +1,17 @@
 from datetime import datetime
 
 from tdi.engines.analysis_engine import AnalysisEngine
+from tdi.engines.decision_engine import DecisionEngine
+from tdi.engines.risk_engine import RiskEngine
+from tdi.engines.trade_advisor import TradeAdvisor
 from tdi.engines.validation_engine import ValidationEngine
 from tdi.models.market_snapshot import MarketSnapshot
 from tdi.models.price_structure import PriceStructure
 from tdi.models.trade import Side, Trade
 from tdi.reports.console_report import ConsoleReport
-from tdi.engines.risk_engine import RiskEngine
 
 
 def main() -> None:
-
     trade = Trade(
         instrument="XAUUSD",
         side=Side.SELL,
@@ -43,10 +44,11 @@ def main() -> None:
         swing_low=3980.0,
     )
 
-    risk_engine = RiskEngine()
-
     analysis_engine = AnalysisEngine()
+    risk_engine = RiskEngine()
     validation_engine = ValidationEngine()
+    decision_engine = DecisionEngine()
+    trade_advisor = TradeAdvisor()
 
     analysis = analysis_engine.analyze(
         snapshot=snapshot,
@@ -57,16 +59,32 @@ def main() -> None:
     risk = risk_engine.analyze(trade)
 
     validation = validation_engine.validate(
-    analysis=analysis,
-    risk=risk,
-    side=trade.side,
-)
-   
+        analysis=analysis,
+        risk=risk,
+        side=trade.side,
+    )
+
+    decision = decision_engine.decide(
+        analysis=analysis,
+        validation=validation,
+        risk=risk,
+    )
+
+    advisor = trade_advisor.advise(
+        trade=trade,
+        analysis=analysis,
+        validation=validation,
+        decision=decision,
+        risk=risk,
+    )
+
     ConsoleReport.display(
         trade=trade,
         analysis=analysis,
         validation=validation,
         risk=risk,
+        decision=decision,
+        advisor=advisor,
     )
 
 

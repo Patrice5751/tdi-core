@@ -1,9 +1,13 @@
 import MetaTrader5 as mt5
-from tdi.graphical.market_bias_engine import MarketBiasEngine
+
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
 from tdi.adapters.mt5_market_data_adapter import MT5MarketDataAdapter
 from tdi.adapters.mt5_multi_timeframe_pipeline import (
     MT5MultiTimeframePipeline,
+)
+from tdi.graphical.market_bias_engine import MarketBiasEngine
+from tdi.graphical.multi_timeframe_decision_engine import (
+    MultiTimeframeDecisionEngine,
 )
 
 
@@ -13,20 +17,25 @@ def print_context(
 ) -> None:
     print()
     print(f"=== {timeframe} ===")
+
     print(
         f"Direction : "
         f"{context.direction.value}"
     )
+
     print(
         f"Confiance direction : "
         f"{context.direction_confidence}%"
     )
+
     print(
         f"MA20 : {context.ma20}"
     )
+
     print(
         f"MA50 : {context.ma50}"
     )
+
     print(
         f"MA200 : {context.ma200}"
     )
@@ -43,6 +52,7 @@ def print_context(
         f"{ma_direction} "
         f"({context.ma_confirmation_score}%)"
     )
+
     bias = MarketBiasEngine().analyze(
         context
     )
@@ -66,22 +76,27 @@ def print_context(
         f"Bias reason : "
         f"{bias.reason}"
     )
+
     print(
         f"Localisation : "
         f"{context.location_type.value}"
     )
+
     print(
         f"Support : "
         f"{context.support}"
     )
+
     print(
         f"Contacts support : "
         f"{context.support_touches}"
     )
+
     print(
         f"Resistance : "
         f"{context.resistance}"
     )
+
     print(
         f"Contacts resistance : "
         f"{context.resistance_touches}"
@@ -98,10 +113,8 @@ def main():
             adapter=adapter
         )
 
-        multi_pipeline = (
-            MT5MultiTimeframePipeline(
-                pipeline=analysis_pipeline
-            )
+        multi_pipeline = MT5MultiTimeframePipeline(
+            pipeline=analysis_pipeline
         )
 
         result = multi_pipeline.analyze(
@@ -128,13 +141,55 @@ def main():
         print("=== ALIGNEMENT ===")
 
         if result.aligned:
-            print(
-                "H4 / H1 : OUI"
-            )
+            print("H4 / H1 : OUI")
         else:
-            print(
-                "H4 / H1 : NON"
+            print("H4 / H1 : NON")
+
+        decision = (
+            MultiTimeframeDecisionEngine().decide(
+                result
             )
+        )
+
+        print()
+        print(
+            "=== TDI MULTI-TIMEFRAME DECISION ==="
+        )
+
+        print(
+            f"Preferred side : "
+            f"{decision.preferred_side}"
+        )
+
+        print(
+            f"Bias aligned : "
+            f"{decision.bias_aligned}"
+        )
+
+        print(
+            f"Structure aligned : "
+            f"{decision.structure_aligned}"
+        )
+
+        print(
+            f"Timing favorable : "
+            f"{decision.timing_favorable}"
+        )
+
+        print(
+            f"Confidence : "
+            f"{decision.confidence}%"
+        )
+
+        print(
+            f"Action : "
+            f"{decision.decision.value}"
+        )
+
+        print(
+            f"Reason : "
+            f"{decision.reason}"
+        )
 
     finally:
         adapter.shutdown()
@@ -142,3 +197,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

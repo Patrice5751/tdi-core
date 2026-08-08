@@ -150,4 +150,40 @@ def test_wilder_atr_uses_all_new_true_ranges():
     ) / 14
 
     assert result.atr == expected
-    
+
+def test_rsi_is_available_with_enough_history():
+    result = IndicatorEngine().calculate(
+        make_candles(30)
+    )
+
+    assert result.rsi is not None
+    assert 0 <= result.rsi <= 100
+
+
+def test_rsi_is_100_on_only_rising_closes():
+    result = IndicatorEngine().calculate(
+        make_candles(30)
+    )
+
+    assert result.rsi == 100.0
+
+
+def test_macd_is_available_with_enough_history():
+    result = IndicatorEngine().calculate(
+        make_candles(50)
+    )
+
+    assert result.macd is not None
+    assert result.macd_signal is not None
+    assert result.macd_histogram is not None
+
+
+def test_macd_histogram_matches_difference():
+    result = IndicatorEngine().calculate(
+        make_candles(50)
+    )
+
+    assert result.macd_histogram == (
+        result.macd - result.macd_signal
+    )
+

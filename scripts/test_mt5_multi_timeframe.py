@@ -2,6 +2,7 @@ import MetaTrader5 as mt5
 
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
 from tdi.adapters.mt5_market_data_adapter import MT5MarketDataAdapter
+from tdi.adapters.mt5_momentum_pipeline import MT5MomentumPipeline
 from tdi.adapters.mt5_multi_timeframe_pipeline import (
     MT5MultiTimeframePipeline,
 )
@@ -103,6 +104,38 @@ def print_context(
     )
 
 
+def print_momentum(
+    timeframe: str,
+    momentum,
+) -> None:
+    print()
+    print(
+        f"=== MOMENTUM {timeframe} ==="
+    )
+
+    print(
+        f"Momentum : "
+        f"{momentum.momentum.value}"
+    )
+
+    print(
+        f"Momentum confidence : "
+        f"{momentum.confidence}%"
+    )
+
+    if momentum.reason:
+        print("Reasons :")
+
+        for reason in momentum.reason:
+            print(
+                f"- {reason}"
+            )
+    else:
+        print(
+            "Reasons : aucune confirmation."
+        )
+
+
 def main():
     adapter = MT5MarketDataAdapter(mt5)
 
@@ -117,8 +150,24 @@ def main():
             pipeline=analysis_pipeline
         )
 
+        momentum_pipeline = MT5MomentumPipeline(
+            analysis_pipeline=analysis_pipeline
+        )
+
         result = multi_pipeline.analyze(
             symbol="XAUUSD",
+            count=250,
+        )
+
+        h4_momentum = momentum_pipeline.analyze(
+            symbol="XAUUSD",
+            timeframe="H4",
+            count=250,
+        )
+
+        h1_momentum = momentum_pipeline.analyze(
+            symbol="XAUUSD",
+            timeframe="H1",
             count=250,
         )
 
@@ -132,18 +181,32 @@ def main():
             result.h4,
         )
 
+        print_momentum(
+            "H4",
+            h4_momentum,
+        )
+
         print_context(
             "H1",
             result.h1,
+        )
+
+        print_momentum(
+            "H1",
+            h1_momentum,
         )
 
         print()
         print("=== ALIGNEMENT ===")
 
         if result.aligned:
-            print("H4 / H1 : OUI")
+            print(
+                "Structure H4 / H1 : OUI"
+            )
         else:
-            print("H4 / H1 : NON")
+            print(
+                "Structure H4 / H1 : NON"
+            )
 
         decision = (
             MultiTimeframeDecisionEngine().decide(
@@ -177,7 +240,7 @@ def main():
         )
 
         print(
-            f"Confidence : "
+            f"Directional bias confidence : "
             f"{decision.confidence}%"
         )
 

@@ -15,6 +15,7 @@ class MultiTimeframeDecisionAnalysis:
     timing_favorable: bool
 
     confidence: int
-
     reason: str
+
+    momentum_confirmed: bool = False
     

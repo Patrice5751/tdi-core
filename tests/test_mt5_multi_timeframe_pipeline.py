@@ -84,4 +84,33 @@ def test_different_directions_are_not_aligned():
     )
 
     assert result.aligned is False
+
+def test_transition_transition_is_not_aligned():
+    fake = FakePipeline(
+        MarketDirection.TRANSITION,
+        MarketDirection.TRANSITION,
+    )
+
+    result = MT5MultiTimeframePipeline(
+        pipeline=fake
+    ).analyze(
+        symbol="XAUUSD"
+    )
+
+    assert result.aligned is False
+
+
+def test_range_range_is_not_aligned():
+    fake = FakePipeline(
+        MarketDirection.RANGE,
+        MarketDirection.RANGE,
+    )
+
+    result = MT5MultiTimeframePipeline(
+        pipeline=fake
+    ).analyze(
+        symbol="XAUUSD"
+    )
+
+    assert result.aligned is False
     

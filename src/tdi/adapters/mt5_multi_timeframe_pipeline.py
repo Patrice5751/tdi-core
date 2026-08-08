@@ -6,6 +6,7 @@ from tdi.adapters.mt5_analysis_pipeline import (
 from tdi.adapters.mt5_multi_timeframe_result import (
     MT5MultiTimeframeResult,
 )
+from tdi.graphical.market_direction import MarketDirection
 
 
 @dataclass(frozen=True)
@@ -29,8 +30,9 @@ class MT5MultiTimeframePipeline:
             count=count,
         )
 
-        aligned = (
-            h4.direction == h1.direction
+        aligned = self._is_directionally_aligned(
+            h4.direction,
+            h1.direction,
         )
 
         return MT5MultiTimeframeResult(
@@ -38,4 +40,22 @@ class MT5MultiTimeframePipeline:
             h1=h1,
             aligned=aligned,
         )
+
+    def _is_directionally_aligned(
+        self,
+        h4_direction: MarketDirection,
+        h1_direction: MarketDirection,
+    ) -> bool:
+        directional_states = {
+            MarketDirection.BULLISH,
+            MarketDirection.BEARISH,
+        }
+
+        if (
+            h4_direction not in directional_states
+            or h1_direction not in directional_states
+        ):
+            return False
+
+        return h4_direction == h1_direction
     

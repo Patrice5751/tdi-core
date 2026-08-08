@@ -87,6 +87,8 @@ class MT5AnalysisPipeline:
             current_price=current_price,
             atr=indicators.atr,
             ma20=indicators.ma20,
+            ma50=indicators.ma50,
+            ma200=indicators.ma200,
             market_direction=(
                 direction_analysis.direction
             ),

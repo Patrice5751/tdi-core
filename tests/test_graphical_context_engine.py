@@ -129,4 +129,53 @@ def test_graphical_context_accepts_breakout_level():
     )
 
     assert result.location_type == LocationType.BREAKOUT
+
+def test_graphical_context_contains_bullish_ma_confirmation():
+    candles = [
+        make_candle(0, 100, 90),
+        make_candle(1, 101, 91),
+        make_candle(2, 105, 92),
+        make_candle(3, 102, 91),
+        make_candle(4, 101, 90),
+    ]
+
+    result = GraphicalContextEngine().analyze(
+        candles=candles,
+        current_price=120,
+        atr=5,
+        ma20=115,
+        ma50=110,
+        ma200=100,
+        market_direction=MarketDirection.BULLISH,
+        direction_confidence=80,
+    )
+
+    assert result.ma_bullish is True
+    assert result.ma_bearish is False
+    assert result.ma_confirmation_score == 100
+
+
+def test_graphical_context_contains_bearish_ma_confirmation():
+    candles = [
+        make_candle(0, 100, 90),
+        make_candle(1, 101, 91),
+        make_candle(2, 105, 92),
+        make_candle(3, 102, 91),
+        make_candle(4, 101, 90),
+    ]
+
+    result = GraphicalContextEngine().analyze(
+        candles=candles,
+        current_price=80,
+        atr=5,
+        ma20=85,
+        ma50=90,
+        ma200=100,
+        market_direction=MarketDirection.BEARISH,
+        direction_confidence=80,
+    )
+
+    assert result.ma_bearish is True
+    assert result.ma_bullish is False
+    assert result.ma_confirmation_score == 100
     

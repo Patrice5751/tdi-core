@@ -1,5 +1,8 @@
 from tdi.graphical.candle import Candle
 from tdi.graphical.graphical_context import GraphicalContext
+from tdi.graphical.ma_confirmation_engine import (
+    MAConfirmationEngine,
+)
 from tdi.graphical.market_direction import MarketDirection
 from tdi.graphical.pivot_detector import PivotDetector
 from tdi.graphical.price_location_engine import PriceLocationEngine
@@ -18,6 +21,8 @@ class GraphicalContextEngine:
         ma20: float,
         market_direction: MarketDirection,
         direction_confidence: int,
+        ma50: float | None = None,
+        ma200: float | None = None,
         breakout_level: float | None = None,
     ) -> GraphicalContext:
         pivots = PivotDetector().detect(
@@ -45,6 +50,13 @@ class GraphicalContextEngine:
             )
         )
 
+        ma_confirmation = MAConfirmationEngine().analyze(
+            current_price=current_price,
+            ma20=ma20,
+            ma50=ma50,
+            ma200=ma200,
+        )
+
         return GraphicalContext(
             direction=market_direction,
             direction_confidence=direction_confidence,
@@ -53,5 +65,11 @@ class GraphicalContextEngine:
             resistance=support_resistance.resistance,
             support_touches=support_resistance.support_touches,
             resistance_touches=support_resistance.resistance_touches,
+            ma20=ma20,
+            ma50=ma50,
+            ma200=ma200,
+            ma_confirmation_score=ma_confirmation.score,
+            ma_bullish=ma_confirmation.bullish,
+            ma_bearish=ma_confirmation.bearish,
         )
     

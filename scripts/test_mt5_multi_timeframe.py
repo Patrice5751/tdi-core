@@ -1,5 +1,5 @@
 import MetaTrader5 as mt5
-
+from tdi.graphical.market_bias_engine import MarketBiasEngine
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
 from tdi.adapters.mt5_market_data_adapter import MT5MarketDataAdapter
 from tdi.adapters.mt5_multi_timeframe_pipeline import (
@@ -42,6 +42,29 @@ def print_context(
         f"Confirmation MA : "
         f"{ma_direction} "
         f"({context.ma_confirmation_score}%)"
+    )
+    bias = MarketBiasEngine().analyze(
+        context
+    )
+
+    print(
+        f"Market Bias : "
+        f"{bias.bias.value}"
+    )
+
+    print(
+        f"Preferred side : "
+        f"{bias.preferred_side}"
+    )
+
+    print(
+        f"Bias confidence : "
+        f"{bias.confidence}%"
+    )
+
+    print(
+        f"Bias reason : "
+        f"{bias.reason}"
     )
     print(
         f"Localisation : "

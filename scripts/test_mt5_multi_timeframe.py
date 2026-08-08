@@ -22,6 +22,28 @@ def print_context(
         f"{context.direction_confidence}%"
     )
     print(
+        f"MA20 : {context.ma20}"
+    )
+    print(
+        f"MA50 : {context.ma50}"
+    )
+    print(
+        f"MA200 : {context.ma200}"
+    )
+
+    if context.ma_bullish:
+        ma_direction = "Bullish"
+    elif context.ma_bearish:
+        ma_direction = "Bearish"
+    else:
+        ma_direction = "Neutral"
+
+    print(
+        f"Confirmation MA : "
+        f"{ma_direction} "
+        f"({context.ma_confirmation_score}%)"
+    )
+    print(
         f"Localisation : "
         f"{context.location_type.value}"
     )
@@ -97,4 +119,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

@@ -2,6 +2,10 @@ import MetaTrader5 as mt5
 
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
 from tdi.adapters.mt5_market_data_adapter import MT5MarketDataAdapter
+from tdi.graphical.graphical_decision_engine import (
+    GraphicalDecisionEngine,
+)
+from tdi.models.trade import Side
 
 
 def main():
@@ -15,7 +19,7 @@ def main():
         )
 
         context = pipeline.analyze(
-            symbol="XAUUSD+",
+            symbol="XAUUSD",
             timeframe="H4",
             count=250,
         )
@@ -42,6 +46,33 @@ def main():
         print(
             f"Contacts resistance : "
             f"{context.resistance_touches}"
+        )
+
+        buy_decision = GraphicalDecisionEngine().decide(
+            context=context,
+            side=Side.BUY,
+        )
+
+        sell_decision = GraphicalDecisionEngine().decide(
+            context=context,
+            side=Side.SELL,
+        )
+
+        print()
+        print("=== TDI DECISION ===")
+
+        print(
+            f"BUY  : {buy_decision.decision.value}"
+        )
+        print(
+            f"       {buy_decision.reason}"
+        )
+
+        print(
+            f"SELL : {sell_decision.decision.value}"
+        )
+        print(
+            f"       {sell_decision.reason}"
         )
 
     finally:

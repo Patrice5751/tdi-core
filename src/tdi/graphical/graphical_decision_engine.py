@@ -20,6 +20,19 @@ class GraphicalDecisionEngine:
             else MarketDirection.BEARISH
         )
 
+        if context.direction in {
+            MarketDirection.TRANSITION,
+            MarketDirection.RANGE,
+        }:
+            return GraphicalDecisionAnalysis(
+                decision=GraphicalDecision.WAIT,
+                confidence=context.direction_confidence,
+                reason=(
+                    "La structure du marché n'est pas "
+                    "suffisamment directionnelle."
+                ),
+            )
+
         if context.direction != expected_direction:
             return GraphicalDecisionAnalysis(
                 decision=GraphicalDecision.NO_GO,

@@ -112,4 +112,42 @@ class MT5MarketDataAdapter:
             self._mt5,
             attribute_name,
         )
-    
+    def resolve_symbol(
+        self,
+        symbol: str,
+    ) -> str:
+        if self._mt5.symbol_info(symbol) is not None:
+            self._mt5.symbol_select(symbol, True)
+            return symbol
+
+        symbols = self._mt5.symbols_get()
+
+        if symbols is None:
+            raise MT5MarketDataError(
+                "Impossible de récupérer la liste des symboles MT5."
+            )
+
+        requested = symbol.upper()
+
+        candidates = [
+            item.name
+            for item in symbols
+            if item.name.upper().startswith(requested)
+        ]
+
+        if not candidates:
+            raise MT5MarketDataError(
+                f"Aucun symbole MT5 correspondant à {symbol}."
+            )
+
+        resolved = candidates[0]
+
+        if not self._mt5.symbol_select(
+            resolved,
+            True,
+        ):
+            raise MT5MarketDataError(
+                f"Impossible d'activer le symbole {resolved}."
+            )
+
+        return resolved

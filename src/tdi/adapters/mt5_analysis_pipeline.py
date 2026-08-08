@@ -26,8 +26,18 @@ class MT5AnalysisPipeline:
         count: int = 250,
         breakout_level: float | None = None,
     ) -> GraphicalContext:
+        resolved_symbol = symbol
+
+        if hasattr(
+            self.adapter,
+            "resolve_symbol",
+        ):
+            resolved_symbol = self.adapter.resolve_symbol(
+                symbol
+            )
+
         candles = self.adapter.get_candles(
-            symbol=symbol,
+            symbol=resolved_symbol,
             timeframe=timeframe,
             count=count,
         )
@@ -68,7 +78,7 @@ class MT5AnalysisPipeline:
 
         current_price = (
             self.adapter.get_current_price(
-                symbol
+                resolved_symbol
             )
         )
 

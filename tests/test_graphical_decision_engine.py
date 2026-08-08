@@ -121,4 +121,51 @@ def test_sell_on_support_returns_wait():
     )
 
     assert result.decision == GraphicalDecision.WAIT
-     
+
+def test_transition_returns_wait():
+    result = GraphicalDecisionEngine().decide(
+        context=make_context(
+            direction=MarketDirection.TRANSITION,
+            location_type=LocationType.MIDDLE,
+        ),
+        side=Side.BUY,
+    )
+
+    assert result.decision == GraphicalDecision.WAIT
+
+
+def test_range_returns_wait():
+    result = GraphicalDecisionEngine().decide(
+        context=make_context(
+            direction=MarketDirection.RANGE,
+            location_type=LocationType.MIDDLE,
+        ),
+        side=Side.SELL,
+    )
+
+    assert result.decision == GraphicalDecision.WAIT
+
+def test_transition_returns_wait():
+    result = GraphicalDecisionEngine().decide(
+        context=make_context(
+            direction=MarketDirection.TRANSITION,
+            location_type=LocationType.MIDDLE,
+        ),
+        side=Side.BUY,
+    )
+
+    assert result.decision == GraphicalDecision.WAIT
+
+
+def test_range_returns_wait():
+    result = GraphicalDecisionEngine().decide(
+        context=make_context(
+            direction=MarketDirection.RANGE,
+            location_type=LocationType.MIDDLE,
+        ),
+        side=Side.SELL,
+    )
+
+    assert result.decision == GraphicalDecision.WAIT
+    
+

@@ -39,16 +39,8 @@ class GraphicalContextEngine:
                 market_direction=market_direction,
                 ma20=ma20,
                 atr=atr,
-                nearest_support=(
-                    support_resistance.support
-                    if support_resistance.support is not None
-                    else current_price
-                ),
-                nearest_resistance=(
-                    support_resistance.resistance
-                    if support_resistance.resistance is not None
-                    else current_price
-                ),
+                nearest_support=support_resistance.support,
+                nearest_resistance=support_resistance.resistance,
                 breakout_level=breakout_level,
             )
         )

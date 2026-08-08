@@ -150,3 +150,31 @@ def test_location_type_is_valid_enum():
     result = PriceLocationEngine().analyze(make_input())
 
     assert isinstance(result.location_type, LocationType)
+
+def test_missing_support_does_not_return_support():
+    result = PriceLocationEngine().analyze(
+        make_input(
+            current_price=100.0,
+            ma20=90.0,
+            atr=10.0,
+            nearest_support=None,
+            nearest_resistance=120.0,
+        )
+    )
+
+    assert result.location_type != LocationType.SUPPORT
+
+
+def test_missing_resistance_does_not_return_resistance():
+    result = PriceLocationEngine().analyze(
+        make_input(
+            current_price=100.0,
+            ma20=90.0,
+            atr=10.0,
+            nearest_support=80.0,
+            nearest_resistance=None,
+        )
+    )
+
+    assert result.location_type != LocationType.RESISTANCE
+    

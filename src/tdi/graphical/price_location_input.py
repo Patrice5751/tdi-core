@@ -13,8 +13,9 @@ class PriceLocationInput:
 
     atr: float
 
-    nearest_support: float
+    nearest_support: float | None
 
-    nearest_resistance: float
+    nearest_resistance: float | None
 
     breakout_level: float | None = None
+    

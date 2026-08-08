@@ -77,4 +77,77 @@ def test_atr_is_calculated_from_true_range():
     )
 
     assert result.atr == 4.0
+
+def test_wilder_atr_applies_smoothing():
+    candles = make_candles(15)
+
+    last = candles[-1]
+
+    candles.append(
+        Candle(
+            index=15,
+            timestamp=last.timestamp
+            + timedelta(hours=1),
+            open=114.0,
+            high=124.0,
+            low=112.0,
+            close=120.0,
+        )
+    )
+
+    result = IndicatorEngine().calculate(
+        candles
+    )
+
+    expected = (
+        (4.0 * 13) + 12.0
+    ) / 14
+
+    assert result.atr == expected
+
+
+def test_wilder_atr_uses_all_new_true_ranges():
+    candles = make_candles(15)
+
+    candles.append(
+        Candle(
+            index=15,
+            timestamp=(
+                datetime(2026, 1, 1)
+                + timedelta(hours=15)
+            ),
+            open=114.0,
+            high=124.0,
+            low=112.0,
+            close=120.0,
+        )
+    )
+
+    candles.append(
+        Candle(
+            index=16,
+            timestamp=(
+                datetime(2026, 1, 1)
+                + timedelta(hours=16)
+            ),
+            open=120.0,
+            high=125.0,
+            low=119.0,
+            close=123.0,
+        )
+    )
+
+    result = IndicatorEngine().calculate(
+        candles
+    )
+
+    first_atr = (
+        (4.0 * 13) + 12.0
+    ) / 14
+
+    expected = (
+        (first_atr * 13) + 6.0
+    ) / 14
+
+    assert result.atr == expected
     

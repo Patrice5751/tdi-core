@@ -13,7 +13,7 @@ class IndicatorEngine:
             ma20=self._sma(candles, 20),
             ma50=self._sma(candles, 50),
             ma200=self._sma(candles, 200),
-            atr=self._atr(
+            atr=self._atr_wilder(
                 candles,
                 self.ATR_PERIOD,
             ),
@@ -34,7 +34,24 @@ class IndicatorEngine:
 
         return sum(closes) / period
 
-    def _atr(
+    def _true_range(
+        self,
+        current: Candle,
+        previous: Candle,
+    ) -> float:
+        return max(
+            current.high - current.low,
+            abs(
+                current.high
+                - previous.close
+            ),
+            abs(
+                current.low
+                - previous.close
+            ),
+        )
+
+    def _atr_wilder(
         self,
         candles: list[Candle],
         period: int,
@@ -44,28 +61,31 @@ class IndicatorEngine:
 
         true_ranges: list[float] = []
 
-        recent_candles = candles[-(period + 1):]
-
         for index in range(
             1,
-            len(recent_candles),
+            len(candles),
         ):
-            current = recent_candles[index]
-            previous = recent_candles[index - 1]
-
-            true_range = max(
-                current.high - current.low,
-                abs(
-                    current.high
-                    - previous.close
-                ),
-                abs(
-                    current.low
-                    - previous.close
-                ),
+            true_ranges.append(
+                self._true_range(
+                    current=candles[index],
+                    previous=candles[index - 1],
+                )
             )
 
-            true_ranges.append(true_range)
+        initial_atr = (
+            sum(true_ranges[:period])
+            / period
+        )
 
-        return sum(true_ranges) / period
+        atr = initial_atr
+
+        for true_range in true_ranges[period:]:
+            atr = (
+                (
+                    atr * (period - 1)
+                )
+                + true_range
+            ) / period
+
+        return atr
     

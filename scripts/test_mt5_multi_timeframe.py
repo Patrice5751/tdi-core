@@ -210,7 +210,9 @@ def main():
 
         decision = (
             MultiTimeframeDecisionEngine().decide(
-                result
+                result=result,
+                h4_momentum=h4_momentum,
+                h1_momentum=h1_momentum,
             )
         )
 
@@ -232,6 +234,11 @@ def main():
         print(
             f"Structure aligned : "
             f"{decision.structure_aligned}"
+        )
+
+        print(
+            f"Momentum confirmed : "
+            f"{decision.momentum_confirmed}"
         )
 
         print(
@@ -260,4 +267,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

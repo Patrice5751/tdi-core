@@ -3,6 +3,10 @@ from tdi.analysis.decision_result import DecisionResult
 from tdi.analysis.recommendation import Recommendation
 from tdi.analysis.risk_result import RiskResult
 from tdi.analysis.validation_result import ValidationResult
+from tdi.graphical.graphical_decision import GraphicalDecision
+from tdi.graphical.graphical_decision_analysis import (
+    GraphicalDecisionAnalysis,
+)
 
 from config.trading_rules import (
     DECISION_ACCEPTABLE,
@@ -15,14 +19,13 @@ from config.trading_rules import (
 
 
 class DecisionEngine:
-
     def decide(
         self,
         analysis: AnalysisResult,
         validation: ValidationResult,
         risk: RiskResult,
+        graphical_decision: GraphicalDecisionAnalysis | None = None,
     ) -> DecisionResult:
-
         score = self._compute_score(
             analysis,
             validation,
@@ -32,15 +35,29 @@ class DecisionEngine:
         confidence = score / 10
 
         recommendation = self._recommendation(score)
+        accepted = validation.valid
 
         strengths = self._strengths(validation, risk)
-
         weaknesses = self._weaknesses(validation)
+
+        if graphical_decision is not None:
+            (
+                recommendation,
+                accepted,
+                strengths,
+                weaknesses,
+            ) = self._apply_graphical_decision(
+                graphical_decision=graphical_decision,
+                recommendation=recommendation,
+                accepted=accepted,
+                strengths=strengths,
+                weaknesses=weaknesses,
+            )
 
         return DecisionResult(
             score=score,
             confidence=confidence,
-            accepted=validation.valid,
+            accepted=accepted,
             recommendation=recommendation,
             strengths=strengths,
             weaknesses=weaknesses,
@@ -52,7 +69,6 @@ class DecisionEngine:
         validation: ValidationResult,
         risk: RiskResult,
     ) -> int:
-
         score = validation.score
 
         if risk.rr >= 3:
@@ -67,7 +83,6 @@ class DecisionEngine:
         self,
         score: int,
     ) -> Recommendation:
-
         if score >= DECISION_EXCELLENT:
             return Recommendation.EXCELLENT
 
@@ -82,12 +97,62 @@ class DecisionEngine:
 
         return Recommendation.REJECT
 
+    def _apply_graphical_decision(
+        self,
+        graphical_decision: GraphicalDecisionAnalysis,
+        recommendation: Recommendation,
+        accepted: bool,
+        strengths: list[str],
+        weaknesses: list[str],
+    ) -> tuple[
+        Recommendation,
+        bool,
+        list[str],
+        list[str],
+    ]:
+        if graphical_decision.decision == GraphicalDecision.GO:
+            strengths.append(
+                f"Contexte graphique favorable : "
+                f"{graphical_decision.reason}"
+            )
+
+            return (
+                recommendation,
+                accepted,
+                strengths,
+                weaknesses,
+            )
+
+        if graphical_decision.decision == GraphicalDecision.WAIT:
+            weaknesses.append(
+                f"Attente graphique : "
+                f"{graphical_decision.reason}"
+            )
+
+            return (
+                Recommendation.WAIT,
+                False,
+                strengths,
+                weaknesses,
+            )
+
+        weaknesses.append(
+            f"Blocage graphique : "
+            f"{graphical_decision.reason}"
+        )
+
+        return (
+            Recommendation.REJECT,
+            False,
+            strengths,
+            weaknesses,
+        )
+
     def _strengths(
         self,
         validation: ValidationResult,
         risk: RiskResult,
     ) -> list[str]:
-
         strengths = []
 
         if validation.trend_ok:
@@ -100,7 +165,9 @@ class DecisionEngine:
             strengths.append("Structure favorable")
 
         if validation.rr_ok:
-            strengths.append(f"Risk/Reward = {risk.rr:.2f}")
+            strengths.append(
+                f"Risk/Reward = {risk.rr:.2f}"
+            )
 
         return strengths
 
@@ -108,7 +175,6 @@ class DecisionEngine:
         self,
         validation: ValidationResult,
     ) -> list[str]:
-
         weaknesses = []
 
         if not validation.trend_ok:
@@ -127,3 +193,4 @@ class DecisionEngine:
             weaknesses.append("Aucune faiblesse majeure")
 
         return weaknesses
+    

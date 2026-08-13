@@ -22,6 +22,10 @@ from tdi.graphical.bias_readiness_engine import (
     BiasReadinessEngine,
 )
 
+from tdi.graphical.scenario_state_engine import (
+    ScenarioStateEngine,
+)
+
 def print_context(
     timeframe: str,
     context,
@@ -369,6 +373,41 @@ def main():
             f"Reason : "
             f"{bias_readiness.reason}"
         )
+
+        scenario = ScenarioStateEngine().analyze(
+            decision=decision,
+            wait_plan=wait_plan,
+            bias_readiness=bias_readiness,
+        )
+
+        print()
+        print("=== TDI SCENARIO STATE ===")
+
+        print(
+            f"Target side : "
+            f"{scenario.target_side}"
+        )
+
+        print(
+            f"Scenario state : "
+            f"{scenario.state.value}"
+        )
+
+        print(
+            f"Scenario score : "
+            f"{scenario.score}%"
+        )
+
+        print(
+            f"Action : "
+            f"{decision.decision.value}"
+        )
+
+        print(
+            f"Reason : "
+            f"{scenario.reason}"
+        )
+
 
     finally:
         adapter.shutdown()

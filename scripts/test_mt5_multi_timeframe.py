@@ -35,6 +35,10 @@ from tdi.graphical.scenario_transition_engine import (
     ScenarioTransitionEngine,
 )
 
+from tdi.graphical.transition_alert_engine import (
+    TransitionAlertEngine,
+)
+
 SCENARIO_STATE_PATH = (
     Path("data")
     / "scenario_states.json"
@@ -483,6 +487,34 @@ def main():
             print(
                 f"Reason : "
                 f"{transition.reason}"
+            )
+
+            alert = TransitionAlertEngine().analyze(
+                transition=transition,
+                target_side=scenario.target_side,
+            )
+
+            print()
+            print("=== TDI TRANSITION ALERT ===")
+
+            print(
+                f"Level : "
+                f"{alert.level.value}"
+            )
+
+            print(
+                f"Active : "
+                f"{alert.active}"
+            )
+
+            print(
+                f"Message : "
+                f"{alert.message}"
+            )
+
+            print(
+                f"Action : "
+                f"{alert.action}"
             )
 
         JsonScenarioStateRepository.save(

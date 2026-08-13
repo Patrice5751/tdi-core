@@ -26,6 +26,20 @@ from tdi.graphical.scenario_state_engine import (
     ScenarioStateEngine,
 )
 
+from pathlib import Path
+
+from tdi.graphical.json_scenario_state_repository import (
+    JsonScenarioStateRepository,
+)
+from tdi.graphical.scenario_transition_engine import (
+    ScenarioTransitionEngine,
+)
+
+SCENARIO_STATE_PATH = (
+    Path("data")
+    / "scenario_states.json"
+)
+
 def print_context(
     timeframe: str,
     context,
@@ -342,9 +356,9 @@ def main():
             )
 
         bias_readiness = BiasReadinessEngine().analyze(
-    result=result,
-    h1_momentum=h1_momentum,
-)
+            result=result,
+            h1_momentum=h1_momentum,
+        )
 
         print()
         print("=== TDI BIAS READINESS ===")
@@ -406,6 +420,76 @@ def main():
         print(
             f"Reason : "
             f"{scenario.reason}"
+        )
+
+        previous = JsonScenarioStateRepository.load(
+            symbol="XAUUSD",
+            path=SCENARIO_STATE_PATH,
+        )
+
+        print()
+        print("=== TDI SCENARIO TRANSITION ===")
+
+        if previous is None:
+            print("Previous state : None")
+
+            print(
+                f"Current state : "
+                f"{scenario.state.value}"
+            )
+
+            print(
+                "Transition : Initial"
+            )
+
+            print(
+                "Reason : Premier état enregistré "
+                "pour ce symbole."
+            )
+
+        else:
+            previous_state, previous_side = previous
+
+            transition = ScenarioTransitionEngine().analyze(
+                previous_state=previous_state,
+                current_state=scenario.state,
+            )
+
+            print(
+                f"Previous state : "
+                f"{previous_state.value}"
+            )
+
+            print(
+                f"Previous target side : "
+                f"{previous_side}"
+            )
+
+            print(
+                f"Current state : "
+                f"{scenario.state.value}"
+            )
+
+            print(
+                f"Current target side : "
+                f"{scenario.target_side}"
+            )
+
+            print(
+                f"Transition : "
+                f"{transition.transition.value}"
+            )
+
+            print(
+                f"Reason : "
+                f"{transition.reason}"
+            )
+
+        JsonScenarioStateRepository.save(
+            symbol="XAUUSD",
+            state=scenario.state,
+            target_side=scenario.target_side,
+            path=SCENARIO_STATE_PATH,
         )
 
 

@@ -17,3 +17,5 @@ class WaitCondition(str, Enum):
     MOMENTUM = "Momentum Confirmation"
 
     BREAKOUT = "Breakout Confirmation"
+
+    BIAS_ALIGNMENT = "H4/H1 Bias Alignment"

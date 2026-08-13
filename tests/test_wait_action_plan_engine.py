@@ -138,7 +138,7 @@ def test_all_conditions_met_returns_ready():
     assert plan.conditions == []
 
 
-def test_conflicting_bias_has_no_preferred_side():
+def test_conflicting_bias_waits_for_bias_alignment():
     result = MT5MultiTimeframeResult(
         h4=make_context(
             MarketDirection.TRANSITION,
@@ -156,6 +156,12 @@ def test_conflicting_bias_has_no_preferred_side():
     plan = WaitActionPlanEngine().analyze(
         result=result,
     )
+
+    assert plan.preferred_side is None
+    assert plan.ready is False
+    assert plan.conditions == [
+        WaitCondition.BIAS_ALIGNMENT
+    ]
 
     assert plan.preferred_side is None
     assert plan.ready is False

@@ -14,6 +14,10 @@ from tdi.graphical.wait_action_plan_engine import (
     WaitActionPlanEngine,
 )
 
+from tdi.graphical.wait_priority_engine import (
+    WaitPriorityEngine,
+)
+
 def print_context(
     timeframe: str,
     context,
@@ -299,9 +303,40 @@ def main():
                 "Waiting for: aucune condition restante."
             )
 
+        priorities = WaitPriorityEngine().prioritize(
+            plan=wait_plan,
+            result=result,
+            h4_momentum=h4_momentum,
+            h1_momentum=h1_momentum,
+        )
+
+        print()
+        print("=== TDI WAIT PRIORITIES ===")
+
+        if priorities:
+            for item in priorities:
+                print(
+                    f"{item.priority}. "
+                    f"{item.condition.value}"
+                )
+
+                print(
+                    f"   Proximity : "
+                    f"{item.proximity_score}%"
+                )
+
+                print(
+                    f"   {item.reason}"
+                )
+        else:
+            print(
+                "Aucune condition d'attente restante."
+            )
+
     finally:
         adapter.shutdown()
 
+        
 
 if __name__ == "__main__":
     main()

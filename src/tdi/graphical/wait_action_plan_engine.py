@@ -44,11 +44,14 @@ class WaitActionPlanEngine:
         if preferred_side is None:
             return WaitActionPlan(
                 preferred_side=None,
-                conditions=[],
+                conditions=[
+                    WaitCondition.BIAS_ALIGNMENT
+                ],
                 ready=False,
                 reason=(
-                    "Aucun biais H4/H1 suffisamment "
-                    "aligné pour préparer une entrée."
+                    "Les biais H4/H1 ne sont pas alignés. "
+                    "Attendre un biais directionnel commun "
+                    "avant de préparer une entrée."
                 ),
             )
 

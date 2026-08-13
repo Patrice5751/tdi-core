@@ -151,4 +151,26 @@ def test_no_conditions_returns_empty_priorities():
     )
 
     assert priorities == []
-    
+
+def test_bias_alignment_is_highest_priority():
+    plan = WaitActionPlan(
+        preferred_side=None,
+        conditions=[
+            WaitCondition.BIAS_ALIGNMENT,
+        ],
+        ready=False,
+        reason="Bias not aligned",
+    )
+
+    priorities = WaitPriorityEngine().prioritize(
+        plan=plan,
+        result=make_result(),
+    )
+
+    assert len(priorities) == 1
+    assert (
+        priorities[0].condition
+        == WaitCondition.BIAS_ALIGNMENT
+    )
+    assert priorities[0].priority == 1
+    assert priorities[0].proximity_score == 100

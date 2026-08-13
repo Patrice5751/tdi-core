@@ -68,6 +68,16 @@ class WaitPriorityEngine:
         h4_momentum: MomentumAnalysis | None,
         h1_momentum: MomentumAnalysis | None,
     ) -> tuple[int, str]:
+
+        if condition == WaitCondition.BIAS_ALIGNMENT:
+            return (
+                100,
+                (
+                    "Condition préalable : H4 et H1 doivent "
+                    "partager un biais directionnel exploitable."
+                ),
+            )
+        
         if condition == WaitCondition.MOMENTUM:
             return self._momentum_score(
                 preferred_side=preferred_side,

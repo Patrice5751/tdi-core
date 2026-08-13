@@ -18,6 +18,10 @@ from tdi.graphical.wait_priority_engine import (
     WaitPriorityEngine,
 )
 
+from tdi.graphical.bias_readiness_engine import (
+    BiasReadinessEngine,
+)
+
 def print_context(
     timeframe: str,
     context,
@@ -332,6 +336,39 @@ def main():
             print(
                 "Aucune condition d'attente restante."
             )
+
+        bias_readiness = BiasReadinessEngine().analyze(
+    result=result,
+    h1_momentum=h1_momentum,
+)
+
+        print()
+        print("=== TDI BIAS READINESS ===")
+
+        print(
+            f"Target side : "
+            f"{bias_readiness.target_side}"
+        )
+
+        print(
+            f"Readiness : "
+            f"{bias_readiness.readiness.value}"
+        )
+
+        print(
+            f"Convergence : "
+            f"{bias_readiness.convergence.value}"
+        )
+
+        print(
+            f"Readiness score : "
+            f"{bias_readiness.score}%"
+        )
+
+        print(
+            f"Reason : "
+            f"{bias_readiness.reason}"
+        )
 
     finally:
         adapter.shutdown()

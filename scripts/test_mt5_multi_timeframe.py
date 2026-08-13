@@ -10,7 +10,9 @@ from tdi.graphical.market_bias_engine import MarketBiasEngine
 from tdi.graphical.multi_timeframe_decision_engine import (
     MultiTimeframeDecisionEngine,
 )
-
+from tdi.graphical.wait_action_plan_engine import (
+    WaitActionPlanEngine,
+)
 
 def print_context(
     timeframe: str,
@@ -260,6 +262,42 @@ def main():
             f"Reason : "
             f"{decision.reason}"
         )
+
+        wait_plan = WaitActionPlanEngine().analyze(
+            result=result,
+            h4_momentum=h4_momentum,
+            h1_momentum=h1_momentum,
+        )
+
+        print()
+        print("=== TDI WAIT ACTION PLAN ===")
+
+        print(
+            f"Preferred side : "
+            f"{wait_plan.preferred_side}"
+        )
+
+        print(
+            f"Ready : "
+            f"{wait_plan.ready}"
+        )
+
+        print(
+            f"Reason : "
+            f"{wait_plan.reason}"
+        )
+
+        if wait_plan.conditions:
+            print("Waiting for:")
+
+            for condition in wait_plan.conditions:
+                print(
+                    f"- {condition.value}"
+                )
+        else:
+            print(
+                "Waiting for: aucune condition restante."
+            )
 
     finally:
         adapter.shutdown()

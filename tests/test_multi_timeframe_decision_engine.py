@@ -249,6 +249,66 @@ def test_bad_timing_remains_wait_even_with_strong_momentum():
     assert decision.momentum_confirmed is True
     assert decision.timing_favorable is False
     
+def test_good_buy_setup_without_structure_alignment_waits():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.TRANSITION,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.TRANSITION,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=False,
+    )
 
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.preferred_side == "BUY"
+    assert decision.bias_aligned is True
+    assert decision.structure_aligned is False
+    assert decision.momentum_confirmed is True
+
+def test_good_sell_setup_without_structure_alignment_waits():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.TRANSITION,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.TRANSITION,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=False,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.preferred_side == "SELL"
+    assert decision.bias_aligned is True
+    assert decision.structure_aligned is False
+    assert decision.momentum_confirmed is True
 
 

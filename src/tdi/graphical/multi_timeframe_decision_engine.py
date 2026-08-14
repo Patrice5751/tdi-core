@@ -79,6 +79,20 @@ class MultiTimeframeDecisionEngine:
                 ),
                 momentum_confirmed=False,
             )
+        if not result.aligned:
+            return MultiTimeframeDecisionAnalysis(
+                decision=MultiTimeframeDecision.WAIT,
+                preferred_side=preferred_side,
+                bias_aligned=True,
+                structure_aligned=False,
+                timing_favorable=timing_favorable,
+                confidence=confidence,
+                reason=(
+                    f"Biais {preferred_side} aligné H4/H1, "
+                    "mais structure H4/H1 non confirmée."
+                ),
+                momentum_confirmed=momentum_confirmed,
+            )
 
         if not timing_favorable:
             return MultiTimeframeDecisionAnalysis(

@@ -72,8 +72,8 @@ def print_context(
     )
 
     print(
-        f"Confiance direction : "
-        f"{context.direction_confidence}%"
+        f"Structure score : "
+        f"{context.direction_confidence}/100"
     )
 
     print(
@@ -97,8 +97,12 @@ def print_context(
 
     print(
         f"Confirmation MA : "
-        f"{ma_direction} "
-        f"({context.ma_confirmation_score}%)"
+        f"{ma_direction}"
+    )
+
+    print(
+        f"MA score : "
+        f"{context.ma_confirmation_score}/100"
     )
 
     bias = MarketBiasEngine().analyze(
@@ -116,8 +120,8 @@ def print_context(
     )
 
     print(
-        f"Bias confidence : "
-        f"{bias.confidence}%"
+        f"Bias strength : "
+        f"{bias.confidence}/100"
     )
 
     print(
@@ -166,8 +170,8 @@ def print_momentum(
     )
 
     print(
-        f"Momentum confidence : "
-        f"{momentum.confidence}%"
+        f"Momentum score : "
+        f"{momentum.confidence}/100"
     )
 
     if momentum.reason:
@@ -294,8 +298,8 @@ def main():
         )
 
         print(
-            f"Directional bias confidence : "
-            f"{decision.confidence}%"
+            f"Directional bias strength : "
+            f"{decision.confidence}/100"
         )
 
         print(
@@ -362,8 +366,13 @@ def main():
                 )
 
                 print(
+                    f"   Importance : "
+                    f"{item.importance_score}/100"
+                )
+
+                print(
                     f"   Proximity : "
-                    f"{item.proximity_score}%"
+                    f"{item.proximity_score}/100"
                 )
 
                 print(
@@ -398,8 +407,8 @@ def main():
         )
 
         print(
-            f"Readiness score : "
-            f"{bias_readiness.score}%"
+            f"Bias readiness score : "
+            f"{bias_readiness.score}/100"
         )
 
         print(
@@ -427,8 +436,8 @@ def main():
         )
 
         print(
-            f"Scenario score : "
-            f"{scenario.score}%"
+            f"Scenario maturity : "
+            f"{scenario.score}/100"
         )
 
         print(

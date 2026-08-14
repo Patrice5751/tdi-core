@@ -21,11 +21,16 @@ class WaitPriorityEngine:
         h1_momentum: MomentumAnalysis | None = None,
     ) -> list[WaitPriority]:
         candidates: list[
-            tuple[WaitCondition, int, str]
+            tuple[
+                WaitCondition,
+                int,
+                int,
+                str,
+            ]
         ] = []
 
         for condition in plan.conditions:
-            score, reason = self._condition_score(
+            proximity, reason = self._condition_score(
                 condition=condition,
                 result=result,
                 preferred_side=plan.preferred_side,
@@ -33,16 +38,24 @@ class WaitPriorityEngine:
                 h1_momentum=h1_momentum,
             )
 
+            importance = self._importance_score(
+                condition
+            )
+
             candidates.append(
                 (
                     condition,
-                    score,
+                    importance,
+                    proximity,
                     reason,
                 )
             )
 
         candidates.sort(
-            key=lambda item: item[1],
+            key=lambda item: (
+                item[1],
+                item[2],
+            ),
             reverse=True,
         )
 
@@ -50,15 +63,19 @@ class WaitPriorityEngine:
             WaitPriority(
                 condition=condition,
                 priority=index + 1,
-                proximity_score=score,
+                proximity_score=proximity,
                 reason=reason,
+                importance_score=importance,
             )
             for index, (
                 condition,
-                score,
+                importance,
+                proximity,
                 reason,
             ) in enumerate(candidates)
         ]
+
+
 
     def _condition_score(
         self,
@@ -202,4 +219,32 @@ class WaitPriorityEngine:
             60,
             "Le momentum doit se réaligner avec le biais.",
         )
-    
+
+    def _importance_score(
+        self,
+        condition: WaitCondition,
+    ) -> int:
+        if condition == WaitCondition.BIAS_ALIGNMENT:
+            return 100
+
+        if condition in {
+            WaitCondition.H4_STRUCTURE,
+            WaitCondition.H1_STRUCTURE,
+        }:
+            return 90
+
+        if condition in {
+            WaitCondition.H4_PULLBACK,
+            WaitCondition.H1_PULLBACK,
+            WaitCondition.H4_SUPPORT,
+            WaitCondition.H1_SUPPORT,
+            WaitCondition.H4_RESISTANCE,
+            WaitCondition.H1_RESISTANCE,
+            WaitCondition.BREAKOUT,
+        }:
+            return 80
+
+        if condition == WaitCondition.MOMENTUM:
+            return 70
+
+        return 0 

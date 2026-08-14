@@ -91,7 +91,7 @@ def test_priorities_are_returned_in_order():
     assert priorities[-1].priority == 4
 
 
-def test_neutral_momentum_near_threshold_has_high_priority():
+def test_structure_is_prioritized_over_near_momentum():
     plan = WaitActionPlan(
         preferred_side="BUY",
         conditions=[
@@ -115,10 +115,40 @@ def test_neutral_momentum_near_threshold_has_high_priority():
         ),
     )
 
-    assert priorities[0].condition == WaitCondition.MOMENTUM
+    assert (
+        priorities[0].condition
+        == WaitCondition.H4_STRUCTURE
+    )
 
+    assert (
+        priorities[0].importance_score
+        > priorities[1].importance_score
+    )
 
-def test_h1_timing_is_prioritized_over_h4_structure():
+    priorities = WaitPriorityEngine().prioritize(
+        plan=plan,
+        result=make_result(),
+        h4_momentum=make_momentum(
+            Momentum.NEUTRAL,
+            40,
+        ),
+        h1_momentum=make_momentum(
+            Momentum.NEUTRAL,
+            40,
+        ),
+    )
+
+    assert (
+        priorities[0].condition
+        == WaitCondition.H4_STRUCTURE
+    )
+
+    assert (
+        priorities[0].importance_score
+        > priorities[1].importance_score
+    )
+
+def test_structure_is_prioritized_over_h1_timing():
     plan = WaitActionPlan(
         preferred_side="BUY",
         conditions=[
@@ -134,8 +164,10 @@ def test_h1_timing_is_prioritized_over_h4_structure():
         result=make_result(),
     )
 
-    assert priorities[0].condition == WaitCondition.H1_SUPPORT
-
+    assert (
+        priorities[0].condition
+        == WaitCondition.H4_STRUCTURE
+    )
 
 def test_no_conditions_returns_empty_priorities():
     plan = WaitActionPlan(
@@ -174,3 +206,32 @@ def test_bias_alignment_is_highest_priority():
     )
     assert priorities[0].priority == 1
     assert priorities[0].proximity_score == 100
+
+def test_same_importance_uses_proximity_as_tiebreaker():
+    plan = WaitActionPlan(
+        preferred_side="BUY",
+        conditions=[
+            WaitCondition.H4_STRUCTURE,
+            WaitCondition.H1_STRUCTURE,
+        ],
+        ready=False,
+        reason="Test",
+    )
+
+    priorities = WaitPriorityEngine().prioritize(
+        plan=plan,
+        result=make_result(),
+    )
+
+    assert (
+        priorities[0].condition
+        == WaitCondition.H4_STRUCTURE
+    )
+
+    assert priorities[0].importance_score == 90
+    assert priorities[1].importance_score == 90
+
+    assert (
+        priorities[0].proximity_score
+        > priorities[1].proximity_score
+    )

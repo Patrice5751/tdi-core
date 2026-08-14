@@ -39,9 +39,24 @@ from tdi.graphical.transition_alert_engine import (
     TransitionAlertEngine,
 )
 
+from pathlib import Path
+
+from tdi.graphical.alert_deduplication_engine import (
+    AlertDeduplicationEngine,
+)
+from tdi.graphical.alert_state import AlertState
+from tdi.graphical.json_alert_state_repository import (
+    JsonAlertStateRepository,
+)
+
 SCENARIO_STATE_PATH = (
     Path("data")
     / "scenario_states.json"
+)
+
+ALERT_STATE_PATH = (
+    Path("data")
+    / "alert_states.json"
 )
 
 def print_context(
@@ -494,6 +509,16 @@ def main():
                 target_side=scenario.target_side,
             )
 
+            previous_alert = JsonAlertStateRepository.load(
+                symbol="XAUUSD",
+                path=ALERT_STATE_PATH,
+            )
+
+            deduplication = AlertDeduplicationEngine().analyze(
+                current_alert=alert,
+                previous_alert=previous_alert,
+            )
+
             print()
             print("=== TDI TRANSITION ALERT ===")
 
@@ -513,9 +538,29 @@ def main():
             )
 
             print(
+                f"New alert : "
+                f"{deduplication.is_new}"
+            )
+
+            print(
+                f"Deduplication reason : "
+                f"{deduplication.reason}"
+            )
+
+            print(
                 f"Action : "
                 f"{alert.action}"
             )
+
+            if alert.active:
+                JsonAlertStateRepository.save(
+                    symbol="XAUUSD",
+                    alert=AlertState(
+                        level=alert.level.value,
+                        message=alert.message,
+                    ),
+                    path=ALERT_STATE_PATH,
+                )
 
         JsonScenarioStateRepository.save(
             symbol="XAUUSD",

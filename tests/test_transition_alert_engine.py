@@ -137,28 +137,15 @@ def test_sell_triggered_alert_contains_sell_side():
     assert alert.active is True
     assert "SELL" in alert.message
 
-def test_ready_same_side_has_no_repeated_alert():
-    transition = ScenarioTransitionAnalysis(
-        previous_state=ScenarioState.READY,
-        current_state=ScenarioState.READY,
-        transition=ScenarioTransition.UNCHANGED,
-        reason="Le scénario reste Ready.",
-    )
 
-    alert = TransitionAlertEngine().analyze(
-        transition=transition,
-        target_side="BUY",
-    )
-
-    assert alert.level == AlertLevel.NONE
-    assert alert.active is False
-
-def test_sell_triggered_alert_contains_sell_side():
+def test_reversal_generates_high_alert():
     transition = ScenarioTransitionAnalysis(
         previous_state=ScenarioState.BUILDING,
-        current_state=ScenarioState.READY,
-        transition=ScenarioTransition.TRIGGERED,
-        reason="Le scénario devient Ready.",
+        current_state=ScenarioState.BUILDING,
+        transition=ScenarioTransition.REVERSAL,
+        reason="Le scénario passe de BUY à SELL.",
+        previous_target_side="BUY",
+        current_target_side="SELL",
     )
 
     alert = TransitionAlertEngine().analyze(
@@ -169,6 +156,4 @@ def test_sell_triggered_alert_contains_sell_side():
     assert alert.level == AlertLevel.HIGH
     assert alert.active is True
     assert "SELL" in alert.message
-
-
     

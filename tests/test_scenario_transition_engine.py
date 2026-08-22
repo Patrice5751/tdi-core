@@ -89,4 +89,48 @@ def test_invalid_to_building_is_improving():
         analysis.transition
         == ScenarioTransition.IMPROVING
     )
-    
+
+def test_buy_to_sell_same_state_is_reversal():
+    analysis = ScenarioTransitionEngine().analyze(
+        previous_state=ScenarioState.BUILDING,
+        current_state=ScenarioState.BUILDING,
+        previous_target_side="BUY",
+        current_target_side="SELL",
+    )
+
+    assert (
+        analysis.transition
+        == ScenarioTransition.REVERSAL
+    )
+    assert analysis.previous_target_side == "BUY"
+    assert analysis.current_target_side == "SELL"
+
+
+def test_sell_to_buy_same_state_is_reversal():
+    analysis = ScenarioTransitionEngine().analyze(
+        previous_state=ScenarioState.BUILDING,
+        current_state=ScenarioState.BUILDING,
+        previous_target_side="SELL",
+        current_target_side="BUY",
+    )
+
+    assert (
+        analysis.transition
+        == ScenarioTransition.REVERSAL
+    )
+    assert analysis.previous_target_side == "SELL"
+    assert analysis.current_target_side == "BUY"
+
+
+def test_same_side_same_state_remains_unchanged():
+    analysis = ScenarioTransitionEngine().analyze(
+        previous_state=ScenarioState.BUILDING,
+        current_state=ScenarioState.BUILDING,
+        previous_target_side="BUY",
+        current_target_side="BUY",
+    )
+
+    assert (
+        analysis.transition
+        == ScenarioTransition.UNCHANGED
+    )   

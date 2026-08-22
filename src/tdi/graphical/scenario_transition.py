@@ -10,6 +10,7 @@ class ScenarioTransition(Enum):
     DETERIORATING = "Deteriorating"
     TRIGGERED = "Triggered"
     INVALIDATED = "Invalidated"
+    REVERSAL = "Reversal"
 
 
 @dataclass(frozen=True)
@@ -18,4 +19,7 @@ class ScenarioTransitionAnalysis:
     current_state: ScenarioState
     transition: ScenarioTransition
     reason: str
+
+    previous_target_side: str | None = None
+    current_target_side: str | None = None
     

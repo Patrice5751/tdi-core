@@ -93,4 +93,22 @@ def test_inactive_alert_is_never_new():
     )
 
     assert result.is_new is False
-    
+
+def test_identical_high_trigger_alert_is_not_new():
+    current = make_alert(
+        level=AlertLevel.HIGH,
+        active=True,
+        message="Le scénario BUY atteint l'état Ready.",
+    )
+
+    previous = AlertState(
+        level=AlertLevel.HIGH.value,
+        message=current.message,
+    )
+
+    result = AlertDeduplicationEngine().analyze(
+        current_alert=current,
+        previous_alert=previous,
+    )
+
+    assert result.is_new is False

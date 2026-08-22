@@ -85,6 +85,7 @@ def test_triggered_generates_high_alert():
     assert alert.level == AlertLevel.HIGH
     assert alert.active is True
     assert "Ready" in alert.message
+    assert "BUY" in alert.message
 
 
 def test_missing_target_side_is_supported():
@@ -97,4 +98,77 @@ def test_missing_target_side_is_supported():
 
     assert alert.level == AlertLevel.INFO
     assert alert.active is True
+
+def test_ready_same_side_has_no_repeated_alert():
+    transition = ScenarioTransitionAnalysis(
+        previous_state=ScenarioState.READY,
+        current_state=ScenarioState.READY,
+        transition=ScenarioTransition.UNCHANGED,
+        reason="Le scénario reste Ready.",
+        previous_target_side="BUY",
+        current_target_side="BUY",
+    )
+
+    alert = TransitionAlertEngine().analyze(
+        transition=transition,
+        target_side="BUY",
+    )
+
+    assert alert.level == AlertLevel.NONE
+    assert alert.active is False
+
+
+def test_sell_triggered_alert_contains_sell_side():
+    transition = ScenarioTransitionAnalysis(
+        previous_state=ScenarioState.BUILDING,
+        current_state=ScenarioState.READY,
+        transition=ScenarioTransition.TRIGGERED,
+        reason="Le scénario devient Ready.",
+        previous_target_side="SELL",
+        current_target_side="SELL",
+    )
+
+    alert = TransitionAlertEngine().analyze(
+        transition=transition,
+        target_side="SELL",
+    )
+
+    assert alert.level == AlertLevel.HIGH
+    assert alert.active is True
+    assert "SELL" in alert.message
+
+def test_ready_same_side_has_no_repeated_alert():
+    transition = ScenarioTransitionAnalysis(
+        previous_state=ScenarioState.READY,
+        current_state=ScenarioState.READY,
+        transition=ScenarioTransition.UNCHANGED,
+        reason="Le scénario reste Ready.",
+    )
+
+    alert = TransitionAlertEngine().analyze(
+        transition=transition,
+        target_side="BUY",
+    )
+
+    assert alert.level == AlertLevel.NONE
+    assert alert.active is False
+
+def test_sell_triggered_alert_contains_sell_side():
+    transition = ScenarioTransitionAnalysis(
+        previous_state=ScenarioState.BUILDING,
+        current_state=ScenarioState.READY,
+        transition=ScenarioTransition.TRIGGERED,
+        reason="Le scénario devient Ready.",
+    )
+
+    alert = TransitionAlertEngine().analyze(
+        transition=transition,
+        target_side="SELL",
+    )
+
+    assert alert.level == AlertLevel.HIGH
+    assert alert.active is True
+    assert "SELL" in alert.message
+
+
     

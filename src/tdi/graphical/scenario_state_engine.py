@@ -13,6 +13,7 @@ from tdi.graphical.scenario_state import (
     ScenarioStateAnalysis,
 )
 from tdi.graphical.wait_action_plan import WaitActionPlan
+from tdi.graphical.wait_condition import WaitCondition
 
 
 class ScenarioStateEngine:
@@ -86,24 +87,15 @@ class ScenarioStateEngine:
             bias_readiness.convergence
             == BiasConvergence.ALIGNED
         ):
-            if wait_plan.ready:
-                return ScenarioStateAnalysis(
-                    target_side=target_side,
-                    state=ScenarioState.READY,
-                    score=100,
-                    reason=(
-                        f"Le scénario {target_side} "
-                        "est prêt."
-                    ),
-                )
+            maturity_score = self._maturity_score(
+                base_score=bias_readiness.score,
+                conditions=wait_plan.conditions,
+            )
 
             return ScenarioStateAnalysis(
                 target_side=target_side,
                 state=ScenarioState.BUILDING,
-                score=max(
-                    bias_readiness.score - 20,
-                    0,
-                ),
+                score=maturity_score,
                 reason=(
                     f"Le biais {target_side} est aligné, "
                     "mais certaines conditions d'entrée "
@@ -121,4 +113,37 @@ class ScenarioStateEngine:
                 "suffisamment confirmée."
             ),
         )
-    
+
+    def _maturity_score(
+        self,
+        base_score: int,
+        conditions: list,
+    ) -> int:
+        penalty = 0
+
+        for condition in conditions:
+            if condition in {
+                WaitCondition.H4_STRUCTURE,
+                WaitCondition.H1_STRUCTURE,
+                WaitCondition.BIAS_ALIGNMENT,
+            }:
+                penalty += 15
+
+            elif condition in {
+                WaitCondition.H4_PULLBACK,
+                WaitCondition.H1_PULLBACK,
+                WaitCondition.H4_SUPPORT,
+                WaitCondition.H1_SUPPORT,
+                WaitCondition.H4_RESISTANCE,
+                WaitCondition.H1_RESISTANCE,
+                WaitCondition.BREAKOUT,
+            }:
+                penalty += 10
+
+            elif condition == WaitCondition.MOMENTUM:
+                penalty += 10
+
+        return max(
+            base_score - penalty,
+            0,
+        )

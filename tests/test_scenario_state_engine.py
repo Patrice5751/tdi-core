@@ -162,5 +162,144 @@ def test_aligned_bias_with_missing_conditions_is_building():
 
     assert analysis.state == ScenarioState.BUILDING
     assert analysis.target_side == "BUY"
-    assert analysis.score == 80
-    
+    assert analysis.score == 90
+
+def test_multiple_missing_conditions_reduce_maturity():
+    wait_plan = WaitActionPlan(
+        preferred_side="BUY",
+        conditions=[
+            WaitCondition.H4_STRUCTURE,
+            WaitCondition.H1_STRUCTURE,
+            WaitCondition.H1_SUPPORT,
+            WaitCondition.MOMENTUM,
+        ],
+        ready=False,
+        reason="Test",
+    )
+
+    analysis = ScenarioStateEngine().analyze(
+        decision=make_decision(
+            preferred_side="BUY",
+        ),
+        wait_plan=wait_plan,
+        bias_readiness=make_readiness(
+            target_side="BUY",
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    assert analysis.state == ScenarioState.BUILDING
+    assert analysis.score == 50
+
+
+def test_structure_penalizes_maturity_more_than_momentum():
+    structure_plan = WaitActionPlan(
+        preferred_side="BUY",
+        conditions=[
+            WaitCondition.H4_STRUCTURE,
+        ],
+        ready=False,
+        reason="Test",
+    )
+
+    momentum_plan = WaitActionPlan(
+        preferred_side="BUY",
+        conditions=[
+            WaitCondition.MOMENTUM,
+        ],
+        ready=False,
+        reason="Test",
+    )
+
+    engine = ScenarioStateEngine()
+
+    structure = engine.analyze(
+        decision=make_decision(),
+        wait_plan=structure_plan,
+        bias_readiness=make_readiness(
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    momentum = engine.analyze(
+        decision=make_decision(),
+        wait_plan=momentum_plan,
+        bias_readiness=make_readiness(
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    assert structure.score == 85
+    assert momentum.score == 90
+    assert structure.score < momentum.score
+
+
+def test_wait_decision_can_never_return_ready():
+    analysis = ScenarioStateEngine().analyze(
+        decision=make_decision(
+            decision=MultiTimeframeDecision.WAIT,
+            preferred_side="BUY",
+        ),
+        wait_plan=make_wait_plan(
+            preferred_side="BUY",
+            ready=True,
+        ),
+        bias_readiness=make_readiness(
+            target_side="BUY",
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    assert analysis.state != ScenarioState.READY
+
+
+def test_buy_decision_always_returns_ready():
+    analysis = ScenarioStateEngine().analyze(
+        decision=make_decision(
+            decision=MultiTimeframeDecision.BUY,
+            preferred_side="BUY",
+        ),
+        wait_plan=make_wait_plan(
+            preferred_side="BUY",
+            ready=True,
+        ),
+        bias_readiness=make_readiness(
+            target_side="BUY",
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    assert analysis.state == ScenarioState.READY
+    assert analysis.target_side == "BUY"
+
+
+def test_sell_decision_always_returns_ready():
+    analysis = ScenarioStateEngine().analyze(
+        decision=make_decision(
+            decision=MultiTimeframeDecision.SELL,
+            preferred_side="SELL",
+        ),
+        wait_plan=make_wait_plan(
+            preferred_side="SELL",
+            ready=True,
+        ),
+        bias_readiness=make_readiness(
+            target_side="SELL",
+            readiness=BiasReadiness.HIGH,
+            convergence=BiasConvergence.ALIGNED,
+            score=100,
+        ),
+    )
+
+    assert analysis.state == ScenarioState.READY
+    assert analysis.target_side == "SELL"

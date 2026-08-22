@@ -109,10 +109,7 @@ class MultiTimeframeDecisionEngine:
                 momentum_confirmed=momentum_confirmed,
             )
 
-        if (
-            momentum_available
-            and not momentum_confirmed
-        ):
+        if not momentum_confirmed:
             return MultiTimeframeDecisionAnalysis(
                 decision=MultiTimeframeDecision.WAIT,
                 preferred_side=preferred_side,
@@ -122,7 +119,11 @@ class MultiTimeframeDecisionEngine:
                 confidence=confidence,
                 reason=(
                     f"Biais {preferred_side} et timing favorables, "
-                    "mais momentum H4/H1 non confirmé."
+                    + (
+                        "mais momentum H4/H1 non confirmé."
+                        if momentum_available
+                        else "mais données de momentum H4/H1 absentes."
+                    )
                 ),
                 momentum_confirmed=False,
             )

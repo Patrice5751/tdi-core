@@ -76,7 +76,13 @@ def test_aligned_buy_bias_with_good_timing_returns_buy():
     )
 
     decision = MultiTimeframeDecisionEngine().decide(
-        result
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
     )
 
     assert decision.decision == MultiTimeframeDecision.BUY
@@ -99,7 +105,13 @@ def test_aligned_sell_bias_with_good_timing_returns_sell():
     )
 
     decision = MultiTimeframeDecisionEngine().decide(
-        result
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
     )
 
     assert decision.decision == MultiTimeframeDecision.SELL
@@ -310,5 +322,31 @@ def test_good_sell_setup_without_structure_alignment_waits():
     assert decision.bias_aligned is True
     assert decision.structure_aligned is False
     assert decision.momentum_confirmed is True
+
+def test_buy_setup_without_momentum_data_waits():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.preferred_side == "BUY"
+    assert decision.bias_aligned is True
+    assert decision.structure_aligned is True
+    assert decision.timing_favorable is True
+    assert decision.momentum_confirmed is False
 
 

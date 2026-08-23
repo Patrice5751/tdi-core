@@ -82,6 +82,23 @@ class TransitionAlertEngine:
                 ),
             )
 
+        if transition.transition == ScenarioTransition.REVERSAL:
+            side = target_side or "directionnel"
+
+            return TransitionAlert(
+                level=AlertLevel.HIGH,
+                active=True,
+                message=(
+                    f"Renversement de scénario détecté vers "
+                    f"{side}."
+                ),
+                action=(
+                    "Abandonner le scénario précédent et "
+                    "réévaluer entièrement le nouveau biais "
+                    "avant toute entrée."
+                ),
+            )
+
         return TransitionAlert(
             level=AlertLevel.NONE,
             active=False,

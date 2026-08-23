@@ -481,6 +481,8 @@ def main():
             transition = ScenarioTransitionEngine().analyze(
                 previous_state=previous_state,
                 current_state=scenario.state,
+                previous_target_side=previous_side,
+                current_target_side=scenario.target_side,
             )
 
             print(

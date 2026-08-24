@@ -245,4 +245,93 @@ def test_missing_h4_momentum_adds_momentum_wait_condition():
     assert plan.preferred_side == "BUY"
     assert plan.ready is False
     assert WaitCondition.MOMENTUM in plan.conditions
+
+def test_sell_middle_waits_for_h1_resistance():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.MIDDLE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+    )
+
+    assert plan.preferred_side == "SELL"
+    assert plan.ready is False
+    assert WaitCondition.H1_RESISTANCE in plan.conditions
+    assert WaitCondition.MOMENTUM not in plan.conditions
+
+
+def test_sell_with_bearish_momentum_does_not_wait_for_momentum():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+    )
+
+    assert plan.preferred_side == "SELL"
+    assert WaitCondition.MOMENTUM not in plan.conditions
+
+
+def test_sell_with_wrong_momentum_waits_for_momentum():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.NEUTRAL
+        ),
+    )
+
+    assert plan.preferred_side == "SELL"
+    assert plan.ready is False
+    assert WaitCondition.MOMENTUM in plan.conditions
     

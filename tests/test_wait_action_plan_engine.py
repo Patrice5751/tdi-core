@@ -190,3 +190,59 @@ def test_missing_momentum_adds_momentum_wait_condition():
     assert plan.preferred_side == "BUY"
     assert plan.ready is False
     assert WaitCondition.MOMENTUM in plan.conditions
+
+def test_missing_h1_momentum_adds_momentum_wait_condition():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+        h1_momentum=None,
+    )
+
+    assert plan.preferred_side == "BUY"
+    assert plan.ready is False
+    assert WaitCondition.MOMENTUM in plan.conditions
+
+
+def test_missing_h4_momentum_adds_momentum_wait_condition():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=None,
+        h1_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+    )
+
+    assert plan.preferred_side == "BUY"
+    assert plan.ready is False
+    assert WaitCondition.MOMENTUM in plan.conditions
+    

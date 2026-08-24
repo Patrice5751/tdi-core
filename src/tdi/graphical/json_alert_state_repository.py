@@ -74,4 +74,33 @@ class JsonAlertStateRepository:
             return {}
 
         return json.loads(content)
-    
+
+    def delete(
+        symbol: str,
+        path: str | Path,
+    ) -> None:
+        destination = Path(path)
+
+        data = JsonAlertStateRepository._load_data(
+            destination
+        )
+
+        if symbol not in data:
+            return
+
+        del data[symbol]
+
+        destination.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        destination.write_text(
+            json.dumps(
+                data,
+                indent=2,
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        

@@ -572,6 +572,11 @@ def main():
                     ),
                     path=ALERT_STATE_PATH,
                 )
+            else:
+                JsonAlertStateRepository.delete(
+                    symbol="XAUUSD",
+                    path=ALERT_STATE_PATH,
+                )
 
         JsonScenarioStateRepository.save(
             symbol="XAUUSD",

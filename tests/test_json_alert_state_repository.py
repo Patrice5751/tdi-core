@@ -70,4 +70,46 @@ def test_multiple_alert_symbols_are_preserved(tmp_path):
 
     assert gold.message == "Gold"
     assert nasdaq.message == "Nasdaq"
+
+def test_delete_alert_removes_symbol_only(tmp_path):
+    path = tmp_path / "alerts.json"
+
+    JsonAlertStateRepository.save(
+        symbol="XAUUSD",
+        alert=AlertState(
+            level="High",
+            message="Gold alert",
+        ),
+        path=path,
+    )
+
+    JsonAlertStateRepository.save(
+        symbol="NAS100",
+        alert=AlertState(
+            level="Warning",
+            message="Nasdaq alert",
+        ),
+        path=path,
+    )
+
+    JsonAlertStateRepository.delete(
+        symbol="XAUUSD",
+        path=path,
+    )
+
+    gold = JsonAlertStateRepository.load(
+        symbol="XAUUSD",
+        path=path,
+    )
+
+    nasdaq = JsonAlertStateRepository.load(
+        symbol="NAS100",
+        path=path,
+    )
+
+    assert gold is None
+    assert nasdaq is not None
+    assert nasdaq.message == "Nasdaq alert"
+
+    
     

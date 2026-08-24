@@ -167,3 +167,49 @@ def test_main_continues_after_symbol_error(
         "XAGUSD",
         "NAS100",
     ]
+
+def test_main_always_shuts_down_adapter(
+    monkeypatch,
+):
+    shutdown_called = []
+
+    class FakeAdapter:
+        def __init__(self, mt5):
+            pass
+
+        def initialize(self):
+            pass
+
+        def shutdown(self):
+            shutdown_called.append(True)
+
+    class FailingAnalysisPipeline:
+        def __init__(self, adapter):
+            raise RuntimeError("Simulated startup failure")
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MarketDataAdapter",
+        FakeAdapter,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5AnalysisPipeline",
+        FailingAnalysisPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "parse_args",
+        lambda: type(
+            "Args",
+            (),
+            {"symbols": ["XAUUSD"]},
+        )(),
+    )
+
+    try:
+        run_tdi_mt5.main()
+    except RuntimeError:
+        pass
+
+    assert shutdown_called == [True]

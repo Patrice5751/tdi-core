@@ -24,3 +24,7 @@ data/
 # TDI runtime state
 data/alert_states.json
 data/scenario_states.json
+
+# TDI runtime state
+data/*.json
+

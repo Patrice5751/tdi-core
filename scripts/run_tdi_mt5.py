@@ -4,7 +4,6 @@ from pathlib import Path
 import MetaTrader5 as mt5
 
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
-from tdi.adapters.mt5_market_data_adapter import MT5MarketDataAdapter
 from tdi.adapters.mt5_momentum_pipeline import MT5MomentumPipeline
 from tdi.adapters.mt5_multi_timeframe_pipeline import (
     MT5MultiTimeframePipeline,
@@ -37,6 +36,11 @@ from tdi.graphical.transition_alert_engine import (
 from tdi.graphical.wait_action_plan_engine import (
     WaitActionPlanEngine,
 )
+
+from tdi.adapters.mt5_market_data_adapter import (
+    MT5MarketDataAdapter,
+)
+
 
 
 SCENARIO_STATE_PATH = (
@@ -286,11 +290,23 @@ def main():
         )
 
         for symbol in args.symbols:
-            analyze_symbol(
-                symbol=symbol,
-                multi_pipeline=multi_pipeline,
-                momentum_pipeline=momentum_pipeline,
-            )
+            try:
+                analyze_symbol(
+                    symbol=symbol,
+                    multi_pipeline=multi_pipeline,
+                    momentum_pipeline=momentum_pipeline,
+                )
+
+            except Exception as exc:
+                print()
+                print("=" * 60)
+                print(f"TDI LIVE — {symbol}")
+                print("=" * 60)
+                print("Status            : ERROR")
+                print(
+                    f"Error             : "
+                    f"{type(exc).__name__}: {exc}"
+                )
 
     finally:
         adapter.shutdown()
@@ -298,4 +314,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

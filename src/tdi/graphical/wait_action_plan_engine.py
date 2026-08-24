@@ -160,6 +160,9 @@ class WaitActionPlanEngine:
             h4_momentum is None
             or h1_momentum is None
         ):
+            conditions.append(
+                WaitCondition.MOMENTUM
+            )
             return
 
         expected = (

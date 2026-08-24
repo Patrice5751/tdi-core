@@ -165,3 +165,28 @@ def test_conflicting_bias_waits_for_bias_alignment():
 
     assert plan.preferred_side is None
     assert plan.ready is False
+
+def test_missing_momentum_adds_momentum_wait_condition():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=None,
+        h1_momentum=None,
+    )
+
+    assert plan.preferred_side == "BUY"
+    assert plan.ready is False
+    assert WaitCondition.MOMENTUM in plan.conditions

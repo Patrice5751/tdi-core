@@ -17,3 +17,10 @@ Thumbs.db
 
 # Python package metadata
 *.egg-info/
+
+# TDI runtime state
+data/
+
+# TDI runtime state
+data/alert_states.json
+data/scenario_states.json

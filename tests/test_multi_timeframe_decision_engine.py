@@ -161,6 +161,7 @@ def test_buy_bias_on_h1_resistance_returns_wait():
     )
 
     assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
 
 def make_momentum(
     momentum: Momentum,
@@ -348,5 +349,104 @@ def test_buy_setup_without_momentum_data_waits():
     assert decision.structure_aligned is True
     assert decision.timing_favorable is True
     assert decision.momentum_confirmed is False
+
+def test_sell_bias_on_h1_support_returns_wait():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.SUPPORT,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BEARISH),
+        h1_momentum=make_momentum(Momentum.BEARISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
+
+def test_h4_middle_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.MIDDLE,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BULLISH),
+        h1_momentum=make_momentum(Momentum.BULLISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
+
+def test_h1_middle_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.MIDDLE,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BULLISH),
+        h1_momentum=make_momentum(Momentum.BULLISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
+
+def test_h1_extension_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.PULLBACK,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.EXTENSION,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BULLISH),
+        h1_momentum=make_momentum(Momentum.BULLISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
 
 

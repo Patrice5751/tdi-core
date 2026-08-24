@@ -449,4 +449,78 @@ def test_h1_extension_returns_wait_with_other_conditions_valid():
     assert decision.decision == MultiTimeframeDecision.WAIT
     assert decision.timing_favorable is False
 
+def test_sell_h4_middle_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.MIDDLE,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BEARISH),
+        h1_momentum=make_momentum(Momentum.BEARISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
+
+def test_sell_h1_middle_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.MIDDLE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BEARISH),
+        h1_momentum=make_momentum(Momentum.BEARISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
+
+def test_sell_h1_extension_returns_wait_with_other_conditions_valid():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.EXTENSION,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=make_momentum(Momentum.BEARISH),
+        h1_momentum=make_momentum(Momentum.BEARISH),
+    )
+
+    assert decision.decision == MultiTimeframeDecision.WAIT
+    assert decision.timing_favorable is False
+
 

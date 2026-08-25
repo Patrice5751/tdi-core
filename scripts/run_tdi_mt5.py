@@ -219,7 +219,7 @@ def analyze_symbol(
     )
 
     print(
-        f"Scenario maturity : "
+        f"Scenario score    : "
         f"{scenario.score}/100"
     )
 

@@ -442,3 +442,93 @@ def test_monitor_handles_keyboard_interrupt_and_shuts_down(
     run_tdi_mt5.main()
 
     assert shutdown_called == [True]
+
+def test_analyze_symbol_exposes_bias_readiness(
+    monkeypatch,
+    capsys,
+):
+    class FakeMultiPipeline:
+        def analyze(self, symbol, count):
+            return object()
+
+    class FakeMomentumPipeline:
+        def analyze(self, symbol, timeframe, count):
+            return object()
+
+    class FakeDecision:
+        decision = type("Value", (), {"value": "Wait"})()
+        preferred_side = None
+        bias_aligned = False
+        structure_aligned = False
+        timing_favorable = False
+        momentum_confirmed = False
+
+    class FakeWaitPlan:
+        conditions = []
+
+    class FakeBiasReadiness:
+        target_side = "BUY"
+        convergence = type(
+            "Value",
+            (),
+            {"value": "Toward"},
+        )()
+        readiness = type(
+            "Value",
+            (),
+            {"value": "Medium"},
+        )()
+        score = 85
+
+    class FakeScenario:
+        state = type(
+            "Value",
+            (),
+            {"value": "Building"},
+        )()
+        target_side = "BUY"
+        score = 85
+
+    monkeypatch.setattr(
+        run_tdi_mt5.MultiTimeframeDecisionEngine,
+        "decide",
+        lambda self, **kwargs: FakeDecision(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.WaitActionPlanEngine,
+        "analyze",
+        lambda self, **kwargs: FakeWaitPlan(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.BiasReadinessEngine,
+        "analyze",
+        lambda self, **kwargs: FakeBiasReadiness(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.ScenarioStateEngine,
+        "analyze",
+        lambda self, **kwargs: FakeScenario(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "load",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "save",
+        lambda **kwargs: None,
+    )
+
+    run_tdi_mt5.analyze_symbol(
+        symbol="XAUUSD",
+        multi_pipeline=FakeMultiPipeline(),
+        momentum_pipeline=FakeMomentumPipeline(),
+    )
+
+    output = capsys.readouterr().out
+
+    assert "Target side       : BUY" in output
+    assert "Bias convergence  : Toward" in output
+    assert "Bias readiness    : Medium" in output
+    assert "Bias score        : 85/100" in output

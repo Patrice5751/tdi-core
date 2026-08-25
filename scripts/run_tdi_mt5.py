@@ -173,6 +173,27 @@ def analyze_symbol(
     )
 
     print(
+        f"Target side       : "
+        f"{scenario.target_side}"
+    )
+
+    print(
+        f"Bias convergence  : "
+        f"{bias_readiness.convergence.value}"
+    )
+
+    print(
+        f"Bias readiness    : "
+        f"{bias_readiness.readiness.value}"
+    )
+
+    print(
+        f"Bias score        : "
+        f"{bias_readiness.score}/100"
+    )
+
+
+    print(
         f"Bias aligned      : "
         f"{decision.bias_aligned}"
     )

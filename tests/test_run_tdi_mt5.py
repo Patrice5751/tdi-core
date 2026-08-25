@@ -365,3 +365,80 @@ def test_parse_args_supports_monitor_mode(
         "XAGUSD",
     ]
     assert args.monitor is True
+
+def test_monitor_handles_keyboard_interrupt_and_shuts_down(
+    monkeypatch,
+):
+    shutdown_called = []
+
+    class FakeAdapter:
+        def __init__(self, mt5):
+            pass
+
+        def initialize(self):
+            pass
+
+        def shutdown(self):
+            shutdown_called.append(True)
+
+    class FakeAnalysisPipeline:
+        def __init__(self, adapter):
+            pass
+
+    class FakeMultiPipeline:
+        def __init__(self, pipeline):
+            pass
+
+    class FakeMomentumPipeline:
+        def __init__(self, analysis_pipeline):
+            pass
+
+    def fake_analyze_symbol(
+        symbol,
+        multi_pipeline,
+        momentum_pipeline,
+    ):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MarketDataAdapter",
+        FakeAdapter,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5AnalysisPipeline",
+        FakeAnalysisPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MultiTimeframePipeline",
+        FakeMultiPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MomentumPipeline",
+        FakeMomentumPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "analyze_symbol",
+        fake_analyze_symbol,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "parse_args",
+        lambda: type(
+            "Args",
+            (),
+            {
+                "symbols": ["XAUUSD"],
+                "monitor": True,
+                "interval": 60,
+            },
+        )(),
+    )
+
+    run_tdi_mt5.main()
+
+    assert shutdown_called == [True]

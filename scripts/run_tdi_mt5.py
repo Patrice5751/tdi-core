@@ -331,6 +331,10 @@ def main():
 
             sleep(args.interval)
 
+    except KeyboardInterrupt:
+        print()
+        print("TDI monitoring stopped.")
+
     finally:
         adapter.shutdown()
 

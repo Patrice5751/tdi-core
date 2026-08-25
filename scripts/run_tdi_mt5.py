@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-
+from time import sleep
 import MetaTrader5 as mt5
 
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
@@ -266,8 +266,25 @@ def parse_args():
         ),
     )
 
-    return parser.parse_args()
+    parser.add_argument(
+        "--monitor",
+        action="store_true",
+        help=(
+            "Continuously monitor the requested symbols."
+        ),
+    )
 
+    parser.add_argument(
+        "--interval",
+        type=int,
+        default=60,
+        help=(
+            "Monitoring interval in seconds "
+            "(default: 60)."
+        ),
+    )
+
+    return parser.parse_args()
 
 def main():
     args = parse_args()
@@ -289,24 +306,30 @@ def main():
             analysis_pipeline=analysis_pipeline
         )
 
-        for symbol in args.symbols:
-            try:
-                analyze_symbol(
-                    symbol=symbol,
-                    multi_pipeline=multi_pipeline,
-                    momentum_pipeline=momentum_pipeline,
-                )
+        while True:
+            for symbol in args.symbols:
+                try:
+                    analyze_symbol(
+                        symbol=symbol,
+                        multi_pipeline=multi_pipeline,
+                        momentum_pipeline=momentum_pipeline,
+                    )
 
-            except Exception as exc:
-                print()
-                print("=" * 60)
-                print(f"TDI LIVE — {symbol}")
-                print("=" * 60)
-                print("Status            : ERROR")
-                print(
-                    f"Error             : "
-                    f"{type(exc).__name__}: {exc}"
-                )
+                except Exception as exc:
+                    print()
+                    print("=" * 60)
+                    print(f"TDI LIVE â€” {symbol}")
+                    print("=" * 60)
+                    print("Status            : ERROR")
+                    print(
+                        f"Error             : "
+                        f"{type(exc).__name__}: {exc}"
+                    )
+
+            if not args.monitor:
+                break
+
+            sleep(args.interval)
 
     finally:
         adapter.shutdown()
@@ -314,3 +337,105 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def test_monitor_repeats_symbol_analysis(
+    monkeypatch,
+):
+    analyzed_symbols = []
+    sleep_calls = []
+
+    class FakeAdapter:
+        def __init__(self, mt5):
+            pass
+
+        def initialize(self):
+            pass
+
+        def shutdown(self):
+            pass
+
+    class FakeAnalysisPipeline:
+        def __init__(self, adapter):
+            pass
+
+    class FakeMultiPipeline:
+        def __init__(self, pipeline):
+            pass
+
+    class FakeMomentumPipeline:
+        def __init__(self, analysis_pipeline):
+            pass
+
+    def fake_analyze_symbol(
+        symbol,
+        multi_pipeline,
+        momentum_pipeline,
+    ):
+        analyzed_symbols.append(symbol)
+
+    def fake_sleep(seconds):
+        sleep_calls.append(seconds)
+
+        if len(sleep_calls) == 2:
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MarketDataAdapter",
+        FakeAdapter,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5AnalysisPipeline",
+        FakeAnalysisPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MultiTimeframePipeline",
+        FakeMultiPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "MT5MomentumPipeline",
+        FakeMomentumPipeline,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "analyze_symbol",
+        fake_analyze_symbol,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "sleep",
+        fake_sleep,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "parse_args",
+        lambda: type(
+            "Args",
+            (),
+            {
+                "symbols": [
+                    "XAUUSD",
+                    "XAGUSD",
+                ],
+                "monitor": True,
+            },
+        )(),
+    )
+
+    try:
+        run_tdi_mt5.main()
+    except KeyboardInterrupt:
+        pass
+
+    assert analyzed_symbols == [
+        "XAUUSD",
+        "XAGUSD",
+        "XAUUSD",
+        "XAGUSD",
+    ]
+
+

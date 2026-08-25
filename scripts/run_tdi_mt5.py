@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 from time import sleep
 import MetaTrader5 as mt5
-
+import os
 from tdi.adapters.mt5_analysis_pipeline import MT5AnalysisPipeline
 from tdi.adapters.mt5_momentum_pipeline import MT5MomentumPipeline
 from tdi.adapters.mt5_multi_timeframe_pipeline import (
@@ -41,6 +41,11 @@ from tdi.adapters.mt5_market_data_adapter import (
     MT5MarketDataAdapter,
 )
 
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
+from tdi.notifications.telegram_notifier import TelegramNotifier
+
 
 
 SCENARIO_STATE_PATH = (
@@ -55,12 +60,52 @@ ALERT_STATE_PATH = (
 
 DEFAULT_COUNT = 250
 
+def telegram_post(
+    url: str,
+    data: dict,
+    timeout: int,
+):
+    encoded_data = urlencode(data).encode("utf-8")
+
+    request = Request(
+        url,
+        data=encoded_data,
+        method="POST",
+    )
+
+    return urlopen(
+        request,
+        timeout=timeout,
+    )
+
+
+def build_telegram_notifier() -> TelegramNotifier:
+    return TelegramNotifier.from_environment(
+        post=telegram_post,
+    )
+
 def notify_new_alert(
     symbol: str,
     message: str,
     action: str,
 ) -> None:
-    pass
+    bot_token = os.environ.get(
+        "TDI_TELEGRAM_BOT_TOKEN"
+    )
+    chat_id = os.environ.get(
+        "TDI_TELEGRAM_CHAT_ID"
+    )
+
+    if not bot_token or not chat_id:
+        return
+
+    notifier = build_telegram_notifier()
+
+    notifier.send(
+        symbol=symbol,
+        message=message,
+        action=action,
+    )
 
 
 def analyze_symbol(

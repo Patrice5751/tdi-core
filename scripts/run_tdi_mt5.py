@@ -55,6 +55,13 @@ ALERT_STATE_PATH = (
 
 DEFAULT_COUNT = 250
 
+def notify_new_alert(
+    symbol: str,
+    message: str,
+    action: str,
+) -> None:
+    pass
+
 
 def analyze_symbol(
     symbol: str,
@@ -268,6 +275,12 @@ def analyze_symbol(
         print(
             f"ACTION            : "
             f"{alert.action}"
+        )
+
+        notify_new_alert(
+            symbol=symbol,
+            message=alert.message,
+            action=alert.action,
         )
 
 

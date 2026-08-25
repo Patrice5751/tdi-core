@@ -608,3 +608,261 @@ def test_analyze_symbol_labels_scenario_score(
 
     assert "Scenario score    : 85/100" in output
     assert "Scenario maturity" not in output
+
+def test_new_alert_triggers_notification(
+    monkeypatch,
+):
+    notifications = []
+
+    class FakeMultiPipeline:
+        def analyze(self, symbol, count):
+            return object()
+
+    class FakeMomentumPipeline:
+        def analyze(self, symbol, timeframe, count):
+            return object()
+
+    class FakeDecision:
+        decision = type("Value", (), {"value": "Wait"})()
+        preferred_side = "BUY"
+        bias_aligned = True
+        structure_aligned = False
+        timing_favorable = False
+        momentum_confirmed = False
+
+    class FakeWaitPlan:
+        conditions = []
+
+    class FakeBiasReadiness:
+        target_side = "BUY"
+        convergence = type("Value", (), {"value": "Aligned"})()
+        readiness = type("Value", (), {"value": "High"})()
+        score = 100
+
+    class FakeScenario:
+        state = type("Value", (), {"value": "Building"})()
+        target_side = "BUY"
+        score = 90
+
+    class FakeTransition:
+        transition = type("Value", (), {"value": "Improving"})()
+
+    class FakeAlert:
+        active = True
+        level = type("Value", (), {"value": "Info"})()
+        message = "Scenario BUY improving"
+        action = "Monitor confirmation"
+
+    class FakeDeduplication:
+        is_new = True
+
+    monkeypatch.setattr(
+        run_tdi_mt5.MultiTimeframeDecisionEngine,
+        "decide",
+        lambda self, **kwargs: FakeDecision(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.WaitActionPlanEngine,
+        "analyze",
+        lambda self, **kwargs: FakeWaitPlan(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.BiasReadinessEngine,
+        "analyze",
+        lambda self, **kwargs: FakeBiasReadiness(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.ScenarioStateEngine,
+        "analyze",
+        lambda self, **kwargs: FakeScenario(),
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "load",
+        lambda **kwargs: (FakeScenario.state, "BUY"),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "save",
+        lambda **kwargs: None,
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5.ScenarioTransitionEngine,
+        "analyze",
+        lambda self, **kwargs: FakeTransition(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.TransitionAlertEngine,
+        "analyze",
+        lambda self, **kwargs: FakeAlert(),
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "load",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "save",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "delete",
+        lambda **kwargs: None,
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5.AlertDeduplicationEngine,
+        "analyze",
+        lambda self, **kwargs: FakeDeduplication(),
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "notify_new_alert",
+        lambda symbol, message, action: notifications.append(
+            (symbol, message, action)
+        ),
+        raising=False,
+    )
+
+    run_tdi_mt5.analyze_symbol(
+        symbol="XAUUSD",
+        multi_pipeline=FakeMultiPipeline(),
+        momentum_pipeline=FakeMomentumPipeline(),
+    )
+
+    assert notifications == [
+        (
+            "XAUUSD",
+            "Scenario BUY improving",
+            "Monitor confirmation",
+        )
+    ]
+
+def test_duplicate_alert_does_not_trigger_notification(
+    monkeypatch,
+):
+    notifications = []
+
+    class FakeMultiPipeline:
+        def analyze(self, symbol, count):
+            return object()
+
+    class FakeMomentumPipeline:
+        def analyze(self, symbol, timeframe, count):
+            return object()
+
+    class FakeDecision:
+        decision = type("Value", (), {"value": "Wait"})()
+        preferred_side = "BUY"
+        bias_aligned = True
+        structure_aligned = False
+        timing_favorable = False
+        momentum_confirmed = False
+
+    class FakeWaitPlan:
+        conditions = []
+
+    class FakeBiasReadiness:
+        target_side = "BUY"
+        convergence = type("Value", (), {"value": "Aligned"})()
+        readiness = type("Value", (), {"value": "High"})()
+        score = 100
+
+    class FakeScenario:
+        state = type("Value", (), {"value": "Building"})()
+        target_side = "BUY"
+        score = 90
+
+    class FakeTransition:
+        transition = type("Value", (), {"value": "Unchanged"})()
+
+    class FakeAlert:
+        active = True
+        level = type("Value", (), {"value": "Info"})()
+        message = "Scenario BUY improving"
+        action = "Monitor confirmation"
+
+    class FakeDeduplication:
+        is_new = False
+
+    monkeypatch.setattr(
+        run_tdi_mt5.MultiTimeframeDecisionEngine,
+        "decide",
+        lambda self, **kwargs: FakeDecision(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.WaitActionPlanEngine,
+        "analyze",
+        lambda self, **kwargs: FakeWaitPlan(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.BiasReadinessEngine,
+        "analyze",
+        lambda self, **kwargs: FakeBiasReadiness(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.ScenarioStateEngine,
+        "analyze",
+        lambda self, **kwargs: FakeScenario(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "load",
+        lambda **kwargs: (FakeScenario.state, "BUY"),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonScenarioStateRepository,
+        "save",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.ScenarioTransitionEngine,
+        "analyze",
+        lambda self, **kwargs: FakeTransition(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.TransitionAlertEngine,
+        "analyze",
+        lambda self, **kwargs: FakeAlert(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "load",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "save",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonAlertStateRepository,
+        "delete",
+        lambda **kwargs: None,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5.AlertDeduplicationEngine,
+        "analyze",
+        lambda self, **kwargs: FakeDeduplication(),
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "notify_new_alert",
+        lambda symbol, message, action: notifications.append(
+            (symbol, message, action)
+        ),
+    )
+
+    run_tdi_mt5.analyze_symbol(
+        symbol="XAUUSD",
+        multi_pipeline=FakeMultiPipeline(),
+        momentum_pipeline=FakeMomentumPipeline(),
+    )
+
+    assert notifications == []

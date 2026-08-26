@@ -126,6 +126,24 @@ class WaitActionPlanEngine:
                 WaitCondition.H4_PULLBACK
             )
 
+        if (
+            preferred_side == "BUY"
+            and result.h4.location_type
+            == LocationType.MIDDLE
+        ):
+            conditions.append(
+                WaitCondition.H4_SUPPORT
+            )
+
+        if (
+            preferred_side == "SELL"
+            and result.h4.location_type
+            == LocationType.MIDDLE
+        ):
+            conditions.append(
+                WaitCondition.H4_RESISTANCE
+            )
+
         if result.h1.location_type == LocationType.EXTENSION:
             conditions.append(
                 WaitCondition.H1_PULLBACK

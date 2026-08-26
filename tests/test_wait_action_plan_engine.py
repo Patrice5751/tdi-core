@@ -334,4 +334,62 @@ def test_sell_with_wrong_momentum_waits_for_momentum():
     assert plan.preferred_side == "SELL"
     assert plan.ready is False
     assert WaitCondition.MOMENTUM in plan.conditions
+
+def test_buy_h4_middle_waits_for_h4_support():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BULLISH,
+            LocationType.MIDDLE,
+            ma_bullish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BULLISH,
+            LocationType.SUPPORT,
+            ma_bullish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+    )
+
+    assert plan.preferred_side == "BUY"
+    assert plan.ready is False
+    assert WaitCondition.H4_SUPPORT in plan.conditions
+
+def test_sell_h4_middle_waits_for_h4_resistance():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.MIDDLE,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+        h1_momentum=make_momentum(
+            Momentum.BEARISH
+        ),
+    )
+
+    assert plan.preferred_side == "SELL"
+    assert plan.ready is False
+    assert WaitCondition.H4_RESISTANCE in plan.conditions
     

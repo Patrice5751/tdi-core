@@ -1,4 +1,4 @@
-import argparse
+﻿import argparse
 from pathlib import Path
 from time import sleep
 import MetaTrader5 as mt5
@@ -41,11 +41,18 @@ from tdi.adapters.mt5_market_data_adapter import (
     MT5MarketDataAdapter,
 )
 
+from tdi.graphical.alert_notification_filter import (
+    AlertNotificationFilter,
+)
+
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from tdi.notifications.telegram_notifier import TelegramNotifier
 
+from tdi.graphical.alert_notification_filter import (
+    AlertNotificationFilter,
+)
 
 
 SCENARIO_STATE_PATH = (
@@ -77,7 +84,6 @@ def telegram_post(
         request,
         timeout=timeout,
     )
-
 
 def build_telegram_notifier() -> TelegramNotifier:
     return TelegramNotifier.from_environment(
@@ -114,6 +120,7 @@ def analyze_symbol(
     symbol: str,
     multi_pipeline: MT5MultiTimeframePipeline,
     momentum_pipeline: MT5MomentumPipeline,
+    notification_filter: AlertNotificationFilter | None = None,
 ) -> None:
     result = multi_pipeline.analyze(
         symbol=symbol,
@@ -324,12 +331,22 @@ def analyze_symbol(
             f"{alert.action}"
         )
 
-        notify_new_alert(
-            symbol=symbol,
-            level=alert.level.value,
-            message=alert.message,
-            action=alert.action,
+        should_notify = (
+            notification_filter is None
+            or notification_filter.should_notify(
+                symbol=symbol,
+                level=alert.level.value,
+                message=alert.message,
+            )
         )
+
+        if should_notify:
+            notify_new_alert(
+                symbol=symbol,
+                level=alert.level.value,
+                message=alert.message,
+                action=alert.action,
+            )
 
 
 def parse_args():
@@ -388,6 +405,8 @@ def main():
             analysis_pipeline=analysis_pipeline
         )
 
+        notification_filter = AlertNotificationFilter()
+
         while True:
             for symbol in args.symbols:
                 try:
@@ -395,6 +414,7 @@ def main():
                         symbol=symbol,
                         multi_pipeline=multi_pipeline,
                         momentum_pipeline=momentum_pipeline,
+                        notification_filter=notification_filter,
                     )
 
                 except Exception as exc:
@@ -456,6 +476,7 @@ def test_monitor_repeats_symbol_analysis(
         symbol,
         multi_pipeline,
         momentum_pipeline,
+        notification_filter=None,
     ):
         analyzed_symbols.append(symbol)
 

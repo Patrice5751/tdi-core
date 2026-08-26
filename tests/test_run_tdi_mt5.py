@@ -30,6 +30,7 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
         symbol,
         multi_pipeline,
         momentum_pipeline,
+        notification_filter=None,
     ):
         analyzed_symbols.append(symbol)
 
@@ -38,7 +39,7 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
         "MT5MarketDataAdapter",
         FakeAdapter,
     )
-    monkeypatch.setattr(
+    monkeypatch.setattr
         run_tdi_mt5,
         "MT5AnalysisPipeline",
         FakeAnalysisPipeline,
@@ -114,7 +115,9 @@ def test_main_continues_after_symbol_error(
         symbol,
         multi_pipeline,
         momentum_pipeline,
+        notification_filter=None,
     ):
+
         analyzed_symbols.append(symbol)
 
         if symbol == "XAGUSD":
@@ -237,6 +240,7 @@ def test_parse_args_supports_monitor_interval(
 
     assert args.monitor is True
     assert args.interval == 120
+
 def test_monitor_repeats_symbol_analysis(
     monkeypatch,
 ):
@@ -269,13 +273,14 @@ def test_monitor_repeats_symbol_analysis(
         symbol,
         multi_pipeline,
         momentum_pipeline,
+        notification_filter=None,
     ):
         analyzed_symbols.append(symbol)
 
     def fake_sleep(seconds):
         sleep_calls.append(seconds)
 
-        if len(sleep_calls) == 2:
+        if len(sleep_calls) ==
             raise KeyboardInterrupt
 
     monkeypatch.setattr(

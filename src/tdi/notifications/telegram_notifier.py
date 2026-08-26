@@ -65,9 +65,22 @@ class TelegramNotifier:
                 f"Action: {action}"
             )
         else:
+            priority_by_level = {
+                "INFO": "WATCH",
+                "WARNING": "CAUTION",
+                "HIGH": "READY",
+            }
+
+            normalized_level = level.upper()
+            priority = priority_by_level.get(
+                normalized_level,
+                "WATCH",
+            )
+
             text = (
                 f"TDI ALERT — {symbol}\n"
-                f"Level: {level.upper()}\n"
+                f"Priority: {priority}\n"
+                f"Level: {normalized_level}\n"
                 f"{message}\n"
                 f"Action: {action}"
             )

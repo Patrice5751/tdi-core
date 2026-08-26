@@ -137,8 +137,73 @@ def test_telegram_notifier_includes_alert_level(
 
     assert requests[0]["text"] == (
         "TDI ALERT — XAUUSD\n"
+        "Priority: READY\n"
         "Level: HIGH\n"
         "Scenario BUY ready\n"
         "Action: Review setup"
     )
-    
+
+def test_high_alert_is_presented_as_ready():
+    requests = []
+
+    def fake_post(url, data, timeout):
+        requests.append(data)
+
+    notifier = TelegramNotifier(
+        bot_token="test-token",
+        chat_id="123456",
+        post=fake_post,
+    )
+
+    notifier.send(
+        symbol="XAUUSD",
+        level="High",
+        message="Scenario BUY ready",
+        action="Review setup",
+    )
+
+    assert requests[0]["text"] == (
+        "TDI ALERT — XAUUSD\n"
+        "Priority: READY\n"
+        "Level: HIGH\n"
+        "Scenario BUY ready\n"
+        "Action: Review setup"
+    )
+
+@pytest.mark.parametrize(
+    ("level", "expected_priority"),
+    [
+        ("Info", "WATCH"),
+        ("Warning", "CAUTION"),
+        ("High", "READY"),
+    ],
+)
+def test_alert_levels_map_to_operational_priorities(
+    level,
+    expected_priority,
+):
+    requests = []
+
+    def fake_post(url, data, timeout):
+        requests.append(data)
+
+    notifier = TelegramNotifier(
+        bot_token="test-token",
+        chat_id="123456",
+        post=fake_post,
+    )
+
+    notifier.send(
+        symbol="XAUUSD",
+        level=level,
+        message="Test scenario",
+        action="Test action",
+    )
+
+    text = requests[0]["text"]
+
+    assert (
+        f"Priority: {expected_priority}\n"
+        in text
+    )
+    assert f"Level: {level.upper()}\n" in text

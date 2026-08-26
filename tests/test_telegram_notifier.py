@@ -113,4 +113,32 @@ def test_telegram_notifier_requires_chat_id(
         TelegramNotifier.from_environment(
             post=fake_post,
         )
+
+def test_telegram_notifier_includes_alert_level(
+    monkeypatch,
+):
+    requests = []
+
+    def fake_post(url, data, timeout):
+        requests.append(data)
+
+    notifier = TelegramNotifier(
+        bot_token="test-token",
+        chat_id="123456",
+        post=fake_post,
+    )
+
+    notifier.send(
+        symbol="XAUUSD",
+        level="High",
+        message="Scenario BUY ready",
+        action="Review setup",
+    )
+
+    assert requests[0]["text"] == (
+        "TDI ALERT — XAUUSD\n"
+        "Level: HIGH\n"
+        "Scenario BUY ready\n"
+        "Action: Review setup"
+    )
     

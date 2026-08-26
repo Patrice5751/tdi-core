@@ -724,8 +724,8 @@ def test_new_alert_triggers_notification(
     monkeypatch.setattr(
         run_tdi_mt5,
         "notify_new_alert",
-        lambda symbol, message, action: notifications.append(
-            (symbol, message, action)
+        lambda symbol, level, message, action: notifications.append(
+            (symbol, level, message, action)
         ),
         raising=False,
     )
@@ -739,6 +739,7 @@ def test_new_alert_triggers_notification(
     assert notifications == [
         (
             "XAUUSD",
+            "Info",
             "Scenario BUY improving",
             "Monitor confirmation",
         )
@@ -905,9 +906,15 @@ def test_notify_new_alert_sends_telegram_when_configured(
             symbol,
             message,
             action,
+            level=None,
         ):
             sent.append(
-                (symbol, message, action)
+                (
+                    symbol,
+                    level,
+                    message,
+                    action,
+                )
             )
 
     monkeypatch.setattr(
@@ -924,11 +931,12 @@ def test_notify_new_alert_sends_telegram_when_configured(
     )
 
     assert sent == [
-        (
-            "XAUUSD",
-            "Scenario BUY ready",
-            "Review setup",
-        )
+    (
+        "XAUUSD",
+        None,
+        "Scenario BUY ready",
+        "Review setup",
+    )
     ]
 
 def test_build_telegram_notifier_uses_environment(
@@ -985,3 +993,56 @@ def test_telegram_post_builds_encoded_post_request(
 
     assert "chat_id=123456" in body
     assert "text=TDI+ALERT+" in body
+
+def test_notify_new_alert_forwards_high_level_to_telegram(
+    monkeypatch,
+):
+    sent = []
+
+    class FakeNotifier:
+        def send(
+            self,
+            symbol,
+            message,
+            action,
+            level=None,
+        ):
+            sent.append(
+                (
+                    symbol,
+                    level,
+                    message,
+                    action,
+                )
+            )
+
+    monkeypatch.setenv(
+        "TDI_TELEGRAM_BOT_TOKEN",
+        "test-token",
+    )
+    monkeypatch.setenv(
+        "TDI_TELEGRAM_CHAT_ID",
+        "123456",
+    )
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "build_telegram_notifier",
+        lambda: FakeNotifier(),
+    )
+
+    run_tdi_mt5.notify_new_alert(
+        symbol="XAUUSD",
+        level="High",
+        message="Scenario BUY ready",
+        action="Review setup",
+    )
+
+    assert sent == [
+        (
+            "XAUUSD",
+            "High",
+            "Scenario BUY ready",
+            "Review setup",
+        )
+    ]

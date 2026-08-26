@@ -51,17 +51,26 @@ class TelegramNotifier:
         symbol: str,
         message: str,
         action: str,
+        level: str | None = None,
     ) -> None:
         url = (
             "https://api.telegram.org/"
             f"bot{self.bot_token}/sendMessage"
         )
 
-        text = (
-            f"TDI ALERT — {symbol}\n"
-            f"{message}\n"
-            f"Action: {action}"
-        )
+        if level is None:
+            text = (
+                f"TDI ALERT — {symbol}\n"
+                f"{message}\n"
+                f"Action: {action}"
+            )
+        else:
+            text = (
+                f"TDI ALERT — {symbol}\n"
+                f"Level: {level.upper()}\n"
+                f"{message}\n"
+                f"Action: {action}"
+            )
 
         self.post(
             url,

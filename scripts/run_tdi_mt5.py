@@ -88,6 +88,7 @@ def notify_new_alert(
     symbol: str,
     message: str,
     action: str,
+    level: str | None = None,
 ) -> None:
     bot_token = os.environ.get(
         "TDI_TELEGRAM_BOT_TOKEN"
@@ -105,6 +106,7 @@ def notify_new_alert(
         symbol=symbol,
         message=message,
         action=action,
+        level=level,
     )
 
 
@@ -324,6 +326,7 @@ def analyze_symbol(
 
         notify_new_alert(
             symbol=symbol,
+            level=alert.level.value,
             message=alert.message,
             action=alert.action,
         )

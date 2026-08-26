@@ -400,7 +400,7 @@ def main():
                 except Exception as exc:
                     print()
                     print("=" * 60)
-                    print(f"TDI LIVE â€” {symbol}")
+                    print(f"TDI LIVE — {symbol}")
                     print("=" * 60)
                     print("Status            : ERROR")
                     print(

@@ -38,5 +38,10 @@ class AlertNotificationFilter:
                 signature
             )
 
+        previous = self._last_by_symbol.get(symbol)
+
+        if previous == signature:
+            return False
+
         self._last_by_symbol[symbol] = signature
         return True

@@ -39,7 +39,7 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
         "MT5MarketDataAdapter",
         FakeAdapter,
     )
-    monkeypatch.setattr
+    monkeypatch.setattr(
         run_tdi_mt5,
         "MT5AnalysisPipeline",
         FakeAnalysisPipeline,
@@ -280,7 +280,7 @@ def test_monitor_repeats_symbol_analysis(
     def fake_sleep(seconds):
         sleep_calls.append(seconds)
 
-        if len(sleep_calls) ==
+        if len(sleep_calls) == 2:
             raise KeyboardInterrupt
 
     monkeypatch.setattr(

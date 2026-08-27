@@ -29,7 +29,11 @@ class JsonAlertStateRepository:
             exist_ok=True,
         )
 
-        destination.write_text(
+        temporary = destination.with_suffix(
+            destination.suffix + ".tmp"
+        )
+
+        temporary.write_text(
             json.dumps(
                 data,
                 indent=2,
@@ -37,6 +41,8 @@ class JsonAlertStateRepository:
             ),
             encoding="utf-8",
         )
+
+        temporary.replace(destination)
 
     @staticmethod
     def load(

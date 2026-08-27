@@ -140,3 +140,45 @@ def test_corrupted_json_is_treated_as_empty_alert_state(tmp_path):
     )
 
     assert result is None
+
+def test_save_replaces_destination_atomically(
+    tmp_path,
+    monkeypatch,
+):
+    path = tmp_path / "alerts.json"
+    replace_calls = []
+
+    original_replace = type(path).replace
+
+    def tracking_replace(source, target):
+        replace_calls.append(
+            (source, target)
+        )
+        return original_replace(
+            source,
+            target,
+        )
+
+    monkeypatch.setattr(
+        type(path),
+        "replace",
+        tracking_replace,
+    )
+
+    JsonAlertStateRepository.save(
+        symbol="XAUUSD",
+        alert=AlertState(
+            level="High",
+            message="Gold alert",
+        ),
+        path=path,
+    )
+
+    assert replace_calls == [
+        (
+            path.with_suffix(
+                path.suffix + ".tmp"
+            ),
+            path,
+        )
+    ]

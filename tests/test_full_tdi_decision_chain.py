@@ -222,3 +222,77 @@ def test_incomplete_buy_chain_never_triggers_high_alert():
     )
 
     assert alert.level != AlertLevel.HIGH
+
+def test_full_sell_chain_triggers_high_alert():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(
+            MarketDirection.BEARISH,
+            LocationType.PULLBACK,
+            ma_bearish=True,
+        ),
+        h1=make_context(
+            MarketDirection.BEARISH,
+            LocationType.RESISTANCE,
+            ma_bearish=True,
+        ),
+        aligned=True,
+    )
+
+    h4_momentum = make_momentum(
+        Momentum.BEARISH
+    )
+
+    h1_momentum = make_momentum(
+        Momentum.BEARISH
+    )
+
+    decision = MultiTimeframeDecisionEngine().decide(
+        result=result,
+        h4_momentum=h4_momentum,
+        h1_momentum=h1_momentum,
+    )
+
+    wait_plan = WaitActionPlanEngine().analyze(
+        result=result,
+        h4_momentum=h4_momentum,
+        h1_momentum=h1_momentum,
+    )
+
+    scenario = ScenarioStateEngine().analyze(
+        decision=decision,
+        wait_plan=wait_plan,
+        bias_readiness=make_readiness("SELL"),
+    )
+
+    transition = ScenarioTransitionEngine().analyze(
+        previous_state=ScenarioState.BUILDING,
+        current_state=scenario.state,
+        previous_target_side="SELL",
+        current_target_side=scenario.target_side,
+    )
+
+    alert = TransitionAlertEngine().analyze(
+        transition=transition,
+        target_side=scenario.target_side,
+    )
+
+    assert (
+        decision.decision
+        == MultiTimeframeDecision.SELL
+    )
+
+    assert wait_plan.ready is True
+
+    assert (
+        scenario.state
+        == ScenarioState.READY
+    )
+
+    assert (
+        transition.transition
+        == ScenarioTransition.TRIGGERED
+    )
+
+    assert alert.level == AlertLevel.HIGH
+    assert alert.active is True
+    assert "SELL" in alert.message

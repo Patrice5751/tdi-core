@@ -73,7 +73,10 @@ class JsonAlertStateRepository:
         if not content:
             return {}
 
-        return json.loads(content)
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            return {}
 
     def delete(
         symbol: str,

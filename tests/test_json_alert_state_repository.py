@@ -111,5 +111,32 @@ def test_delete_alert_removes_symbol_only(tmp_path):
     assert nasdaq is not None
     assert nasdaq.message == "Nasdaq alert"
 
-    
-    
+def test_corrupted_json_is_treated_as_empty_alert_state(tmp_path):
+    path = tmp_path / "alerts.json"
+
+    path.write_text(
+        "{invalid json",
+        encoding="utf-8",
+    )
+
+    result = JsonAlertStateRepository.load(
+        symbol="XAUUSD",
+        path=path,
+    )
+
+    assert result is None
+
+def test_corrupted_json_is_treated_as_empty_alert_state(tmp_path):
+    path = tmp_path / "alerts.json"
+
+    path.write_text(
+        "{invalid json",
+        encoding="utf-8",
+    )
+
+    result = JsonAlertStateRepository.load(
+        symbol="XAUUSD",
+        path=path,
+    )
+
+    assert result is None

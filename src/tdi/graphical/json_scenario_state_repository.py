@@ -74,5 +74,7 @@ class JsonScenarioStateRepository:
         if not content:
             return {}
 
-        return json.loads(content)
-    
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            return {}

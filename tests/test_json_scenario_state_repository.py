@@ -117,4 +117,18 @@ def test_repository_creates_parent_directory(tmp_path):
     )
 
     assert path.exists()
-    
+
+def test_corrupted_json_is_treated_as_empty_state(tmp_path):
+    path = tmp_path / "scenario_states.json"
+
+    path.write_text(
+        "{invalid json",
+        encoding="utf-8",
+    )
+
+    result = JsonScenarioStateRepository.load(
+        symbol="XAUUSD",
+        path=path,
+    )
+
+    assert result is None

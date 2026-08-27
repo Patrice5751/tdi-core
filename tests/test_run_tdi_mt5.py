@@ -402,6 +402,7 @@ def test_monitor_handles_keyboard_interrupt_and_shuts_down(
         symbol,
         multi_pipeline,
         momentum_pipeline,
+        notification_filter=None,
     ):
         raise KeyboardInterrupt
 

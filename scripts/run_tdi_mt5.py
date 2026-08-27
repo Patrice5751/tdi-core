@@ -108,12 +108,18 @@ def notify_new_alert(
 
     notifier = build_telegram_notifier()
 
-    notifier.send(
-        symbol=symbol,
-        message=message,
-        action=action,
-        level=level,
-    )
+    try:
+        notifier.send(
+            symbol=symbol,
+            message=message,
+            action=action,
+            level=level,
+        )
+    except Exception as exc:
+        print(
+            f"Telegram notification failed: "
+            f"{type(exc).__name__}: {exc}"
+        )
 
 
 def analyze_symbol(
@@ -443,4 +449,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

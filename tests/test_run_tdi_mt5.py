@@ -1052,3 +1052,44 @@ def test_notify_new_alert_forwards_high_level_to_telegram(
             "Review setup",
         )
     ]
+
+def test_notify_new_alert_survives_telegram_failure(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setenv(
+        "TDI_TELEGRAM_BOT_TOKEN",
+        "test-token",
+    )
+    monkeypatch.setenv(
+        "TDI_TELEGRAM_CHAT_ID",
+        "123456",
+    )
+
+    class FailingNotifier:
+        def send(
+            self,
+            symbol,
+            message,
+            action,
+            level=None,
+        ):
+            raise OSError("Telegram unavailable")
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "build_telegram_notifier",
+        lambda: FailingNotifier(),
+    )
+
+    run_tdi_mt5.notify_new_alert(
+        symbol="XAUUSD",
+        level="High",
+        message="Scenario BUY ready",
+        action="Review setup",
+    )
+
+    output = capsys.readouterr().out
+
+    assert "Telegram" in output
+    assert "unavailable" in output

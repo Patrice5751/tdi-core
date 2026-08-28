@@ -1,0 +1,121 @@
+from types import SimpleNamespace
+
+from tdi.graphical.dashboard_state_builder import (
+    DashboardStateBuilder,
+)
+
+
+def value(name):
+    return SimpleNamespace(value=name)
+
+
+def test_dashboard_state_builder_builds_initial_state():
+    decision = SimpleNamespace(
+        decision=value("Wait"),
+        preferred_side=None,
+        bias_aligned=False,
+        structure_aligned=False,
+        timing_favorable=False,
+        momentum_confirmed=False,
+    )
+
+    bias_readiness = SimpleNamespace(
+        convergence=value("Toward"),
+        readiness=value("Medium"),
+        score=85,
+    )
+
+    scenario = SimpleNamespace(
+        target_side="BUY",
+        state=value("Building"),
+        score=85,
+    )
+
+    wait_plan = SimpleNamespace(
+        conditions=[
+            value("H4/H1 Bias Alignment"),
+        ]
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="XAUUSD",
+        decision=decision,
+        bias_readiness=bias_readiness,
+        scenario=scenario,
+        wait_plan=wait_plan,
+    )
+
+    assert state.symbol == "XAUUSD"
+    assert state.decision == "Wait"
+    assert state.preferred_side is None
+    assert state.target_side == "BUY"
+
+    assert state.bias_convergence == "Toward"
+    assert state.bias_readiness == "Medium"
+    assert state.bias_score == 85
+
+    assert state.bias_aligned is False
+    assert state.structure_aligned is False
+    assert state.timing_favorable is False
+    assert state.momentum_confirmed is False
+
+    assert state.scenario == "Building"
+    assert state.scenario_score == 85
+    assert state.waiting_for == (
+        "H4/H1 Bias Alignment",
+    )
+
+    assert state.transition == "Initial"
+    assert state.alert_level is None
+    assert state.alert_active is False
+
+def test_dashboard_state_builder_builds_alert_state():
+    decision = SimpleNamespace(
+        decision=value("Wait"),
+        preferred_side="SELL",
+        bias_aligned=True,
+        structure_aligned=True,
+        timing_favorable=False,
+        momentum_confirmed=False,
+    )
+
+    bias_readiness = SimpleNamespace(
+        convergence=value("Toward"),
+        readiness=value("High"),
+        score=90,
+    )
+
+    scenario = SimpleNamespace(
+        target_side="SELL",
+        state=value("Ready"),
+        score=90,
+    )
+
+    wait_plan = SimpleNamespace(
+        conditions=[
+            value("Momentum Confirmation"),
+        ]
+    )
+
+    transition = SimpleNamespace(
+        transition=value("Improving"),
+    )
+
+    alert = SimpleNamespace(
+        level=value("INFO"),
+        active=True,
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="XAUUSD",
+        decision=decision,
+        bias_readiness=bias_readiness,
+        scenario=scenario,
+        wait_plan=wait_plan,
+        transition=transition,
+        alert=alert,
+    )
+
+    assert state.transition == "Improving"
+    assert state.alert_level == "INFO"
+    assert state.alert_active is True 

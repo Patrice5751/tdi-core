@@ -1,4 +1,4 @@
-import argparse
+﻿import argparse
 from pathlib import Path
 from time import sleep
 import MetaTrader5 as mt5
@@ -14,6 +14,9 @@ from tdi.graphical.alert_deduplication_engine import (
 from tdi.graphical.alert_state import AlertState
 from tdi.graphical.bias_readiness_engine import (
     BiasReadinessEngine,
+)
+from tdi.graphical.dashboard_state_builder import (
+    DashboardStateBuilder,
 )
 from tdi.graphical.json_alert_state_repository import (
     JsonAlertStateRepository,
@@ -223,6 +226,15 @@ def analyze_symbol(
         target_side=scenario.target_side,
         path=SCENARIO_STATE_PATH,
     )
+    dashboard_state = DashboardStateBuilder.build(
+    symbol=symbol,
+    decision=decision,
+    bias_readiness=bias_readiness,
+    scenario=scenario,
+    wait_plan=wait_plan,
+    transition=transition,
+    alert=alert,
+)
 
     print()
     print("=" * 60)

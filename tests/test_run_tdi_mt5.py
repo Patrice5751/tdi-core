@@ -525,7 +525,13 @@ def test_analyze_symbol_exposes_bias_readiness(
         "save",
         lambda **kwargs: None,
     )
+    dashboard_states = []
 
+    monkeypatch.setattr(
+        run_tdi_mt5.DashboardStateBuilder,
+        "build",
+        lambda **kwargs: dashboard_states.append(kwargs),
+    )
     run_tdi_mt5.analyze_symbol(
         symbol="XAUUSD",
         multi_pipeline=FakeMultiPipeline(),
@@ -538,6 +544,26 @@ def test_analyze_symbol_exposes_bias_readiness(
     assert "Bias convergence  : Toward" in output
     assert "Bias readiness    : Medium" in output
     assert "Bias score        : 85/100" in output
+    assert len(dashboard_states) == 1
+    assert dashboard_states[0]["symbol"] == "XAUUSD"
+    assert isinstance(
+        dashboard_states[0]["decision"],
+        FakeDecision,
+    )
+    assert isinstance(
+        dashboard_states[0]["bias_readiness"],
+        FakeBiasReadiness,
+    )
+    assert isinstance(
+        dashboard_states[0]["scenario"],
+        FakeScenario,
+    )
+    assert isinstance(
+        dashboard_states[0]["wait_plan"],
+        FakeWaitPlan,
+    )
+    assert dashboard_states[0]["transition"] is None
+    assert dashboard_states[0]["alert"] is None
 
 def test_analyze_symbol_labels_scenario_score(
     monkeypatch,

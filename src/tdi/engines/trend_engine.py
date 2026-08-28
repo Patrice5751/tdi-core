@@ -1,8 +1,8 @@
 
 from tdi.analysis.trend_analysis import Trend, TrendAnalysis
 from tdi.models.market_snapshot import MarketSnapshot
-from config.trading_rules import RSI_SCORE
-from config.trading_rules import MIN_CONFIDENCE
+from tdi.config.trading_rules import RSI_SCORE
+from tdi.config.trading_rules import MIN_CONFIDENCE
 
 class TrendEngine:
 

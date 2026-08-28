@@ -1093,3 +1093,22 @@ def test_notify_new_alert_survives_telegram_failure(
 
     assert "Telegram" in output
     assert "unavailable" in output
+
+
+def test_runner_help_works_when_executed_as_script():
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_tdi_mt5.py",
+            "--help",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "TDI live MT5 analysis runner." in result.stdout

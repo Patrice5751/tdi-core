@@ -8,7 +8,7 @@ from tdi.graphical.graphical_decision_analysis import (
     GraphicalDecisionAnalysis,
 )
 
-from config.trading_rules import (
+from tdi.config.trading_rules import (
     DECISION_ACCEPTABLE,
     DECISION_EXCELLENT,
     DECISION_GOOD,

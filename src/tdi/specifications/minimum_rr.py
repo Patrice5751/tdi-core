@@ -1,4 +1,4 @@
-from config.trading_rules import MIN_RR
+from tdi.config.trading_rules import MIN_RR
 from tdi.analysis.risk_result import RiskResult
 
 

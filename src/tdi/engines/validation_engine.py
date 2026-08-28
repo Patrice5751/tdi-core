@@ -13,7 +13,7 @@ from tdi.specifications.momentum_valid import (
     MomentumValidSpecification,
 )
 
-from config.trading_rules import (
+from tdi.config.trading_rules import (
     MIN_RR,
     VALIDATION_MIN_SCORE,
     VALIDATION_MOMENTUM_SCORE,

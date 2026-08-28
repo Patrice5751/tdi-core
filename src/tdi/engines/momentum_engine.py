@@ -1,7 +1,7 @@
 from tdi.analysis.momentum_analysis import Momentum, MomentumAnalysis
 from tdi.models.market_snapshot import MarketSnapshot
 
-from config.trading_rules import (
+from tdi.config.trading_rules import (
     HISTOGRAM_SCORE,
     MACD_SCORE,
     MOMENTUM_DECISION_THRESHOLD,

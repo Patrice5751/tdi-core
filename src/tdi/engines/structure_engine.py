@@ -2,7 +2,7 @@ from tdi.analysis.structure_analysis import Structure, StructureAnalysis
 from tdi.models.price_structure import PriceStructure
 from tdi.models.trade import Side
 
-from config.trading_rules import (
+from tdi.config.trading_rules import (
     STRUCTURE_ENTRY_THRESHOLD,
     STRUCTURE_NEAR_LEVEL_RATIO,
     STRUCTURE_RESISTANCE_SCORE,

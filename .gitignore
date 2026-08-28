@@ -23,3 +23,5 @@ data/alert_states.json
 data/scenario_states.json
 
 runtime/
+
+data/dashboard/

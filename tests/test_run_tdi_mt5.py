@@ -532,6 +532,11 @@ def test_analyze_symbol_exposes_bias_readiness(
         "build",
         lambda **kwargs: dashboard_states.append(kwargs),
     )
+    monkeypatch.setattr(
+        run_tdi_mt5.JsonDashboardStateWriter,
+        "write",
+        lambda **kwargs: None,
+    )
     run_tdi_mt5.analyze_symbol(
         symbol="XAUUSD",
         multi_pipeline=FakeMultiPipeline(),

@@ -57,6 +57,10 @@ from tdi.graphical.alert_notification_filter import (
     AlertNotificationFilter,
 )
 
+from tdi.graphical.json_dashboard_state_writer import (
+    JsonDashboardStateWriter,
+)
+
 
 SCENARIO_STATE_PATH = (
     Path("data")
@@ -66,6 +70,11 @@ SCENARIO_STATE_PATH = (
 ALERT_STATE_PATH = (
     Path("data")
     / "alert_states.json"
+)
+
+DASHBOARD_STATE_DIR = (
+    Path("data")
+    / "dashboard"
 )
 
 DEFAULT_COUNT = 250
@@ -234,6 +243,13 @@ def analyze_symbol(
     wait_plan=wait_plan,
     transition=transition,
     alert=alert,
+)
+    JsonDashboardStateWriter.write(
+    state=dashboard_state,
+    path=(
+        DASHBOARD_STATE_DIR
+        / f"{symbol}.json"
+    ),
 )
 
     print()

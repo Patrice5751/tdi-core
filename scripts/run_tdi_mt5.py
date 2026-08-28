@@ -77,6 +77,8 @@ DASHBOARD_STATE_DIR = (
     / "dashboard"
 )
 
+
+
 DEFAULT_COUNT = 250
 
 def telegram_post(
@@ -139,6 +141,7 @@ def analyze_symbol(
     multi_pipeline: MT5MultiTimeframePipeline,
     momentum_pipeline: MT5MomentumPipeline,
     notification_filter: AlertNotificationFilter | None = None,
+    dashboard_dir: Path = DASHBOARD_STATE_DIR,
 ) -> None:
     result = multi_pipeline.analyze(
         symbol=symbol,
@@ -247,7 +250,7 @@ def analyze_symbol(
     JsonDashboardStateWriter.write(
     state=dashboard_state,
     path=(
-        DASHBOARD_STATE_DIR
+       dashboard_dir
         / f"{symbol}.json"
     ),
 )
@@ -416,6 +419,15 @@ def parse_args():
             "(default: 60)."
         ),
     )
+    parser.add_argument(
+        "--dashboard-dir",
+        type=Path,
+        default=DASHBOARD_STATE_DIR,
+        help=(
+            "Directory where dashboard JSON files "
+            "are written."
+        ),
+    )
 
     return parser.parse_args()
 
@@ -449,6 +461,7 @@ def main():
                         multi_pipeline=multi_pipeline,
                         momentum_pipeline=momentum_pipeline,
                         notification_filter=notification_filter,
+                        dashboard_dir=args.dashboard_dir,
                     )
 
                 except Exception as exc:

@@ -31,6 +31,7 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
         multi_pipeline,
         momentum_pipeline,
         notification_filter=None,
+         dashboard_dir=run_tdi_mt5.DASHBOARD_STATE_DIR,
     ):
         analyzed_symbols.append(symbol)
 
@@ -72,6 +73,7 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
                     "NAS100",
                 ],
 		"monitor": False,
+        "dashboard_dir": run_tdi_mt5.DASHBOARD_STATE_DIR,
             },
         )(),
     )
@@ -116,6 +118,7 @@ def test_main_continues_after_symbol_error(
         multi_pipeline,
         momentum_pipeline,
         notification_filter=None,
+        dashboard_dir=run_tdi_mt5.DASHBOARD_STATE_DIR,
     ):
 
         analyzed_symbols.append(symbol)
@@ -162,6 +165,7 @@ def test_main_continues_after_symbol_error(
                 ],
 		"monitor": False,
 		"interval": 60,
+        "dashboard_dir": run_tdi_mt5.DASHBOARD_STATE_DIR,
             },
         )(),
     )
@@ -274,6 +278,7 @@ def test_monitor_repeats_symbol_analysis(
         multi_pipeline,
         momentum_pipeline,
         notification_filter=None,
+        dashboard_dir=run_tdi_mt5.DASHBOARD_STATE_DIR,
     ):
         analyzed_symbols.append(symbol)
 
@@ -326,7 +331,8 @@ def test_monitor_repeats_symbol_analysis(
                     "XAGUSD",
                 ],
                 "monitor": True,
-		"interval": 60,
+		        "interval": 60,
+                "dashboard_dir": run_tdi_mt5.DASHBOARD_STATE_DIR,
             },
         )(),
     )

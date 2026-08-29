@@ -644,6 +644,12 @@ int OnInit()
       0, waiting_value_2_name,
       OBJPROP_FONTSIZE, 10
    );
+   ObjectSetString(
+      0,
+      waiting_value_2_name,
+      OBJPROP_TEXT,
+      "—"
+   );
 
     string waiting_value_3_name = "TDI_WAITING_VALUE_3";
 
@@ -670,7 +676,12 @@ int OnInit()
       0, waiting_value_3_name,
       OBJPROP_FONTSIZE, 10
    );
-
+   ObjectSetString(
+      0,
+      waiting_value_3_name,
+      OBJPROP_TEXT,
+      "—"
+   );
    ObjectSetString(
       0, waiting_value_name,
       OBJPROP_TEXT, "—"
@@ -1212,6 +1223,12 @@ void OnTimer()
          "waiting_for",
          2
       );
+
+      if(waiting_for_2 == "")
+         waiting_for_2 = " ";
+
+      if(waiting_for_3 == "")
+         waiting_for_3 = " ";
 
    string transition = JsonGetString(
    content,

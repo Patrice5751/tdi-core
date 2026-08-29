@@ -1212,6 +1212,16 @@ void OnTimer()
       + "   |   "
       + decision
    );
+      ObjectSetInteger(
+      0,
+      "TDI_PANEL_TITLE",
+      OBJPROP_COLOR,
+      decision == "Buy"
+      ? clrLimeGreen
+      : decision == "Sell"
+        ? clrOrangeRed
+        : clrWhite
+   );
    }
 
       ObjectSetString(

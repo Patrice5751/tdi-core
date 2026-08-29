@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from tdi.graphical.dashboard_state import DashboardState
 
 
@@ -53,55 +55,5 @@ class DashboardStateBuilder:
             transition=transition_value,
             alert_level=alert_level,
             alert_active=alert_active,
+            updated_at=datetime.now(timezone.utc).isoformat(),
         )
-
-def test_dashboard_state_builder_builds_alert_state():
-    decision = SimpleNamespace(
-        decision=value("Wait"),
-        preferred_side="SELL",
-        bias_aligned=True,
-        structure_aligned=True,
-        timing_favorable=False,
-        momentum_confirmed=False,
-    )
-
-    bias_readiness = SimpleNamespace(
-        convergence=value("Toward"),
-        readiness=value("High"),
-        score=90,
-    )
-
-    scenario = SimpleNamespace(
-        target_side="SELL",
-        state=value("Ready"),
-        score=90,
-    )
-
-    wait_plan = SimpleNamespace(
-        conditions=[
-            value("Momentum Confirmation"),
-        ]
-    )
-
-    transition = SimpleNamespace(
-        transition=value("Improving"),
-    )
-
-    alert = SimpleNamespace(
-        level=value("INFO"),
-        active=True,
-    )
-
-    state = DashboardStateBuilder.build(
-        symbol="XAUUSD",
-        decision=decision,
-        bias_readiness=bias_readiness,
-        scenario=scenario,
-        wait_plan=wait_plan,
-        transition=transition,
-        alert=alert,
-    )
-
-    assert state.transition == "Improving"
-    assert state.alert_level == "INFO"
-    assert state.alert_active is True

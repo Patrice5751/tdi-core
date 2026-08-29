@@ -25,4 +25,5 @@ class DashboardState:
     transition: str
     alert_level: str | None
     alert_active: bool
-    
+
+    updated_at: str = ""

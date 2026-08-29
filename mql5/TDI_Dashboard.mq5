@@ -4,7 +4,7 @@
 #property indicator_plots 0
 
 input int RefreshSeconds = 2;
-input int StaleAfterSeconds = 60;
+input int StaleAfterSeconds = 90;
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization                                  |

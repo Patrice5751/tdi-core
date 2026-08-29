@@ -4,6 +4,7 @@
 #property indicator_plots 0
 
 input int RefreshSeconds = 2;
+input int StaleAfterSeconds = 60;
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization                                  |
@@ -812,6 +813,36 @@ string JsonGetBool(
    return("—");
 }
 
+datetime IsoUtcToDatetime(
+   const string iso_value
+)
+{
+   if(StringLen(iso_value) < 19)
+      return(0);
+
+   string value = StringSubstr(
+      iso_value,
+      0,
+      19
+   );
+
+   StringReplace(
+      value,
+      "-",
+      "."
+   );
+
+   StringReplace(
+      value,
+      "T",
+      " "
+   );
+
+   return(
+      StringToTime(value)
+   );
+}
+
 string JsonGetFirstArrayString(
    const string json,
    const string key
@@ -967,6 +998,45 @@ string alert_active = JsonGetBool(
    "alert_active"
 );
 
+string updated_at = JsonGetString(
+   content,
+   "updated_at"
+);
+
+datetime updated_time = IsoUtcToDatetime(
+   updated_at
+);
+
+long state_age_seconds = (
+   updated_time > 0
+   ? (long)(TimeGMT() - updated_time)
+   : -1
+);
+
+bool is_stale = (
+   state_age_seconds < 0
+   || state_age_seconds > StaleAfterSeconds
+);
+
+   if(is_stale)
+{
+   ObjectSetString(
+      0,
+      "TDI_PANEL_TITLE",
+      OBJPROP_TEXT,
+      "TDI LIVE — "
+      + _Symbol
+      + "   |   STALE"
+   );
+      ObjectSetInteger(
+      0,
+      "TDI_PANEL_TITLE",
+      OBJPROP_COLOR,
+      clrOrangeRed
+   );
+}
+else
+{
    ObjectSetString(
       0,
       "TDI_PANEL_TITLE",
@@ -976,6 +1046,7 @@ string alert_active = JsonGetBool(
       + "   |   "
       + decision
    );
+}
 
       ObjectSetString(
       0,

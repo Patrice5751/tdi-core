@@ -18,7 +18,11 @@ class JsonDashboardStateWriter:
 
         data = asdict(state)
 
-        path.write_text(
+        temp_path = path.with_suffix(
+            path.suffix + ".tmp"
+        )
+
+        temp_path.write_text(
             json.dumps(
                 data,
                 indent=2,
@@ -26,4 +30,5 @@ class JsonDashboardStateWriter:
             ),
             encoding="utf-8",
         )
-        
+
+        temp_path.replace(path)

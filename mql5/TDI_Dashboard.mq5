@@ -1258,11 +1258,29 @@ void OnTimer()
       "Bias aligned      : " + bias_aligned
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_BIAS",
+      OBJPROP_COLOR,
+      bias_aligned == "True"
+      ? clrLimeGreen
+      : clrSilver
+   );
+
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_STRUCTURE",
       OBJPROP_TEXT,
       "Structure aligned : " + structure_aligned
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_STRUCTURE",
+      OBJPROP_COLOR,
+      structure_aligned == "True"
+      ? clrLimeGreen
+      : clrSilver
    );
 
    ObjectSetString(
@@ -1272,11 +1290,29 @@ void OnTimer()
       "Timing favorable  : " + timing_favorable
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_TIMING",
+      OBJPROP_COLOR,
+      timing_favorable == "True"
+      ? clrLimeGreen
+      : clrSilver
+   );
+
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_MOMENTUM",
       OBJPROP_TEXT,
       "Momentum confirmed: " + momentum_confirmed
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_MOMENTUM",
+      OBJPROP_COLOR,
+      momentum_confirmed == "True"
+      ? clrLimeGreen
+      : clrSilver
    );
 
    ObjectSetString(

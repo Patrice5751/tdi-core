@@ -1252,6 +1252,17 @@ void OnTimer()
       "Readiness   : " + bias_readiness
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_READINESS",
+      OBJPROP_COLOR,
+      StringFind(bias_readiness, "High") >= 0
+      ? clrLimeGreen
+      : StringFind(bias_readiness, "Medium") >= 0
+        ? clrOrange
+        : clrSilver
+   );
+
    ObjectSetString(
       0,
       "TDI_BIAS_SCORE",

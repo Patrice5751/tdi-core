@@ -1379,11 +1379,27 @@ void OnTimer()
       transition
    );
 
+   string alert_level_upper = alert_level;
+   StringToUpper(alert_level_upper);
+
    ObjectSetString(
       0,
       "TDI_ALERT_LEVEL",
       OBJPROP_TEXT,
       "Level  : " + alert_level
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_ALERT_LEVEL",
+      OBJPROP_COLOR,
+      StringFind(alert_level_upper, "HIGH") >= 0
+      ? clrOrangeRed
+      : StringFind(alert_level_upper, "WARNING") >= 0
+        ? clrOrange
+        : StringFind(alert_level_upper, "INFO") >= 0
+          ? clrWhite
+          : clrSilver
    );
 
    ObjectSetString(

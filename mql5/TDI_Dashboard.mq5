@@ -56,7 +56,7 @@ int OnInit()
       0,
       panel_name,
       OBJPROP_YSIZE,
-      620
+      735
    );
 
    ObjectSetInteger(
@@ -101,7 +101,7 @@ int OnInit()
       0,
       title_name,
       OBJPROP_YDISTANCE,
-      45
+      40
    );
 
    ObjectSetInteger(
@@ -143,7 +143,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, decision_name,
-      OBJPROP_YDISTANCE, 85
+      OBJPROP_YDISTANCE, 80
    );
    ObjectSetInteger(
       0, decision_name,
@@ -171,7 +171,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, preferred_name,
-      OBJPROP_YDISTANCE, 115
+      OBJPROP_YDISTANCE, 105
    );
    ObjectSetInteger(
       0, preferred_name,
@@ -199,7 +199,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, target_name,
-      OBJPROP_YDISTANCE, 140
+      OBJPROP_YDISTANCE, 130
    );
    ObjectSetInteger(
       0, target_name,
@@ -232,7 +232,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, bias_title_name,
-      OBJPROP_YDISTANCE, 185
+      OBJPROP_YDISTANCE, 170
    );
    ObjectSetInteger(
       0, bias_title_name,
@@ -260,7 +260,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, convergence_name,
-      OBJPROP_YDISTANCE, 215
+      OBJPROP_YDISTANCE, 195
    );
    ObjectSetInteger(
       0, convergence_name,
@@ -288,7 +288,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, readiness_name,
-      OBJPROP_YDISTANCE, 240
+      OBJPROP_YDISTANCE, 220
    );
    ObjectSetInteger(
       0, readiness_name,
@@ -316,7 +316,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, score_name,
-      OBJPROP_YDISTANCE, 265
+      OBJPROP_YDISTANCE, 245
    );
    ObjectSetInteger(
       0, score_name,
@@ -348,7 +348,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_title_name,
-      OBJPROP_YDISTANCE, 310
+      OBJPROP_YDISTANCE, 425
    );
    ObjectSetInteger(
       0, scenario_title_name,
@@ -376,8 +376,8 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_state_name,
-      OBJPROP_YDISTANCE, 340
-   );
+      OBJPROP_YDISTANCE, 450
+      );
    ObjectSetInteger(
       0, scenario_state_name,
       OBJPROP_COLOR, clrSilver
@@ -404,7 +404,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_score_name,
-      OBJPROP_YDISTANCE, 365
+      OBJPROP_YDISTANCE, 475
    );
    ObjectSetInteger(
       0, scenario_score_name,
@@ -417,6 +417,152 @@ int OnInit()
    ObjectSetString(
       0, scenario_score_name,
       OBJPROP_TEXT, "Score : —/100"
+   );
+
+      string confirmation_title_name = "TDI_CONFIRMATION_TITLE";
+   string bias_aligned_name = "TDI_CONFIRMATION_BIAS";
+   string structure_aligned_name = "TDI_CONFIRMATION_STRUCTURE";
+   string timing_favorable_name = "TDI_CONFIRMATION_TIMING";
+   string momentum_confirmed_name = "TDI_CONFIRMATION_MOMENTUM";
+
+   ObjectCreate(
+      0, confirmation_title_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, confirmation_title_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, confirmation_title_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, confirmation_title_name,
+      OBJPROP_YDISTANCE, 285
+   );
+   ObjectSetInteger(
+      0, confirmation_title_name,
+      OBJPROP_COLOR, clrWhite
+   );
+   ObjectSetInteger(
+      0, confirmation_title_name,
+      OBJPROP_FONTSIZE, 11
+   );
+   ObjectSetString(
+      0, confirmation_title_name,
+      OBJPROP_TEXT, "CONFIRMATION"
+   );
+
+   ObjectCreate(
+      0, bias_aligned_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, bias_aligned_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, bias_aligned_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, bias_aligned_name,
+      OBJPROP_YDISTANCE, 310
+   );
+   ObjectSetInteger(
+      0, bias_aligned_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, bias_aligned_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, bias_aligned_name,
+      OBJPROP_TEXT, "Bias aligned      : —"
+   );
+
+   ObjectCreate(
+      0, structure_aligned_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, structure_aligned_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, structure_aligned_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, structure_aligned_name,
+      OBJPROP_YDISTANCE, 335
+   );
+   ObjectSetInteger(
+      0, structure_aligned_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, structure_aligned_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, structure_aligned_name,
+      OBJPROP_TEXT, "Structure aligned : —"
+   );
+
+   ObjectCreate(
+      0, timing_favorable_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, timing_favorable_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, timing_favorable_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, timing_favorable_name,
+      OBJPROP_YDISTANCE, 360
+   );
+   ObjectSetInteger(
+      0, timing_favorable_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, timing_favorable_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, timing_favorable_name,
+      OBJPROP_TEXT, "Timing favorable  : —"
+   );
+
+   ObjectCreate(
+      0, momentum_confirmed_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, momentum_confirmed_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, momentum_confirmed_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, momentum_confirmed_name,
+      OBJPROP_YDISTANCE, 385
+   );
+   ObjectSetInteger(
+      0, momentum_confirmed_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, momentum_confirmed_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, momentum_confirmed_name,
+      OBJPROP_TEXT, "Momentum confirmed: —"
    );
 
       string waiting_title_name = "TDI_WAITING_TITLE";
@@ -435,7 +581,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_title_name,
-      OBJPROP_YDISTANCE, 410
+      OBJPROP_YDISTANCE, 515
    );
    ObjectSetInteger(
       0, waiting_title_name,
@@ -463,7 +609,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_value_name,
-      OBJPROP_YDISTANCE, 440
+      OBJPROP_YDISTANCE, 540
    );
    ObjectSetInteger(
       0, waiting_value_name,
@@ -494,7 +640,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_title_name,
-      OBJPROP_YDISTANCE, 480
+      OBJPROP_YDISTANCE, 580
    );
    ObjectSetInteger(
       0, transition_title_name,
@@ -522,7 +668,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_value_name,
-      OBJPROP_YDISTANCE, 510
+      OBJPROP_YDISTANCE, 605
    );
    ObjectSetInteger(
       0, transition_value_name,
@@ -554,7 +700,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 545
+      OBJPROP_YDISTANCE, 645
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -582,7 +728,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 575
+      OBJPROP_YDISTANCE, 670
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -610,7 +756,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 600
+      OBJPROP_YDISTANCE, 695
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -986,40 +1132,60 @@ void OnTimer()
    string transition = JsonGetString(
    content,
    "transition"
-);
+   );
 
-string alert_level = JsonGetString(
-   content,
-   "alert_level"
-);
+   string alert_level = JsonGetString(
+      content,
+      "alert_level"
+   );
 
-string alert_active = JsonGetBool(
-   content,
-   "alert_active"
-);
+   string bias_aligned = JsonGetBool(
+      content,
+      "bias_aligned"
+   );
 
-string updated_at = JsonGetString(
-   content,
-   "updated_at"
-);
+   string structure_aligned = JsonGetBool(
+      content,
+      "structure_aligned"
+   );
 
-datetime updated_time = IsoUtcToDatetime(
-   updated_at
-);
+   string timing_favorable = JsonGetBool(
+      content,
+      "timing_favorable"
+   );
 
-long state_age_seconds = (
-   updated_time > 0
-   ? (long)(TimeGMT() - updated_time)
-   : -1
-);
+   string momentum_confirmed = JsonGetBool(
+      content,
+      "momentum_confirmed"
+   );
 
-bool is_stale = (
-   state_age_seconds < 0
-   || state_age_seconds > StaleAfterSeconds
-);
+   string alert_active = JsonGetBool(
+      content,
+      "alert_active"
+   );
+
+   string updated_at = JsonGetString(
+      content,
+      "updated_at"
+   );
+
+   datetime updated_time = IsoUtcToDatetime(
+      updated_at
+   );
+
+   long state_age_seconds = (
+      updated_time > 0
+      ? (long)(TimeGMT() - updated_time)
+      : -1
+   );
+
+   bool is_stale = (
+      state_age_seconds < 0
+      || state_age_seconds > StaleAfterSeconds
+   );
 
    if(is_stale)
-{
+   {
    ObjectSetString(
       0,
       "TDI_PANEL_TITLE",
@@ -1034,9 +1200,9 @@ bool is_stale = (
       OBJPROP_COLOR,
       clrOrangeRed
    );
-}
-else
-{
+   }
+   else
+   {
    ObjectSetString(
       0,
       "TDI_PANEL_TITLE",
@@ -1046,7 +1212,7 @@ else
       + "   |   "
       + decision
    );
-}
+   }
 
       ObjectSetString(
       0,
@@ -1087,6 +1253,34 @@ else
 
    ObjectSetString(
       0,
+      "TDI_CONFIRMATION_BIAS",
+      OBJPROP_TEXT,
+      "Bias aligned      : " + bias_aligned
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_STRUCTURE",
+      OBJPROP_TEXT,
+      "Structure aligned : " + structure_aligned
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_TIMING",
+      OBJPROP_TEXT,
+      "Timing favorable  : " + timing_favorable
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_MOMENTUM",
+      OBJPROP_TEXT,
+      "Momentum confirmed: " + momentum_confirmed
+   );
+
+   ObjectSetString(
+      0,
       "TDI_SCENARIO_STATE",
       OBJPROP_TEXT,
       "State : " + scenario_state
@@ -1109,24 +1303,24 @@ else
    );
 
    ObjectSetString(
-   0,
-   "TDI_TRANSITION_VALUE",
-   OBJPROP_TEXT,
-   transition
+      0,
+      "TDI_TRANSITION_VALUE",
+      OBJPROP_TEXT,
+      transition
    );
 
    ObjectSetString(
-   0,
-   "TDI_ALERT_LEVEL",
-   OBJPROP_TEXT,
-   "Level  : " + alert_level
+      0,
+      "TDI_ALERT_LEVEL",
+      OBJPROP_TEXT,
+      "Level  : " + alert_level
    );
 
    ObjectSetString(
-   0,
-   "TDI_ALERT_ACTIVE",
-   OBJPROP_TEXT,
-   "Active : " + alert_active
+      0,
+      "TDI_ALERT_ACTIVE",
+      OBJPROP_TEXT,
+      "Active : " + alert_active
    );
 
    ChartRedraw();

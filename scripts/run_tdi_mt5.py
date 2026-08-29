@@ -239,21 +239,27 @@ def analyze_symbol(
         path=SCENARIO_STATE_PATH,
     )
     dashboard_state = DashboardStateBuilder.build(
-    symbol=symbol,
-    decision=decision,
-    bias_readiness=bias_readiness,
-    scenario=scenario,
-    wait_plan=wait_plan,
-    transition=transition,
-    alert=alert,
-)
-    JsonDashboardStateWriter.write(
-    state=dashboard_state,
-    path=(
-       dashboard_dir
-        / f"{symbol}.json"
-    ),
-)
+        symbol=symbol,
+        decision=decision,
+        bias_readiness=bias_readiness,
+        scenario=scenario,
+        wait_plan=wait_plan,
+        transition=transition,
+        alert=alert,
+    )
+    try:
+        JsonDashboardStateWriter.write(
+            state=dashboard_state,
+            path=(
+            dashboard_dir
+                / f"{symbol}.json"
+            ),
+        )
+
+    except OSError as exc:
+        print(
+            f"TDI Dashboard: write failed for {symbol}: {exc}"
+        )
 
     print()
     print("=" * 60)

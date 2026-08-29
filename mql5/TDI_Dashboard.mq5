@@ -637,6 +637,13 @@ void OnDeinit(const int reason)
 {
    EventKillTimer();
 
+   ObjectsDeleteAll(
+      0,
+      "TDI_"
+   );
+
+   ChartRedraw();
+
    Print("TDI Dashboard stopped for ", _Symbol);
 }
 

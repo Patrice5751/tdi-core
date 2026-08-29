@@ -1343,6 +1343,19 @@ void OnTimer()
       "State : " + scenario_state
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_SCENARIO_STATE",
+      OBJPROP_COLOR,
+      StringFind(scenario_state, "Ready") >= 0
+      ? clrLimeGreen
+      : StringFind(scenario_state, "Building") >= 0
+        ? clrOrange
+        : StringFind(scenario_state, "Degrading") >= 0
+          ? clrOrangeRed
+          : clrSilver
+   );
+
    ObjectSetString(
       0,
       "TDI_SCENARIO_SCORE",

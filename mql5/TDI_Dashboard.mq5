@@ -619,6 +619,58 @@ int OnInit()
       0, waiting_value_name,
       OBJPROP_FONTSIZE, 10
    );
+   string waiting_value_2_name = "TDI_WAITING_VALUE_2";
+
+   ObjectCreate(
+      0, waiting_value_2_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, waiting_value_2_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, waiting_value_2_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, waiting_value_2_name,
+      OBJPROP_YDISTANCE, 560
+   );
+   ObjectSetInteger(
+      0, waiting_value_2_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, waiting_value_2_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+    string waiting_value_3_name = "TDI_WAITING_VALUE_3";
+
+   ObjectCreate(
+      0, waiting_value_3_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, waiting_value_3_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, waiting_value_3_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, waiting_value_3_name,
+      OBJPROP_YDISTANCE, 580
+   );
+   ObjectSetInteger(
+      0, waiting_value_3_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, waiting_value_3_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
    ObjectSetString(
       0, waiting_value_name,
       OBJPROP_TEXT, "—"
@@ -640,7 +692,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_title_name,
-      OBJPROP_YDISTANCE, 580
+      OBJPROP_YDISTANCE, 620
    );
    ObjectSetInteger(
       0, transition_title_name,
@@ -668,7 +720,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_value_name,
-      OBJPROP_YDISTANCE, 605
+      OBJPROP_YDISTANCE, 645
    );
    ObjectSetInteger(
       0, transition_value_name,
@@ -700,7 +752,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 645
+      OBJPROP_YDISTANCE, 685
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -728,7 +780,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 670
+      OBJPROP_YDISTANCE, 710
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -756,7 +808,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 695
+      OBJPROP_YDISTANCE, 735
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -989,9 +1041,14 @@ datetime IsoUtcToDatetime(
    );
 }
 
-string JsonGetFirstArrayString(
+
+
+
+
+string JsonGetArrayStringAt(
    const string json,
-   const string key
+   const string key,
+   const int index
 )
 {
    string search = "\"" + key + "\":";
@@ -1002,7 +1059,7 @@ string JsonGetFirstArrayString(
    );
 
    if(key_pos < 0)
-      return("—");
+      return("");
 
    int array_start = StringFind(
       json,
@@ -1011,7 +1068,7 @@ string JsonGetFirstArrayString(
    );
 
    if(array_start < 0)
-      return("—");
+      return("");
 
    int array_end = StringFind(
       json,
@@ -1020,39 +1077,53 @@ string JsonGetFirstArrayString(
    );
 
    if(array_end < 0)
-      return("—");
+      return("");
 
-   int value_start = StringFind(
-      json,
-      "\"",
-      array_start + 1
-   );
+   int position = array_start + 1;
+   int current_index = 0;
 
-   if(
-      value_start < 0
-      || value_start > array_end
-   )
-      return("—");
-
-   int value_end = StringFind(
-      json,
-      "\"",
-      value_start + 1
-   );
-
-   if(
-      value_end < 0
-      || value_end > array_end
-   )
-      return("—");
-
-   return(
-      StringSubstr(
+   while(position < array_end)
+   {
+      int value_start = StringFind(
          json,
-         value_start + 1,
-         value_end - value_start - 1
+         "\"",
+         position
+      );
+
+      if(
+         value_start < 0
+         || value_start >= array_end
       )
-   );
+         break;
+
+      int value_end = StringFind(
+         json,
+         "\"",
+         value_start + 1
+      );
+
+      if(
+         value_end < 0
+         || value_end > array_end
+      )
+         break;
+
+      if(current_index == index)
+      {
+         return(
+            StringSubstr(
+               json,
+               value_start + 1,
+               value_end - value_start - 1
+            )
+         );
+      }
+
+      current_index++;
+      position = value_end + 1;
+   }
+
+   return("");
 }
 
 void OnTimer()
@@ -1124,10 +1195,23 @@ void OnTimer()
       "scenario_score"
    );
 
-      string waiting_for = JsonGetFirstArrayString(
-      content,
-      "waiting_for"
-   );
+      string waiting_for = JsonGetArrayStringAt(
+         content,
+         "waiting_for",
+         0
+      );
+
+      string waiting_for_2 = JsonGetArrayStringAt(
+         content,
+         "waiting_for",
+         1
+      );
+
+      string waiting_for_3 = JsonGetArrayStringAt(
+         content,
+         "waiting_for",
+         2
+      );
 
    string transition = JsonGetString(
    content,
@@ -1371,6 +1455,22 @@ void OnTimer()
       OBJPROP_TEXT,
       waiting_for
    );
+
+   ObjectSetString(
+      0,
+      "TDI_WAITING_VALUE_2",
+      OBJPROP_TEXT,
+      waiting_for_2
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_WAITING_VALUE_3",
+      OBJPROP_TEXT,
+      waiting_for_3
+   );
+
+
 
    ObjectSetString(
       0,

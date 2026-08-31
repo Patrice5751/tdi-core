@@ -219,6 +219,29 @@ int OnInit()
    string readiness_name = "TDI_BIAS_READINESS";
    string score_name = "TDI_BIAS_SCORE";
 
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_BIAS",
+      155
+   );
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_CONFIRMATION",
+      270
+   );
+    CreateSectionSeparator(
+      "TDI_SEPARATOR_SCENARIO",
+      410
+   );
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_WAITING_FOR",
+      500
+   );
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_TRANSITION",
+      605
+   );
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_ALERT",
+      670
    ObjectCreate(
       0, bias_title_name, OBJ_LABEL, 0, 0, 0
    );
@@ -843,6 +866,50 @@ int OnInit()
 //+------------------------------------------------------------------+
 //| Custom indicator deinitialization                                |
 //+------------------------------------------------------------------+
+void CreateSectionSeparator(
+   string name,
+   int y
+)
+{
+   ObjectCreate(
+      0,
+      name,
+      OBJ_RECTANGLE_LABEL,
+      0,
+      0,
+      0
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_XDISTANCE, 20
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_YDISTANCE, y
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_XSIZE, 280
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_YSIZE, 1
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_BGCOLOR, clrDimGray
+   );
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_BORDER_COLOR, clrDimGray
+   );
+}
+
 void OnDeinit(const int reason)
 {
    EventKillTimer();

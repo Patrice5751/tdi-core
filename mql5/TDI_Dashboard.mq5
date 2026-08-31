@@ -115,9 +115,14 @@ int OnInit()
       0,
       title_name,
       OBJPROP_FONTSIZE,
-      12
+      13
    );
-
+   ObjectSetString(
+   0,
+   title_name,
+   OBJPROP_FONT,
+   "Arial Bold"
+   );
    ObjectSetString(
       0,
       title_name,
@@ -1366,7 +1371,7 @@ void OnTimer()
       0,
       "TDI_PANEL_TITLE",
       OBJPROP_COLOR,
-      clrOrangeRed
+      clrTomato
    );
    }
    else
@@ -1387,7 +1392,7 @@ void OnTimer()
       decision == "Buy"
       ? clrLimeGreen
       : decision == "Sell"
-        ? clrOrangeRed
+        ? clrTomato
         : clrWhite
    );
    }

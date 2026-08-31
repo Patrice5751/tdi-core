@@ -25,3 +25,6 @@ data/scenario_states.json
 runtime/
 
 data/dashboard/
+
+# MetaTrader compiled files
+*.ex5

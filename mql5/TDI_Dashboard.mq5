@@ -122,7 +122,7 @@ int OnInit()
       0,
       title_name,
       OBJPROP_TEXT,
-      "TDI LIVE — " + _Symbol
+      "TDI LIVE - " + _Symbol
    );
 
       string decision_name = "TDI_DECISION";
@@ -1291,7 +1291,7 @@ void OnTimer()
       0,
       "TDI_PANEL_TITLE",
       OBJPROP_TEXT,
-      "TDI LIVE — "
+      "TDI LIVE - "
       + _Symbol
       + "   |   STALE"
    );
@@ -1308,7 +1308,7 @@ void OnTimer()
       0,
       "TDI_PANEL_TITLE",
       OBJPROP_TEXT,
-      "TDI LIVE — "
+      "TDI LIVE - "
       + _Symbol
       + "   |   "
       + decision

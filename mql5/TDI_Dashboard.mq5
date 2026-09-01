@@ -6,6 +6,132 @@
 input int RefreshSeconds = 2;
 input int StaleAfterSeconds = 90;
 
+void CreateGaugeSegment(
+   string name,
+   int x,
+   int y,
+   color segment_color
+)
+{
+   ObjectCreate(
+      0,
+      name,
+      OBJ_RECTANGLE_LABEL,
+      0,
+      0,
+      0
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_XDISTANCE, x
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_YDISTANCE, y
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_XSIZE, 10
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_YSIZE, 4
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_BGCOLOR, segment_color
+   );
+
+   ObjectSetInteger(
+      0, name,
+      OBJPROP_BORDER_COLOR, segment_color
+   );
+}
+void UpdateBiasGauge(int score)
+{
+   int active_segments = (score * 11 + 99) / 100;
+
+   if(active_segments < 0)
+      active_segments = 0;
+
+   if(active_segments > 11)
+      active_segments = 11;
+
+   for(int i = 0; i < 11; i++)
+   {
+      string name = StringFormat(
+         "TDI_BIAS_GAUGE_%02d",
+         i
+      );
+
+      color segment_color =
+         (i < active_segments)
+         ? clrYellow
+         : clrDimGray;
+
+      ObjectSetInteger(
+         0,
+         name,
+         OBJPROP_BGCOLOR,
+         segment_color
+      );
+
+      ObjectSetInteger(
+         0,
+         name,
+         OBJPROP_BORDER_COLOR,
+         segment_color
+      );
+   }
+}
+
+void UpdateScenarioGauge(int score)
+{
+   int active_segments = (score * 11 + 99) / 100;
+
+   if(active_segments < 0)
+      active_segments = 0;
+
+   if(active_segments > 11)
+      active_segments = 11;
+
+   for(int i = 0; i < 11; i++)
+   {
+      string name = StringFormat(
+         "TDI_SCENARIO_GAUGE_%02d",
+         i
+      );
+
+      color segment_color =
+         (i < active_segments)
+         ? clrDodgerBlue
+         : clrDimGray;
+
+      ObjectSetInteger(
+         0,
+         name,
+         OBJPROP_BGCOLOR,
+         segment_color
+      );
+
+      ObjectSetInteger(
+         0,
+         name,
+         OBJPROP_BORDER_COLOR,
+         segment_color
+      );
+   }
+}
 //+------------------------------------------------------------------+
 //| Custom indicator initialization                                  |
 //+------------------------------------------------------------------+
@@ -56,7 +182,7 @@ int OnInit()
       0,
       panel_name,
       OBJPROP_YSIZE,
-      735
+      850
    );
 
    ObjectSetInteger(
@@ -72,8 +198,138 @@ int OnInit()
       OBJPROP_BORDER_COLOR,
       clrDimGray
    );
-   string title_name = "TDI_PANEL_TITLE";
 
+   CreateGaugeSegment("TDI_BIAS_GAUGE_00", 125, 295, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_01", 129, 280, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_02", 139, 267, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_03", 153, 257, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_04", 169, 251, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_05", 185, 249, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_06", 201, 251, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_07", 217, 257, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_08", 231, 267, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_09", 241, 280, clrYellow);
+   CreateGaugeSegment("TDI_BIAS_GAUGE_10", 245, 295, clrDimGray);
+
+   string bias_gauge_value_name = "TDI_BIAS_GAUGE_VALUE";
+
+   ObjectCreate(
+      0,
+      bias_gauge_value_name,
+      OBJ_LABEL,
+      0,
+      0,
+      0
+   );
+
+   ObjectSetInteger(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_CORNER,
+      CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_XDISTANCE,
+      185
+   );
+
+   ObjectSetInteger(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_YDISTANCE,
+      275
+   );
+
+   ObjectSetInteger(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_FONTSIZE,
+      11
+   );
+
+   ObjectSetInteger(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_COLOR,
+      clrYellow
+   );
+
+ObjectSetString(
+   0,
+   bias_gauge_value_name,
+   OBJPROP_TEXT,
+   "0/100"
+);
+
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_00", 125, 550, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_01", 129, 535, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_02", 139, 522, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_03", 153, 512, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_04", 169, 506, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_05", 185, 504, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_06", 201, 506, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_07", 217, 512, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_08", 231, 522, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_09", 241, 535, clrDodgerBlue);
+   CreateGaugeSegment("TDI_SCENARIO_GAUGE_10", 245, 550, clrDodgerBlue);
+
+   string scenario_gauge_value_name = "TDI_SCENARIO_GAUGE_VALUE";
+
+   ObjectCreate(
+      0,
+      scenario_gauge_value_name,
+      OBJ_LABEL,
+      0,
+      0,
+      0
+   );
+
+   ObjectSetInteger(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_CORNER,
+      CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_XDISTANCE,
+      185
+   );
+
+   ObjectSetInteger(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_YDISTANCE,
+      530
+   );
+
+   ObjectSetInteger(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_FONTSIZE,
+      11
+   );
+
+   ObjectSetInteger(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_COLOR,
+      clrDodgerBlue
+   );
+
+   ObjectSetString(
+      0,
+      scenario_gauge_value_name,
+      OBJPROP_TEXT,
+      "0/100"
+   );
+
+   string title_name = "TDI_PANEL_TITLE";
    ObjectCreate(
       0,
       title_name,
@@ -230,23 +486,24 @@ int OnInit()
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_CONFIRMATION",
-      270
+      315
    );
     CreateSectionSeparator(
       "TDI_SEPARATOR_SCENARIO",
-      410
+      455
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_WAITING_FOR",
-      500
+      590
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_TRANSITION",
-      605
+      695
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_ALERT",
-      670
+      760
+   );
    ObjectCreate(
       0, bias_title_name, OBJ_LABEL, 0, 0, 0
    );
@@ -376,7 +633,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_title_name,
-      OBJPROP_YDISTANCE, 425
+      OBJPROP_YDISTANCE, 470
    );
    ObjectSetInteger(
       0, scenario_title_name,
@@ -404,7 +661,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_state_name,
-      OBJPROP_YDISTANCE, 450
+      OBJPROP_YDISTANCE, 565
       );
    ObjectSetInteger(
       0, scenario_state_name,
@@ -432,7 +689,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, scenario_score_name,
-      OBJPROP_YDISTANCE, 475
+      OBJPROP_YDISTANCE, 495
    );
    ObjectSetInteger(
       0, scenario_score_name,
@@ -466,7 +723,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, confirmation_title_name,
-      OBJPROP_YDISTANCE, 285
+      OBJPROP_YDISTANCE, 330
    );
    ObjectSetInteger(
       0, confirmation_title_name,
@@ -494,7 +751,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, bias_aligned_name,
-      OBJPROP_YDISTANCE, 310
+      OBJPROP_YDISTANCE, 355
    );
    ObjectSetInteger(
       0, bias_aligned_name,
@@ -522,7 +779,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, structure_aligned_name,
-      OBJPROP_YDISTANCE, 335
+      OBJPROP_YDISTANCE, 380
    );
    ObjectSetInteger(
       0, structure_aligned_name,
@@ -550,7 +807,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, timing_favorable_name,
-      OBJPROP_YDISTANCE, 360
+      OBJPROP_YDISTANCE, 405
    );
    ObjectSetInteger(
       0, timing_favorable_name,
@@ -578,7 +835,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, momentum_confirmed_name,
-      OBJPROP_YDISTANCE, 385
+      OBJPROP_YDISTANCE, 430
    );
    ObjectSetInteger(
       0, momentum_confirmed_name,
@@ -609,7 +866,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_title_name,
-      OBJPROP_YDISTANCE, 515
+      OBJPROP_YDISTANCE, 605
    );
    ObjectSetInteger(
       0, waiting_title_name,
@@ -637,7 +894,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_value_name,
-      OBJPROP_YDISTANCE, 540
+      OBJPROP_YDISTANCE, 630
    );
    ObjectSetInteger(
       0, waiting_value_name,
@@ -662,7 +919,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
-      OBJPROP_YDISTANCE, 560
+      OBJPROP_YDISTANCE, 650
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
@@ -694,7 +951,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
-      OBJPROP_YDISTANCE, 580
+      OBJPROP_YDISTANCE, 670
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
@@ -731,7 +988,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_title_name,
-      OBJPROP_YDISTANCE, 620
+      OBJPROP_YDISTANCE, 710
    );
    ObjectSetInteger(
       0, transition_title_name,
@@ -759,7 +1016,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, transition_value_name,
-      OBJPROP_YDISTANCE, 645
+      OBJPROP_YDISTANCE, 735
    );
    ObjectSetInteger(
       0, transition_value_name,
@@ -791,7 +1048,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 685
+      OBJPROP_YDISTANCE, 775
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -819,7 +1076,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 710
+      OBJPROP_YDISTANCE, 800
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -847,7 +1104,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 735
+      OBJPROP_YDISTANCE, 825
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -1445,6 +1702,15 @@ void OnTimer()
       + "/100"
    );
 
+   UpdateBiasGauge(bias_score);
+
+   ObjectSetString(
+      0,
+      "TDI_BIAS_GAUGE_VALUE",
+      OBJPROP_TEXT,
+      IntegerToString(bias_score) + "/100"
+   );
+
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_BIAS",
@@ -1536,6 +1802,15 @@ void OnTimer()
       "Score : "
       + IntegerToString(scenario_score)
       + "/100"
+   );
+
+   UpdateScenarioGauge(scenario_score);
+
+   ObjectSetString(
+      0,
+      "TDI_SCENARIO_GAUGE_VALUE",
+      OBJPROP_TEXT,
+      IntegerToString(scenario_score) + "/100"
    );
 
    ObjectSetString(

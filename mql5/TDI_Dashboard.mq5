@@ -386,7 +386,8 @@ ObjectSetString(
       "TDI LIVE - " + _Symbol
    );
 
-      string decision_name = "TDI_DECISION";
+   string decision_name = "TDI_DECISION";
+   string decision_value_name = "TDI_DECISION_VALUE";
    string preferred_name = "TDI_PREFERRED_SIDE";
    string target_name = "TDI_TARGET_SIDE";
 
@@ -418,6 +419,40 @@ ObjectSetString(
       0, decision_name,
       OBJPROP_TEXT, "DECISION"
    );
+
+   ObjectCreate(
+   0, decision_value_name, OBJ_LABEL, 0, 0, 0
+);
+
+ObjectSetInteger(
+   0, decision_value_name,
+   OBJPROP_CORNER, CORNER_LEFT_UPPER
+);
+
+ObjectSetInteger(
+   0, decision_value_name,
+   OBJPROP_XDISTANCE, 205
+);
+
+ObjectSetInteger(
+   0, decision_value_name,
+   OBJPROP_YDISTANCE, 78
+);
+
+ObjectSetInteger(
+   0, decision_value_name,
+   OBJPROP_COLOR, clrYellow
+);
+
+ObjectSetInteger(
+   0, decision_value_name,
+   OBJPROP_FONTSIZE, 14
+);
+
+ObjectSetString(
+   0, decision_value_name,
+   OBJPROP_TEXT, "WAIT"
+);
 
    ObjectCreate(
       0, preferred_name, OBJ_LABEL, 0, 0, 0
@@ -1653,7 +1688,23 @@ void OnTimer()
         : clrWhite
    );
    }
+   ObjectSetString(
+      0,
+      "TDI_DECISION_VALUE",
+      OBJPROP_TEXT,
+      StringToUpper(decision)
+   );
 
+   ObjectSetInteger(
+      0,
+      "TDI_DECISION_VALUE",
+      OBJPROP_COLOR,
+      decision == "Buy"
+      ? clrLimeGreen
+      : decision == "Sell"
+      ? clrTomato
+      : clrYellow
+   );
       ObjectSetString(
       0,
       "TDI_PREFERRED_SIDE",

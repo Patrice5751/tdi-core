@@ -578,7 +578,9 @@ ObjectSetString(
    );
       string bias_title_name = "TDI_BIAS_TITLE";
    string convergence_name = "TDI_BIAS_CONVERGENCE";
+   string convergence_value_name = "TDI_BIAS_CONVERGENCE_VALUE";
    string readiness_name = "TDI_BIAS_READINESS";
+   string readiness_value_name = "TDI_BIAS_READINESS_VALUE";
    string score_name = "TDI_BIAS_SCORE";
 
    CreateSectionSeparator(
@@ -660,7 +662,39 @@ ObjectSetString(
       0, convergence_name,
       OBJPROP_TEXT, "Convergence : —"
    );
+   ObjectCreate(
+      0, convergence_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, convergence_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, convergence_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, convergence_value_name,
+      OBJPROP_YDISTANCE, 195
+   );
+
+   ObjectSetInteger(
+      0, convergence_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, convergence_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, convergence_value_name,
+      OBJPROP_TEXT, "UNDEFINED"
+   );
    ObjectCreate(
       0, readiness_name, OBJ_LABEL, 0, 0, 0
    );
@@ -688,7 +722,39 @@ ObjectSetString(
       0, readiness_name,
       OBJPROP_TEXT, "Readiness   : —"
    );
+   ObjectCreate(
+      0, readiness_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, readiness_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, readiness_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, readiness_value_name,
+      OBJPROP_YDISTANCE, 220
+   );
+
+   ObjectSetInteger(
+      0, readiness_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, readiness_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, readiness_value_name,
+      OBJPROP_TEXT, "LOW"
+   );
    ObjectCreate(
       0, score_name, OBJ_LABEL, 0, 0, 0
    );
@@ -1761,6 +1827,11 @@ void OnTimer()
    StringToUpper(preferred_side_display);
    string target_side_display = target_side;
    StringToUpper(target_side_display);
+   string bias_convergence_display = bias_convergence;
+   StringToUpper(bias_convergence_display);
+   string bias_readiness_display = bias_readiness;
+   StringToUpper(bias_readiness_display);
+
    ObjectSetString(
       0,
       "TDI_DECISION_VALUE",
@@ -1806,16 +1877,50 @@ void OnTimer()
       0,
       "TDI_BIAS_CONVERGENCE",
       OBJPROP_TEXT,
-      "Convergence : " + bias_convergence
+      "Convergence"
    );
 
    ObjectSetString(
       0,
+      "TDI_BIAS_CONVERGENCE_VALUE",
+      OBJPROP_TEXT,
+      bias_convergence_display
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_CONVERGENCE_VALUE",
+      OBJPROP_COLOR,
+      bias_convergence == "Aligned"
+      ? clrLimeGreen
+      : bias_convergence == "Toward"
+      ? clrYellow
+      : bias_convergence == "Away"
+      ? clrTomato
+      : clrSilver
+   );
+   ObjectSetString(
+      0,
       "TDI_BIAS_READINESS",
       OBJPROP_TEXT,
-      "Readiness   : " + bias_readiness
+      "Readiness"
    );
 
+   ObjectSetString(
+      0,
+      "TDI_BIAS_READINESS_VALUE",
+      OBJPROP_TEXT,
+      bias_readiness_display
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_READINESS_VALUE",
+      OBJPROP_COLOR,
+      bias_readiness == "High"
+      ? clrLimeGreen
+      : bias_readiness == "Medium"
+      ? clrYellow
+      : clrSilver
+   );
    ObjectSetInteger(
       0,
       "TDI_BIAS_READINESS",

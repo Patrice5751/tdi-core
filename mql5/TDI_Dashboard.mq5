@@ -873,9 +873,14 @@ ObjectSetString(
 
       string confirmation_title_name = "TDI_CONFIRMATION_TITLE";
    string bias_aligned_name = "TDI_CONFIRMATION_BIAS";
+   string bias_aligned_value_name = "TDI_CONFIRMATION_BIAS_VALUE";
    string structure_aligned_name = "TDI_CONFIRMATION_STRUCTURE";
+   string structure_aligned_value_name = "TDI_CONFIRMATION_STRUCTURE_VALUE";
    string timing_favorable_name = "TDI_CONFIRMATION_TIMING";
+   string timing_favorable_value_name = "TDI_CONFIRMATION_TIMING_VALUE";
    string momentum_confirmed_name = "TDI_CONFIRMATION_MOMENTUM";
+   string momentum_confirmed_value_name = "TDI_CONFIRMATION_MOMENTUM_VALUE";
+
 
    ObjectCreate(
       0, confirmation_title_name, OBJ_LABEL, 0, 0, 0
@@ -932,7 +937,39 @@ ObjectSetString(
       0, bias_aligned_name,
       OBJPROP_TEXT, "Bias aligned      : —"
    );
+   ObjectCreate(
+      0, bias_aligned_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, bias_aligned_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, bias_aligned_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, bias_aligned_value_name,
+      OBJPROP_YDISTANCE, 355
+   );
+
+   ObjectSetInteger(
+      0, bias_aligned_value_name,
+      OBJPROP_COLOR, clrTomato
+   );
+
+   ObjectSetInteger(
+      0, bias_aligned_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, bias_aligned_value_name,
+      OBJPROP_TEXT, "NO"
+   );
    ObjectCreate(
       0, structure_aligned_name, OBJ_LABEL, 0, 0, 0
    );
@@ -960,7 +997,39 @@ ObjectSetString(
       0, structure_aligned_name,
       OBJPROP_TEXT, "Structure aligned : —"
    );
+   ObjectCreate(
+      0, structure_aligned_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, structure_aligned_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, structure_aligned_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, structure_aligned_value_name,
+      OBJPROP_YDISTANCE, 380
+   );
+
+   ObjectSetInteger(
+      0, structure_aligned_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, structure_aligned_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, structure_aligned_value_name,
+      OBJPROP_TEXT, "NO"
+   );
    ObjectCreate(
       0, timing_favorable_name, OBJ_LABEL, 0, 0, 0
    );
@@ -988,7 +1057,39 @@ ObjectSetString(
       0, timing_favorable_name,
       OBJPROP_TEXT, "Timing favorable  : —"
    );
+   ObjectCreate(
+      0, timing_favorable_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, timing_favorable_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, timing_favorable_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, timing_favorable_value_name,
+      OBJPROP_YDISTANCE, 405
+   );
+
+   ObjectSetInteger(
+      0, timing_favorable_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, timing_favorable_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, timing_favorable_value_name,
+      OBJPROP_TEXT, "NO"
+   );
    ObjectCreate(
       0, momentum_confirmed_name, OBJ_LABEL, 0, 0, 0
    );
@@ -1016,7 +1117,39 @@ ObjectSetString(
       0, momentum_confirmed_name,
       OBJPROP_TEXT, "Momentum confirmed: —"
    );
+   ObjectCreate(
+      0, momentum_confirmed_value_name, OBJ_LABEL, 0, 0, 0
+   );
 
+   ObjectSetInteger(
+      0, momentum_confirmed_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, momentum_confirmed_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, momentum_confirmed_value_name,
+      OBJPROP_YDISTANCE, 430
+   );
+
+   ObjectSetInteger(
+      0, momentum_confirmed_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, momentum_confirmed_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, momentum_confirmed_value_name,
+      OBJPROP_TEXT, "NO"
+   );
       string waiting_title_name = "TDI_WAITING_TITLE";
    string waiting_value_name = "TDI_WAITING_VALUE";
 
@@ -1954,64 +2087,128 @@ void OnTimer()
       0,
       "TDI_CONFIRMATION_BIAS",
       OBJPROP_TEXT,
-      "Bias aligned      : " + bias_aligned
+      "Bias aligned"
    );
 
    ObjectSetInteger(
       0,
       "TDI_CONFIRMATION_BIAS",
       OBJPROP_COLOR,
+      clrSilver
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_BIAS_VALUE",
+      OBJPROP_TEXT,
+      bias_aligned == "True"
+      ? "YES"
+      : "NO"
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_BIAS_VALUE",
+      OBJPROP_COLOR,
       bias_aligned == "True"
       ? clrLimeGreen
-      : clrSilver
+      : clrTomato
    );
 
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_STRUCTURE",
       OBJPROP_TEXT,
-      "Structure aligned : " + structure_aligned
+      "Structure aligned"
    );
 
    ObjectSetInteger(
       0,
       "TDI_CONFIRMATION_STRUCTURE",
+      OBJPROP_COLOR,
+      clrSilver
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_STRUCTURE_VALUE",
+      OBJPROP_TEXT,
+      structure_aligned == "True"
+      ? "YES"
+      : "NO"
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_STRUCTURE_VALUE",
       OBJPROP_COLOR,
       structure_aligned == "True"
       ? clrLimeGreen
-      : clrSilver
+      : clrTomato
    );
 
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_TIMING",
       OBJPROP_TEXT,
-      "Timing favorable  : " + timing_favorable
+      "Timing favorable"
    );
 
    ObjectSetInteger(
       0,
       "TDI_CONFIRMATION_TIMING",
+      OBJPROP_COLOR,
+      clrSilver
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_TIMING_VALUE",
+      OBJPROP_TEXT,
+      timing_favorable == "True"
+      ? "YES"
+      : "NO"
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_TIMING_VALUE",
       OBJPROP_COLOR,
       timing_favorable == "True"
       ? clrLimeGreen
-      : clrSilver
+      : clrTomato
    );
 
    ObjectSetString(
       0,
       "TDI_CONFIRMATION_MOMENTUM",
       OBJPROP_TEXT,
-      "Momentum confirmed: " + momentum_confirmed
+      "Momentum confirmed"
    );
 
    ObjectSetInteger(
       0,
       "TDI_CONFIRMATION_MOMENTUM",
       OBJPROP_COLOR,
+      clrSilver
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_CONFIRMATION_MOMENTUM_VALUE",
+      OBJPROP_TEXT,
+      momentum_confirmed == "True"
+      ? "YES"
+      : "NO"
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_CONFIRMATION_MOMENTUM_VALUE",
+      OBJPROP_COLOR,
       momentum_confirmed == "True"
       ? clrLimeGreen
-      : clrSilver
+      : clrTomato
    );
 
    ObjectSetString(

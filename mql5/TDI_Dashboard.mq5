@@ -424,37 +424,37 @@ ObjectSetString(
 
    ObjectCreate(
    0, decision_value_name, OBJ_LABEL, 0, 0, 0
-);
+   );
 
-ObjectSetInteger(
-   0, decision_value_name,
-   OBJPROP_CORNER, CORNER_LEFT_UPPER
-);
+   ObjectSetInteger(
+      0, decision_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
 
-ObjectSetInteger(
-   0, decision_value_name,
-   OBJPROP_XDISTANCE, 205
-);
+   ObjectSetInteger(
+      0, decision_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
 
-ObjectSetInteger(
-   0, decision_value_name,
-   OBJPROP_YDISTANCE, 78
-);
+   ObjectSetInteger(
+      0, decision_value_name,
+      OBJPROP_YDISTANCE, 78
+   );
 
-ObjectSetInteger(
-   0, decision_value_name,
-   OBJPROP_COLOR, clrYellow
-);
+   ObjectSetInteger(
+      0, decision_value_name,
+      OBJPROP_COLOR, clrYellow
+   );
 
-ObjectSetInteger(
-   0, decision_value_name,
-   OBJPROP_FONTSIZE, 14
-);
+   ObjectSetInteger(
+      0, decision_value_name,
+      OBJPROP_FONTSIZE, 14
+   );
 
-ObjectSetString(
-   0, decision_value_name,
-   OBJPROP_TEXT, "WAIT"
-);
+   ObjectSetString(
+      0, decision_value_name,
+      OBJPROP_TEXT, "WAIT"
+   );
 
    ObjectCreate(
       0, preferred_name, OBJ_LABEL, 0, 0, 0
@@ -720,7 +720,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, readiness_name,
-      OBJPROP_TEXT, "Readiness   : —"
+      OBJPROP_TEXT, "Readiness : —"
    );
    ObjectCreate(
       0, readiness_value_name, OBJ_LABEL, 0, 0, 0
@@ -768,7 +768,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, score_name,
-      OBJPROP_YDISTANCE, 245
+      OBJPROP_YDISTANCE, 235
    );
    ObjectSetInteger(
       0, score_name,
@@ -780,7 +780,43 @@ ObjectSetString(
    );
    ObjectSetString(
       0, score_name,
-      OBJPROP_TEXT, "Score       : —/100"
+      OBJPROP_TEXT, "Score"
+   );
+
+   string bias_score_value_name = "TDI_BIAS_SCORE_VALUE";
+
+   ObjectCreate(
+      0, bias_score_value_name, OBJ_LABEL, 0, 0, 0
+   );
+
+   ObjectSetInteger(
+      0, bias_score_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, bias_score_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, bias_score_value_name,
+      OBJPROP_YDISTANCE, 235
+   );
+
+   ObjectSetInteger(
+      0, bias_score_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, bias_score_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, bias_score_value_name,
+      OBJPROP_TEXT, "—/100"
    );
 
       string scenario_title_name = "TDI_SCENARIO_TITLE";
@@ -843,7 +879,7 @@ ObjectSetString(
       OBJPROP_TEXT, "State"
    );
 
-string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
+   string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
 
    ObjectCreate(
       0, scenario_state_value_name, OBJ_LABEL, 0, 0, 0
@@ -856,7 +892,7 @@ string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
 
    ObjectSetInteger(
       0, scenario_state_value_name,
-      OBJPROP_XDISTANCE, 185
+      OBJPROP_XDISTANCE, 205
    );
 
    ObjectSetInteger(
@@ -892,7 +928,7 @@ string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
    );
    ObjectSetInteger(
       0, scenario_score_name,
-      OBJPROP_YDISTANCE, 495
+      OBJPROP_YDISTANCE, 485
    );
    ObjectSetInteger(
       0, scenario_score_name,
@@ -904,7 +940,43 @@ string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
    );
    ObjectSetString(
       0, scenario_score_name,
-      OBJPROP_TEXT, "Score : —/100"
+      OBJPROP_TEXT, "Score"
+   );
+
+   string scenario_score_value_name = "TDI_SCENARIO_SCORE_VALUE";
+
+   ObjectCreate(
+      0, scenario_score_value_name, OBJ_LABEL, 0, 0, 0
+   );
+
+   ObjectSetInteger(
+      0, scenario_score_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, scenario_score_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+
+   ObjectSetInteger(
+      0, scenario_score_value_name,
+      OBJPROP_YDISTANCE, 485
+   );
+
+   ObjectSetInteger(
+      0, scenario_score_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, scenario_score_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, scenario_score_value_name,
+      OBJPROP_TEXT, "—/100"
    );
 
       string confirmation_title_name = "TDI_CONFIRMATION_TITLE";
@@ -1424,7 +1496,7 @@ string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
    );
    ObjectSetString(
       0, alert_level_name,
-      OBJPROP_TEXT, "Level  : —"
+      OBJPROP_TEXT, "Level : —"
    );
 
    ObjectCreate(
@@ -2105,9 +2177,14 @@ void OnTimer()
       0,
       "TDI_BIAS_SCORE",
       OBJPROP_TEXT,
-      "Score       : "
-      + IntegerToString(bias_score)
-      + "/100"
+      "Score"
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_BIAS_SCORE_VALUE",
+      OBJPROP_TEXT,
+      IntegerToString(bias_score) + "/100"
    );
 
    UpdateBiasGauge(bias_score);
@@ -2253,12 +2330,13 @@ void OnTimer()
       OBJPROP_TEXT,
       "State"
    );
+
    ObjectSetString(
-   0,
-   "TDI_SCENARIO_STATE_VALUE",
-   OBJPROP_TEXT,
-   scenario_state
-);
+      0,
+      "TDI_SCENARIO_STATE_VALUE",
+      OBJPROP_TEXT,
+      scenario_state
+   );
 
    ObjectSetInteger(
       0,
@@ -2267,11 +2345,12 @@ void OnTimer()
       StringFind(scenario_state, "Ready") >= 0
       ? clrLimeGreen
       : StringFind(scenario_state, "Building") >= 0
-      ? clrOrange
-      : StringFind(scenario_state, "Degrading") >= 0
-         ? clrOrangeRed
-         : clrSilver
+        ? clrOrange
+        : StringFind(scenario_state, "Degrading") >= 0
+          ? clrOrangeRed
+          : clrSilver
    );
+
    ObjectSetInteger(
       0,
       "TDI_SCENARIO_STATE",
@@ -2285,16 +2364,21 @@ void OnTimer()
           : clrSilver
    );
 
-   ObjectSetString(
+  ObjectSetString(
       0,
       "TDI_SCENARIO_SCORE",
       OBJPROP_TEXT,
-      "Score : "
-      + IntegerToString(scenario_score)
-      + "/100"
+      "Score"
    );
 
-   UpdateScenarioGauge(scenario_score);
+   ObjectSetString(
+      0,
+      "TDI_SCENARIO_SCORE_VALUE",
+      OBJPROP_TEXT,
+      IntegerToString(scenario_score) + "/100"
+   );
+
+      UpdateScenarioGauge(scenario_score);
 
    ObjectSetString(
       0,

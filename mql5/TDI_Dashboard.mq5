@@ -840,7 +840,43 @@ ObjectSetString(
    );
    ObjectSetString(
       0, scenario_state_name,
-      OBJPROP_TEXT, "State : —"
+      OBJPROP_TEXT, "State"
+   );
+
+string scenario_state_value_name = "TDI_SCENARIO_STATE_VALUE";
+
+   ObjectCreate(
+      0, scenario_state_value_name, OBJ_LABEL, 0, 0, 0
+   );
+
+   ObjectSetInteger(
+      0, scenario_state_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0, scenario_state_value_name,
+      OBJPROP_XDISTANCE, 185
+   );
+
+   ObjectSetInteger(
+      0, scenario_state_value_name,
+      OBJPROP_YDISTANCE, 565
+   );
+
+   ObjectSetInteger(
+      0, scenario_state_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+
+   ObjectSetInteger(
+      0, scenario_state_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+
+   ObjectSetString(
+      0, scenario_state_value_name,
+      OBJPROP_TEXT, "—"
    );
 
    ObjectCreate(
@@ -2215,9 +2251,27 @@ void OnTimer()
       0,
       "TDI_SCENARIO_STATE",
       OBJPROP_TEXT,
-      "State : " + scenario_state
+      "State"
    );
+   ObjectSetString(
+   0,
+   "TDI_SCENARIO_STATE_VALUE",
+   OBJPROP_TEXT,
+   scenario_state
+);
 
+   ObjectSetInteger(
+      0,
+      "TDI_SCENARIO_STATE_VALUE",
+      OBJPROP_COLOR,
+      StringFind(scenario_state, "Ready") >= 0
+      ? clrLimeGreen
+      : StringFind(scenario_state, "Building") >= 0
+      ? clrOrange
+      : StringFind(scenario_state, "Degrading") >= 0
+         ? clrOrangeRed
+         : clrSilver
+   );
    ObjectSetInteger(
       0,
       "TDI_SCENARIO_STATE",

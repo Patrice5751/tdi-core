@@ -199,6 +199,20 @@ int OnInit()
       clrDimGray
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_PANEL_BG",
+      OBJPROP_SELECTABLE,
+      true
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_PANEL_BG",
+      OBJPROP_SELECTED,
+      false
+   );
+
    CreateGaugeSegment("TDI_BIAS_GAUGE_00", 125, 295, clrYellow);
    CreateGaugeSegment("TDI_BIAS_GAUGE_01", 129, 280, clrYellow);
    CreateGaugeSegment("TDI_BIAS_GAUGE_02", 139, 267, clrYellow);

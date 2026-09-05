@@ -61,6 +61,7 @@ from tdi.graphical.json_dashboard_state_writer import (
     JsonDashboardStateWriter,
 )
 
+from tdi.graphical.global_tdi_score_engine import GlobalTDIScoreEngine
 
 SCENARIO_STATE_PATH = (
     Path("data")
@@ -177,6 +178,34 @@ def analyze_symbol(
         h1_momentum=h1_momentum,
     )
 
+    if hasattr(result, "h4") and hasattr(result, "h1"):
+        structure_score = min(
+            result.h4.direction_confidence,
+            result.h1.direction_confidence,
+        )
+
+        location_score = min(
+            result.h4.location_quality_score,
+            result.h1.location_quality_score,
+        )
+    else:
+        structure_score = 0
+        location_score = 0
+
+    global_score = GlobalTDIScoreEngine().compute(
+        bias_score=bias_readiness.score,
+        structure_score=structure_score,
+        momentum_score=min(
+            getattr(h4_momentum, "confidence", 0),
+            getattr(h1_momentum, "confidence", 0),
+        ),
+        location_score=location_score,
+        bias_available=bias_readiness.target_side is not None,
+        structure_aligned=decision.structure_aligned,
+        timing_favorable=decision.timing_favorable,
+        momentum_confirmed=decision.momentum_confirmed,
+    )
+
     scenario = ScenarioStateEngine().analyze(
         decision=decision,
         wait_plan=wait_plan,
@@ -244,6 +273,7 @@ def analyze_symbol(
         bias_readiness=bias_readiness,
         scenario=scenario,
         wait_plan=wait_plan,
+        global_score=global_score,
         transition=transition,
         alert=alert,
     )

@@ -11,6 +11,7 @@ class DashboardStateBuilder:
         bias_readiness,
         scenario,
         wait_plan,
+        global_score=None,
         transition=None,
         alert=None,
     ) -> DashboardState:
@@ -36,7 +37,29 @@ class DashboardStateBuilder:
             if alert is None
             else alert.active
         )
+        global_score_value = (
+            0 if global_score is None else global_score.score
+        )
 
+        global_grade_value = (
+            "E" if global_score is None else global_score.grade
+        )
+
+        global_bias_score = (
+            0 if global_score is None else global_score.bias_score
+        )
+
+        global_structure_score = (
+            0 if global_score is None else global_score.structure_score
+        )
+
+        global_momentum_score = (
+            0 if global_score is None else global_score.momentum_score
+        )
+
+        global_location_score = (
+            0 if global_score is None else global_score.location_score
+        )
         return DashboardState(
             symbol=symbol,
             decision=decision.decision.value,
@@ -55,5 +78,11 @@ class DashboardStateBuilder:
             transition=transition_value,
             alert_level=alert_level,
             alert_active=alert_active,
+            global_score=global_score_value,
+            global_grade=global_grade_value,
+            global_bias_score=global_bias_score,
+            global_structure_score=global_structure_score,
+            global_momentum_score=global_momentum_score,
+            global_location_score=global_location_score,
             updated_at=datetime.now(timezone.utc).isoformat(),
         )

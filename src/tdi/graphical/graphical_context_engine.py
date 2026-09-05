@@ -61,6 +61,7 @@ class GraphicalContextEngine:
             direction=market_direction,
             direction_confidence=direction_confidence,
             location_type=price_location.location_type,
+            location_quality_score=price_location.quality_score,
             support=support_resistance.support,
             resistance=support_resistance.resistance,
             support_touches=support_resistance.support_touches,

@@ -17,6 +17,8 @@ class GraphicalContext:
     support_touches: int
     resistance_touches: int
 
+    location_quality_score: int = 0
+
     ma20: float | None = None
     ma50: float | None = None
     ma200: float | None = None

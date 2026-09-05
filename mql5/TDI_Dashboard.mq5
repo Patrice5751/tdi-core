@@ -1258,6 +1258,95 @@ ObjectSetString(
       0, momentum_confirmed_value_name,
       OBJPROP_TEXT, "NO"
    );
+
+   string global_score_title_name = "TDI_GLOBAL_SCORE_TITLE";
+   string global_score_value_name = "TDI_GLOBAL_SCORE_VALUE";
+   string global_grade_name = "TDI_GLOBAL_GRADE";
+
+   ObjectCreate(
+      0, global_score_title_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, global_score_title_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, global_score_title_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, global_score_title_name,
+      OBJPROP_YDISTANCE, 605
+   );
+   ObjectSetInteger(
+      0, global_score_title_name,
+      OBJPROP_COLOR, clrWhite
+   );
+   ObjectSetInteger(
+      0, global_score_title_name,
+      OBJPROP_FONTSIZE, 11
+   );
+   ObjectSetString(
+      0, global_score_title_name,
+      OBJPROP_TEXT, "GLOBAL SCORE"
+   );
+
+   ObjectCreate(
+      0, global_score_value_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, global_score_value_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, global_score_value_name,
+      OBJPROP_XDISTANCE, 205
+   );
+   ObjectSetInteger(
+      0, global_score_value_name,
+      OBJPROP_YDISTANCE, 605
+   );
+   ObjectSetInteger(
+      0, global_score_value_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, global_score_value_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, global_score_value_name,
+      OBJPROP_TEXT, "—/100"
+   );
+
+   ObjectCreate(
+      0, global_grade_name, OBJ_LABEL, 0, 0, 0
+   );
+   ObjectSetInteger(
+      0, global_grade_name,
+      OBJPROP_CORNER, CORNER_LEFT_UPPER
+   );
+   ObjectSetInteger(
+      0, global_grade_name,
+      OBJPROP_XDISTANCE, 25
+   );
+   ObjectSetInteger(
+      0, global_grade_name,
+      OBJPROP_YDISTANCE, 630
+   );
+   ObjectSetInteger(
+      0, global_grade_name,
+      OBJPROP_COLOR, clrSilver
+   );
+   ObjectSetInteger(
+      0, global_grade_name,
+      OBJPROP_FONTSIZE, 10
+   );
+   ObjectSetString(
+      0, global_grade_name,
+      OBJPROP_TEXT, "Grade : —"
+   );
+
       string waiting_title_name = "TDI_WAITING_TITLE";
    string waiting_value_name = "TDI_WAITING_VALUE";
 
@@ -1274,7 +1363,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_title_name,
-      OBJPROP_YDISTANCE, 605
+      OBJPROP_YDISTANCE, 660
    );
    ObjectSetInteger(
       0, waiting_title_name,
@@ -1302,7 +1391,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_name,
-      OBJPROP_YDISTANCE, 630
+      OBJPROP_YDISTANCE, 685
    );
    ObjectSetInteger(
       0, waiting_value_name,
@@ -1327,7 +1416,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
-      OBJPROP_YDISTANCE, 650
+      OBJPROP_YDISTANCE, 705
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
@@ -1359,7 +1448,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
-      OBJPROP_YDISTANCE, 670
+      OBJPROP_YDISTANCE, 725
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
@@ -1396,7 +1485,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, transition_title_name,
-      OBJPROP_YDISTANCE, 710
+      OBJPROP_YDISTANCE, 765
    );
    ObjectSetInteger(
       0, transition_title_name,
@@ -1424,7 +1513,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, transition_value_name,
-      OBJPROP_YDISTANCE, 735
+      OBJPROP_YDISTANCE, 790
    );
    ObjectSetInteger(
       0, transition_value_name,
@@ -1456,7 +1545,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 775
+      OBJPROP_YDISTANCE, 830
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -1484,7 +1573,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 800
+      OBJPROP_YDISTANCE, 855
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -1512,7 +1601,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 825
+      OBJPROP_YDISTANCE, 880
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -1948,7 +2037,15 @@ void OnTimer()
          "waiting_for",
          0
       );
+      int global_score = JsonGetInt(
+         content,
+         "global_score"
+      );
 
+      string global_grade = JsonGetString(
+         content,
+         "global_grade"
+      );
       string waiting_for_2 = JsonGetArrayStringAt(
          content,
          "waiting_for",
@@ -2336,6 +2433,45 @@ void OnTimer()
       "TDI_SCENARIO_STATE_VALUE",
       OBJPROP_TEXT,
       scenario_state
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_GLOBAL_SCORE_VALUE",
+      OBJPROP_TEXT,
+      IntegerToString(global_score) + "/100"
+   );
+
+   ObjectSetString(
+      0,
+      "TDI_GLOBAL_GRADE",
+      OBJPROP_TEXT,
+      "Grade : " + global_grade
+   );
+
+   color global_score_color = clrTomato;
+
+   if(global_score >= 90)
+      global_score_color = clrLimeGreen;
+   else if(global_score >= 80)
+      global_score_color = clrGreenYellow;
+   else if(global_score >= 70)
+      global_score_color = clrYellow;
+   else if(global_score >= 60)
+      global_score_color = clrOrange;
+
+   ObjectSetInteger(
+      0,
+      "TDI_GLOBAL_SCORE_VALUE",
+      OBJPROP_COLOR,
+      global_score_color
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_GLOBAL_GRADE",
+      OBJPROP_COLOR,
+      global_score_color
    );
 
    ObjectSetInteger(

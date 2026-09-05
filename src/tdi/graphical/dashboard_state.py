@@ -26,4 +26,12 @@ class DashboardState:
     alert_level: str | None
     alert_active: bool
 
+    global_score: int = 0
+    global_grade: str = "E"
+
+    global_bias_score: int = 0
+    global_structure_score: int = 0
+    global_momentum_score: int = 0
+    global_location_score: int = 0
+
     updated_at: str = ""

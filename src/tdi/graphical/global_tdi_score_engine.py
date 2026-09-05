@@ -39,7 +39,7 @@ class GlobalTDIScoreEngine:
         score = raw_score
 
         if not bias_available:
-            score = min(score, 39)
+            score = min(score, 25)
 
         elif not structure_aligned:
             score = min(score, 69)

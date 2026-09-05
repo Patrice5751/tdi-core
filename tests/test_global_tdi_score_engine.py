@@ -47,7 +47,7 @@ def test_global_score_is_capped_when_no_bias_is_available():
         momentum_confirmed=True,
     )
 
-    assert result.score == 39
+    assert result.score == 25
     assert result.grade == "E"
 
 
@@ -97,4 +97,3 @@ def test_global_score_is_capped_when_momentum_is_not_confirmed():
 
     assert result.score == 89
     assert result.grade == "B"
-    

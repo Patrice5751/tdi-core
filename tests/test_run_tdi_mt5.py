@@ -459,9 +459,12 @@ def test_analyze_symbol_exposes_bias_readiness(
     monkeypatch,
     capsys,
 ):
+
+    multi_result = object()
+
     class FakeMultiPipeline:
         def analyze(self, symbol, count):
-            return object()
+            return multi_result
 
     class FakeMomentumPipeline:
         def analyze(self, symbol, timeframe, count):
@@ -543,7 +546,7 @@ def test_analyze_symbol_exposes_bias_readiness(
         "write",
         lambda **kwargs: None,
     )
-    run_tdi_mt5.analyze_symbol(
+    returned = run_tdi_mt5.analyze_symbol(
         symbol="XAUUSD",
         multi_pipeline=FakeMultiPipeline(),
         momentum_pipeline=FakeMomentumPipeline(),
@@ -575,6 +578,7 @@ def test_analyze_symbol_exposes_bias_readiness(
     )
     assert dashboard_states[0]["transition"] is None
     assert dashboard_states[0]["alert"] is None
+    assert returned is multi_result
 
 def test_analyze_symbol_labels_scenario_score(
     monkeypatch,

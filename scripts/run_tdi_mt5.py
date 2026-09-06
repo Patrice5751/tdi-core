@@ -371,7 +371,7 @@ def analyze_symbol(
     if transition is None:
         print("Transition        : Initial")
         print("Alert             : None")
-        return
+        return result
 
     print(
         f"Transition        : "
@@ -420,7 +420,7 @@ def analyze_symbol(
                 message=alert.message,
                 action=alert.action,
             )
-
+    return result
 
 def parse_args():
     parser = argparse.ArgumentParser(

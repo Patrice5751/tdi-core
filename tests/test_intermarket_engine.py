@@ -48,3 +48,32 @@ def test_intermarket_is_mixed_when_confirmation_is_neutral():
 
     assert result.state.value == "Mixed"
     assert result.score == 50
+
+def test_intermarket_is_mixed_when_primary_is_neutral():
+    result = IntermarketEngine().analyze(
+        primary=make_trend(Trend.NEUTRAL),
+        confirmation=make_trend(Trend.BULLISH),
+    )
+
+    assert result.state.value == "Mixed"
+    assert result.score == 50
+
+
+def test_intermarket_is_mixed_when_both_are_neutral():
+    result = IntermarketEngine().analyze(
+        primary=make_trend(Trend.NEUTRAL),
+        confirmation=make_trend(Trend.NEUTRAL),
+    )
+
+    assert result.state.value == "Mixed"
+    assert result.score == 50
+
+
+def test_intermarket_detects_reverse_divergence():
+    result = IntermarketEngine().analyze(
+        primary=make_trend(Trend.BEARISH),
+        confirmation=make_trend(Trend.BULLISH),
+    )
+
+    assert result.state.value == "Divergent"
+    assert result.score == 0

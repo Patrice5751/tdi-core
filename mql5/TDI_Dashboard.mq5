@@ -2,6 +2,12 @@
 #property version   "1.00"
 #property indicator_chart_window
 #property indicator_plots 0
+#include <Canvas\Canvas.mqh>
+
+CCanvas g_bias_canvas;
+
+int g_panel_x = 10;
+int g_panel_y = 10;
 
 input int RefreshSeconds = 2;
 input int StaleAfterSeconds = 90;
@@ -135,6 +141,75 @@ void UpdateScenarioGauge(int score)
 //+------------------------------------------------------------------+
 //| Custom indicator initialization                                  |
 //+------------------------------------------------------------------+
+void UpdateBiasSmoothGauge(int score)
+{
+   if(score < 0)
+      score = 0;
+
+   if(score > 100)
+      score = 100;
+
+   double pi = 3.14159265358979323846;
+   double active_angle = pi * score / 100.0;
+
+   g_bias_canvas.Erase(clrBlack);
+
+   // Fond gris plus Ã©pais
+   for(int t = 0; t < 6; t++)
+   {
+      g_bias_canvas.Arc(
+         60,
+         60,
+         60 - t,
+         50 - t,
+         0.0,
+         pi,
+         clrDimGray
+      );
+   }
+
+   // Partie active
+   if(score > 0)
+   {
+      color gauge_color = clrDodgerBlue;
+
+      if(score >= 90)
+         gauge_color = clrLimeGreen;
+      else if(score >= 80)
+         gauge_color = clrGreenYellow;
+      else if(score >= 70)
+         gauge_color = clrYellow;
+      else if(score >= 60)
+         gauge_color = clrOrange;
+
+      double start_angle = pi - active_angle;
+
+      for(int t = 0; t < 6; t++)
+      {
+         g_bias_canvas.Arc(
+            60,
+            60,
+            60 - t,
+            50 - t,
+            start_angle,
+            pi,
+            gauge_color
+         );
+      }
+   }
+
+   g_bias_canvas.FontSet("Arial", 18);
+
+   g_bias_canvas.TextOut(
+      40,
+      45,
+      IntegerToString(score) + "/100",
+      White
+   );
+
+   g_bias_canvas.Update();
+}
+
 int OnInit()
 {
    EventSetTimer(RefreshSeconds);
@@ -201,16 +276,23 @@ int OnInit()
 
    ObjectSetInteger(
       0,
-      "TDI_PANEL_BG",
+      panel_name,
       OBJPROP_SELECTABLE,
       true
    );
 
    ObjectSetInteger(
       0,
-      "TDI_PANEL_BG",
+      panel_name,
       OBJPROP_SELECTED,
-      false
+      true
+   );
+
+   ObjectSetInteger(
+      0,
+      panel_name,
+      OBJPROP_ZORDER,
+      100
    );
 
    CreateGaugeSegment("TDI_BIAS_GAUGE_00", 125, 295, clrYellow);
@@ -254,7 +336,7 @@ int OnInit()
       0,
       bias_gauge_value_name,
       OBJPROP_YDISTANCE,
-      275
+      240
    );
 
    ObjectSetInteger(
@@ -271,12 +353,28 @@ int OnInit()
       clrYellow
    );
 
-ObjectSetString(
-   0,
-   bias_gauge_value_name,
-   OBJPROP_TEXT,
-   "0/100"
-);
+   ObjectSetString(
+      0,
+      bias_gauge_value_name,
+      OBJPROP_TEXT,
+      "0/100"
+   );
+
+   ObjectDelete(
+      0,
+      "TDI_BIAS_GAUGE_VALUE"
+   );
+
+    for(int i = 0; i <= 10; i++)
+   {
+      string name = StringFormat(
+         "TDI_BIAS_GAUGE_%02d",
+         i
+      );
+
+      if(ObjectFind(0, name) >= 0)
+         ObjectDelete(0, name);
+   }
 
    CreateGaugeSegment("TDI_SCENARIO_GAUGE_00", 125, 550, clrDodgerBlue);
    CreateGaugeSegment("TDI_SCENARIO_GAUGE_01", 129, 535, clrDodgerBlue);
@@ -495,7 +593,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, preferred_name,
-      OBJPROP_TEXT, "Preferred side : —"
+      OBJPROP_TEXT, "Preferred side : -"
    );
    ObjectCreate(
    0, preferred_value_name, OBJ_LABEL, 0, 0, 0
@@ -555,7 +653,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, target_name,
-      OBJPROP_TEXT, "Target side    : —"
+      OBJPROP_TEXT, "Target side    : -"
    );
    ObjectCreate(
       0, target_value_name, OBJ_LABEL, 0, 0, 0
@@ -609,17 +707,18 @@ ObjectSetString(
       "TDI_SEPARATOR_SCENARIO",
       455
    );
+
    CreateSectionSeparator(
       "TDI_SEPARATOR_WAITING_FOR",
-      590
+      640
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_TRANSITION",
-      695
+      730
    );
    CreateSectionSeparator(
       "TDI_SEPARATOR_ALERT",
-      760
+      785
    );
    ObjectCreate(
       0, bias_title_name, OBJ_LABEL, 0, 0, 0
@@ -674,7 +773,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, convergence_name,
-      OBJPROP_TEXT, "Convergence : —"
+      OBJPROP_TEXT, "Convergence : â€”"
    );
    ObjectCreate(
       0, convergence_value_name, OBJ_LABEL, 0, 0, 0
@@ -722,7 +821,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, readiness_name,
-      OBJPROP_YDISTANCE, 220
+      OBJPROP_YDISTANCE, 210
    );
    ObjectSetInteger(
       0, readiness_name,
@@ -734,7 +833,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, readiness_name,
-      OBJPROP_TEXT, "Readiness : —"
+      OBJPROP_TEXT, "Readiness : â€”"
    );
    ObjectCreate(
       0, readiness_value_name, OBJ_LABEL, 0, 0, 0
@@ -752,7 +851,7 @@ ObjectSetString(
 
    ObjectSetInteger(
       0, readiness_value_name,
-      OBJPROP_YDISTANCE, 220
+      OBJPROP_YDISTANCE, 210
    );
 
    ObjectSetInteger(
@@ -782,7 +881,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, score_name,
-      OBJPROP_YDISTANCE, 235
+      OBJPROP_YDISTANCE, 225
    );
    ObjectSetInteger(
       0, score_name,
@@ -815,7 +914,7 @@ ObjectSetString(
 
    ObjectSetInteger(
       0, bias_score_value_name,
-      OBJPROP_YDISTANCE, 235
+      OBJPROP_YDISTANCE, 225
    );
 
    ObjectSetInteger(
@@ -830,7 +929,45 @@ ObjectSetString(
 
    ObjectSetString(
       0, bias_score_value_name,
-      OBJPROP_TEXT, "—/100"
+      OBJPROP_TEXT, "â€”/100"
+   );
+
+
+   if(
+      !g_bias_canvas.CreateBitmapLabel(
+         0,
+         0,
+         "TDI_BIAS_CANVAS",
+         105,
+         240,
+         120,
+         70,
+         COLOR_FORMAT_XRGB_NOALPHA
+      )
+   )
+   g_bias_canvas.Erase(ColorToARGB(clrRed, 255));
+
+   g_bias_canvas.Erase(clrBlack);
+
+   UpdateBiasSmoothGauge(100);
+
+   {
+      Print("TDI Dashboard: unable to create bias canvas");
+   }
+
+
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_CANVAS",
+      OBJPROP_BACK,
+      false
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_CANVAS",
+      OBJPROP_ZORDER,
+      200
    );
 
       string scenario_title_name = "TDI_SCENARIO_TITLE";
@@ -926,7 +1063,7 @@ ObjectSetString(
 
    ObjectSetString(
       0, scenario_state_value_name,
-      OBJPROP_TEXT, "—"
+      OBJPROP_TEXT, "â€”"
    );
 
    ObjectCreate(
@@ -990,7 +1127,7 @@ ObjectSetString(
 
    ObjectSetString(
       0, scenario_score_value_name,
-      OBJPROP_TEXT, "—/100"
+      OBJPROP_TEXT, "â€”/100"
    );
 
       string confirmation_title_name = "TDI_CONFIRMATION_TITLE";
@@ -1057,7 +1194,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, bias_aligned_name,
-      OBJPROP_TEXT, "Bias aligned      : —"
+      OBJPROP_TEXT, "Bias aligned      : â€”"
    );
    ObjectCreate(
       0, bias_aligned_value_name, OBJ_LABEL, 0, 0, 0
@@ -1117,7 +1254,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, structure_aligned_name,
-      OBJPROP_TEXT, "Structure aligned : —"
+      OBJPROP_TEXT, "Structure aligned : â€”"
    );
    ObjectCreate(
       0, structure_aligned_value_name, OBJ_LABEL, 0, 0, 0
@@ -1177,7 +1314,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, timing_favorable_name,
-      OBJPROP_TEXT, "Timing favorable  : —"
+      OBJPROP_TEXT, "Timing favorable  : â€”"
    );
    ObjectCreate(
       0, timing_favorable_value_name, OBJ_LABEL, 0, 0, 0
@@ -1237,7 +1374,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, momentum_confirmed_name,
-      OBJPROP_TEXT, "Momentum confirmed: —"
+      OBJPROP_TEXT, "Momentum confirmed: â€”"
    );
    ObjectCreate(
       0, momentum_confirmed_value_name, OBJ_LABEL, 0, 0, 0
@@ -1273,10 +1410,15 @@ ObjectSetString(
       OBJPROP_TEXT, "NO"
    );
 
+
    string global_score_title_name = "TDI_GLOBAL_SCORE_TITLE";
    string global_score_value_name = "TDI_GLOBAL_SCORE_VALUE";
    string global_grade_name = "TDI_GLOBAL_GRADE";
 
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_GLOBAL_SCORE",
+      590
+   );
    ObjectCreate(
       0, global_score_title_name, OBJ_LABEL, 0, 0, 0
    );
@@ -1290,7 +1432,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, global_score_title_name,
-      OBJPROP_YDISTANCE, 605
+      OBJPROP_YDISTANCE, 600
    );
    ObjectSetInteger(
       0, global_score_title_name,
@@ -1318,7 +1460,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, global_score_value_name,
-      OBJPROP_YDISTANCE, 605
+      OBJPROP_YDISTANCE, 600
    );
    ObjectSetInteger(
       0, global_score_value_name,
@@ -1330,7 +1472,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, global_score_value_name,
-      OBJPROP_TEXT, "—/100"
+      OBJPROP_TEXT, "â€”/100"
    );
 
    ObjectCreate(
@@ -1346,7 +1488,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, global_grade_name,
-      OBJPROP_YDISTANCE, 630
+      OBJPROP_YDISTANCE, 620
    );
    ObjectSetInteger(
       0, global_grade_name,
@@ -1358,7 +1500,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, global_grade_name,
-      OBJPROP_TEXT, "Grade : —"
+      OBJPROP_TEXT, "Grade : â€”"
    );
 
       string waiting_title_name = "TDI_WAITING_TITLE";
@@ -1377,7 +1519,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_title_name,
-      OBJPROP_YDISTANCE, 660
+      OBJPROP_YDISTANCE, 650
    );
    ObjectSetInteger(
       0, waiting_title_name,
@@ -1405,7 +1547,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_name,
-      OBJPROP_YDISTANCE, 685
+      OBJPROP_YDISTANCE, 672
    );
    ObjectSetInteger(
       0, waiting_value_name,
@@ -1430,7 +1572,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
-      OBJPROP_YDISTANCE, 705
+      OBJPROP_YDISTANCE, 690
    );
    ObjectSetInteger(
       0, waiting_value_2_name,
@@ -1444,7 +1586,7 @@ ObjectSetString(
       0,
       waiting_value_2_name,
       OBJPROP_TEXT,
-      "—"
+      "â€”"
    );
 
     string waiting_value_3_name = "TDI_WAITING_VALUE_3";
@@ -1462,7 +1604,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
-      OBJPROP_YDISTANCE, 725
+      OBJPROP_YDISTANCE, 708
    );
    ObjectSetInteger(
       0, waiting_value_3_name,
@@ -1476,11 +1618,11 @@ ObjectSetString(
       0,
       waiting_value_3_name,
       OBJPROP_TEXT,
-      "—"
+      "â€”"
    );
    ObjectSetString(
       0, waiting_value_name,
-      OBJPROP_TEXT, "—"
+      OBJPROP_TEXT, "â€”"
    );
 
     string transition_title_name = "TDI_TRANSITION_TITLE";
@@ -1499,7 +1641,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, transition_title_name,
-      OBJPROP_YDISTANCE, 765
+      OBJPROP_YDISTANCE, 745
    );
    ObjectSetInteger(
       0, transition_title_name,
@@ -1527,7 +1669,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, transition_value_name,
-      OBJPROP_YDISTANCE, 790
+      OBJPROP_YDISTANCE, 765
    );
    ObjectSetInteger(
       0, transition_value_name,
@@ -1539,7 +1681,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, transition_value_name,
-      OBJPROP_TEXT, "—"
+      OBJPROP_TEXT, "â€”"
    );
 
       string alert_title_name = "TDI_ALERT_TITLE";
@@ -1559,7 +1701,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 830
+      OBJPROP_YDISTANCE, 800
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -1587,7 +1729,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 855
+      OBJPROP_YDISTANCE, 822
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -1599,7 +1741,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, alert_level_name,
-      OBJPROP_TEXT, "Level : —"
+      OBJPROP_TEXT, "Level : â€”"
    );
 
    ObjectCreate(
@@ -1615,7 +1757,7 @@ ObjectSetString(
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 880
+      OBJPROP_YDISTANCE, 842
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -1627,7 +1769,7 @@ ObjectSetString(
    );
    ObjectSetString(
       0, alert_active_name,
-      OBJPROP_TEXT, "Active : —"
+      OBJPROP_TEXT, "Active : â€”"
    );
 
    ChartRedraw();
@@ -1755,7 +1897,7 @@ string JsonGetNullableString(
    );
 
    if(key_pos < 0)
-      return("—");
+      return("-");
 
    int null_pos = StringFind(
       json,
@@ -1773,7 +1915,7 @@ string JsonGetNullableString(
       null_pos >= 0
       && (quote_pos < 0 || null_pos < quote_pos)
    )
-      return("—");
+      return("-");
 
    return(
       JsonGetString(
@@ -1837,7 +1979,7 @@ string JsonGetBool(
    );
 
    if(key_pos < 0)
-      return("—");
+      return("-");
 
    int start = key_pos + StringLen(search);
 
@@ -1859,7 +2001,7 @@ string JsonGetBool(
    )
       return("False");
 
-   return("—");
+   return("-");
 }
 
 datetime IsoUtcToDatetime(
@@ -1978,7 +2120,70 @@ string JsonGetArrayStringAt(
 }
 
 void OnTimer()
+
 {
+   int current_x = (int)ObjectGetInteger(
+      0,
+      "TDI_PANEL_BACKGROUND",
+      OBJPROP_XDISTANCE
+   );
+
+   int current_y = (int)ObjectGetInteger(
+      0,
+      "TDI_PANEL_BACKGROUND",
+      OBJPROP_YDISTANCE
+   );
+
+   int dx = current_x - g_panel_x;
+   int dy = current_y - g_panel_y;
+
+   if(dx != 0 || dy != 0)
+   {
+      int total_objects = ObjectsTotal(0, -1, -1);
+
+      for(int i = 0; i < total_objects; i++)
+      {
+         string object_name = ObjectName(0, i, -1, -1);
+
+         if(
+            StringFind(object_name, "TDI_") == 0 &&
+            object_name != "TDI_PANEL_BACKGROUND"
+         )
+         {
+            int object_x = (int)ObjectGetInteger(
+               0,
+               object_name,
+               OBJPROP_XDISTANCE
+            );
+
+            int object_y = (int)ObjectGetInteger(
+               0,
+               object_name,
+               OBJPROP_YDISTANCE
+            );
+
+            ObjectSetInteger(
+               0,
+               object_name,
+               OBJPROP_XDISTANCE,
+               object_x + dx
+            );
+
+            ObjectSetInteger(
+               0,
+               object_name,
+               OBJPROP_YDISTANCE,
+               object_y + dy
+            );
+         }
+      }
+
+      g_panel_x = current_x;
+      g_panel_y = current_y;
+
+      ChartRedraw();
+   }
+
    string file_name = _Symbol + ".json";
 
    int handle = FileOpen(
@@ -2040,6 +2245,8 @@ void OnTimer()
       content,
       "scenario"
    );
+
+   UpdateBiasSmoothGauge(bias_score);
 
    int scenario_score = JsonGetInt(
       content,
@@ -2298,6 +2505,20 @@ void OnTimer()
       IntegerToString(bias_score) + "/100"
    );
 
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_SCORE",
+      OBJPROP_ZORDER,
+      300
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_SCORE_VALUE",
+      OBJPROP_ZORDER,
+      300
+   );
+
    UpdateBiasGauge(bias_score);
 
    ObjectSetString(
@@ -2305,6 +2526,13 @@ void OnTimer()
       "TDI_BIAS_GAUGE_VALUE",
       OBJPROP_TEXT,
       IntegerToString(bias_score) + "/100"
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_BIAS_GAUGE_VALUE",
+      OBJPROP_ZORDER,
+      300
    );
 
    ObjectSetString(

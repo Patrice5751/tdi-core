@@ -154,7 +154,7 @@ void UpdateBiasSmoothGauge(int score)
 
    g_bias_canvas.Erase(clrBlack);
 
-   // Fond gris plus Ã©pais
+   // Fond gris plus epais
    for(int t = 0; t < 6; t++)
    {
       g_bias_canvas.Arc(
@@ -773,7 +773,7 @@ int OnInit()
    );
    ObjectSetString(
       0, convergence_name,
-      OBJPROP_TEXT, "Convergence : â€”"
+      OBJPROP_TEXT, "Convergence : -"
    );
    ObjectCreate(
       0, convergence_value_name, OBJ_LABEL, 0, 0, 0
@@ -833,7 +833,7 @@ int OnInit()
    );
    ObjectSetString(
       0, readiness_name,
-      OBJPROP_TEXT, "Readiness : â€”"
+      OBJPROP_TEXT, "Readiness : -"
    );
    ObjectCreate(
       0, readiness_value_name, OBJ_LABEL, 0, 0, 0
@@ -929,7 +929,7 @@ int OnInit()
 
    ObjectSetString(
       0, bias_score_value_name,
-      OBJPROP_TEXT, "â€”/100"
+      OBJPROP_TEXT, "-/100"
    );
 
 
@@ -1063,7 +1063,7 @@ int OnInit()
 
    ObjectSetString(
       0, scenario_state_value_name,
-      OBJPROP_TEXT, "â€”"
+      OBJPROP_TEXT, "-"
    );
 
    ObjectCreate(
@@ -1127,7 +1127,7 @@ int OnInit()
 
    ObjectSetString(
       0, scenario_score_value_name,
-      OBJPROP_TEXT, "â€”/100"
+      OBJPROP_TEXT, "-/100"
    );
 
       string confirmation_title_name = "TDI_CONFIRMATION_TITLE";
@@ -1194,7 +1194,7 @@ int OnInit()
    );
    ObjectSetString(
       0, bias_aligned_name,
-      OBJPROP_TEXT, "Bias aligned      : â€”"
+      OBJPROP_TEXT, "Bias aligned      : -"
    );
    ObjectCreate(
       0, bias_aligned_value_name, OBJ_LABEL, 0, 0, 0
@@ -1254,7 +1254,7 @@ int OnInit()
    );
    ObjectSetString(
       0, structure_aligned_name,
-      OBJPROP_TEXT, "Structure aligned : â€”"
+      OBJPROP_TEXT, "Structure aligned : -"
    );
    ObjectCreate(
       0, structure_aligned_value_name, OBJ_LABEL, 0, 0, 0
@@ -1314,7 +1314,7 @@ int OnInit()
    );
    ObjectSetString(
       0, timing_favorable_name,
-      OBJPROP_TEXT, "Timing favorable  : â€”"
+      OBJPROP_TEXT, "Timing favorable  : -"
    );
    ObjectCreate(
       0, timing_favorable_value_name, OBJ_LABEL, 0, 0, 0
@@ -1374,7 +1374,7 @@ int OnInit()
    );
    ObjectSetString(
       0, momentum_confirmed_name,
-      OBJPROP_TEXT, "Momentum confirmed: â€”"
+      OBJPROP_TEXT, "Momentum confirmed: -"
    );
    ObjectCreate(
       0, momentum_confirmed_value_name, OBJ_LABEL, 0, 0, 0
@@ -1472,7 +1472,7 @@ int OnInit()
    );
    ObjectSetString(
       0, global_score_value_name,
-      OBJPROP_TEXT, "â€”/100"
+      OBJPROP_TEXT, "-/100"
    );
 
    ObjectCreate(
@@ -1500,7 +1500,7 @@ int OnInit()
    );
    ObjectSetString(
       0, global_grade_name,
-      OBJPROP_TEXT, "Grade : â€”"
+      OBJPROP_TEXT, "Grade : -"
    );
 
       string waiting_title_name = "TDI_WAITING_TITLE";
@@ -1586,7 +1586,7 @@ int OnInit()
       0,
       waiting_value_2_name,
       OBJPROP_TEXT,
-      "â€”"
+      "-"
    );
 
     string waiting_value_3_name = "TDI_WAITING_VALUE_3";
@@ -1618,11 +1618,11 @@ int OnInit()
       0,
       waiting_value_3_name,
       OBJPROP_TEXT,
-      "â€”"
+      "-"
    );
    ObjectSetString(
       0, waiting_value_name,
-      OBJPROP_TEXT, "â€”"
+      OBJPROP_TEXT, "-"
    );
 
     string transition_title_name = "TDI_TRANSITION_TITLE";
@@ -1681,7 +1681,7 @@ int OnInit()
    );
    ObjectSetString(
       0, transition_value_name,
-      OBJPROP_TEXT, "â€”"
+      OBJPROP_TEXT, "-"
    );
 
       string alert_title_name = "TDI_ALERT_TITLE";
@@ -1741,7 +1741,7 @@ int OnInit()
    );
    ObjectSetString(
       0, alert_level_name,
-      OBJPROP_TEXT, "Level : â€”"
+      OBJPROP_TEXT, "Level : -"
    );
 
    ObjectCreate(
@@ -1769,7 +1769,7 @@ int OnInit()
    );
    ObjectSetString(
       0, alert_active_name,
-      OBJPROP_TEXT, "Active : â€”"
+      OBJPROP_TEXT, "Active : -"
    );
 
    ChartRedraw();

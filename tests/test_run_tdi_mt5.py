@@ -89,7 +89,9 @@ def test_main_analyzes_all_requested_symbols(monkeypatch):
 def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
     primary_result = object()
     confirmation_result = object()
+    intermarket_analysis = object()
     intermarket_calls = []
+    intermarket_write_calls = []
 
     class FakeAdapter:
         def __init__(self, mt5):
@@ -132,7 +134,7 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         intermarket_calls.append(
             (primary, confirmation)
         )
-        return object()
+        return intermarket_analysis
 
     def fake_print_intermarket_analysis(
         analysis,
@@ -140,6 +142,23 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         confirmation_symbol,
     ):
         pass
+
+    class FakeJsonIntermarketStateWriter:
+        @staticmethod
+        def write(
+            analysis,
+            primary_symbol,
+            confirmation_symbol,
+            path,
+        ):
+            intermarket_write_calls.append(
+                (
+                    analysis,
+                    primary_symbol,
+                    confirmation_symbol,
+                    path,
+                )
+            )
 
     monkeypatch.setattr(
         run_tdi_mt5,
@@ -171,11 +190,15 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         "analyze_intermarket",
         fake_analyze_intermarket,
     )
-
     monkeypatch.setattr(
         run_tdi_mt5,
         "print_intermarket_analysis",
         fake_print_intermarket_analysis,
+    )
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "JsonIntermarketStateWriter",
+        FakeJsonIntermarketStateWriter,
     )
 
     monkeypatch.setattr(
@@ -204,6 +227,18 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         (
             primary_result,
             confirmation_result,
+        )
+    ]
+
+    assert intermarket_write_calls == [
+        (
+            intermarket_analysis,
+            "XAUUSD",
+            "XAGUSD",
+            (
+                run_tdi_mt5.DASHBOARD_STATE_DIR
+                / "intermarket_XAUUSD_XAGUSD.json"
+            ),
         )
     ]
 

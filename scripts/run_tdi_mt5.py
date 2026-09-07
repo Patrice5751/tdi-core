@@ -18,6 +18,9 @@ from tdi.graphical.bias_readiness_engine import (
 from tdi.graphical.dashboard_state_builder import (
     DashboardStateBuilder,
 )
+from tdi.graphical.json_intermarket_state_writer import (
+    JsonIntermarketStateWriter,
+)
 from tdi.graphical.json_alert_state_repository import (
     JsonAlertStateRepository,
 )
@@ -574,6 +577,16 @@ def main():
                 intermarket_analysis = analyze_intermarket(
                     primary=cycle_results["XAUUSD"],
                     confirmation=cycle_results["XAGUSD"],
+                )
+
+                JsonIntermarketStateWriter.write(
+                    analysis=intermarket_analysis,
+                    primary_symbol="XAUUSD",
+                    confirmation_symbol="XAGUSD",
+                    path=(
+                        args.dashboard_dir
+                        / "intermarket_XAUUSD_XAGUSD.json"
+                    ),
                 )
 
                 print_intermarket_analysis(

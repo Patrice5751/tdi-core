@@ -1701,7 +1701,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_title_name,
-      OBJPROP_YDISTANCE, 800
+      OBJPROP_YDISTANCE, 785
    );
    ObjectSetInteger(
       0, alert_title_name,
@@ -1729,7 +1729,7 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_level_name,
-      OBJPROP_YDISTANCE, 822
+      OBJPROP_YDISTANCE, 807
    );
    ObjectSetInteger(
       0, alert_level_name,
@@ -1753,11 +1753,11 @@ int OnInit()
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_XDISTANCE, 25
+      OBJPROP_XDISTANCE, 155
    );
    ObjectSetInteger(
       0, alert_active_name,
-      OBJPROP_YDISTANCE, 842
+      OBJPROP_YDISTANCE, 807
    );
    ObjectSetInteger(
       0, alert_active_name,
@@ -1770,6 +1770,65 @@ int OnInit()
    ObjectSetString(
       0, alert_active_name,
       OBJPROP_TEXT, "Active : -"
+   );
+
+   CreateSectionSeparator(
+      "TDI_SEPARATOR_INTERMARKET",
+      827
+   );
+
+   string intermarket_name =
+      "TDI_INTERMARKET";
+
+   ObjectCreate(
+      0,
+      intermarket_name,
+      OBJ_LABEL,
+      0,
+      0,
+      0
+   );
+
+   ObjectSetInteger(
+      0,
+      intermarket_name,
+      OBJPROP_CORNER,
+      CORNER_LEFT_UPPER
+   );
+
+   ObjectSetInteger(
+      0,
+      intermarket_name,
+      OBJPROP_XDISTANCE,
+      25
+   );
+
+   ObjectSetInteger(
+      0,
+      intermarket_name,
+      OBJPROP_YDISTANCE,
+      837
+   );
+
+   ObjectSetInteger(
+      0,
+      intermarket_name,
+      OBJPROP_COLOR,
+      clrSilver
+   );
+
+   ObjectSetInteger(
+      0,
+      intermarket_name,
+      OBJPROP_FONTSIZE,
+      10
+   );
+
+   ObjectSetString(
+      0,
+      intermarket_name,
+      OBJPROP_TEXT,
+      "INTERMARKET   -   -/100"
    );
 
    ChartRedraw();
@@ -2119,6 +2178,88 @@ string JsonGetArrayStringAt(
    return("");
 }
 
+void UpdateIntermarketDisplay()
+{
+   string object_name = "TDI_INTERMARKET";
+
+   ObjectSetString(
+      0,
+      object_name,
+      OBJPROP_TEXT,
+      "INTERMARKET   -   -/100"
+   );
+
+   ObjectSetInteger(
+      0,
+      object_name,
+      OBJPROP_COLOR,
+      clrSilver
+   );
+
+   string file_name =
+      "intermarket_XAUUSD_XAGUSD.json";
+
+   int handle = FileOpen(
+      file_name,
+      FILE_READ | FILE_TXT | FILE_ANSI
+   );
+
+   if(handle == INVALID_HANDLE)
+      return;
+
+   string content = "";
+
+   while(!FileIsEnding(handle))
+   {
+      content += FileReadString(handle);
+   }
+
+   FileClose(handle);
+
+   string state = JsonGetString(
+      content,
+      "state"
+   );
+
+   int score = JsonGetInt(
+      content,
+      "score"
+   );
+
+   if(state == "")
+      return;
+
+   string state_upper = state;
+   StringToUpper(state_upper);
+
+   ObjectSetString(
+      0,
+      object_name,
+      OBJPROP_TEXT,
+      "INTERMARKET   "
+      + state_upper
+      + "   "
+      + IntegerToString(score)
+      + "/100"
+   );
+
+   color state_color = clrSilver;
+
+   if(state_upper == "CONFIRMED")
+      state_color = clrLimeGreen;
+   else if(state_upper == "MIXED")
+      state_color = clrYellow;
+   else if(state_upper == "DIVERGENT")
+      state_color = clrTomato;
+
+   ObjectSetInteger(
+      0,
+      object_name,
+      OBJPROP_COLOR,
+      state_color
+   );
+}
+
 void OnTimer()
 
 {
@@ -2183,6 +2324,8 @@ void OnTimer()
 
       ChartRedraw();
    }
+
+   UpdateIntermarketDisplay();
 
    string file_name = _Symbol + ".json";
 

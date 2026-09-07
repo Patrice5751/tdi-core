@@ -142,47 +142,6 @@ def notify_new_alert(
             f"{type(exc).__name__}: {exc}"
         )
 
-def test_analyze_intermarket_confirms_aligned_h4_directions():
-    from tdi.graphical.market_direction import MarketDirection
-
-    primary = type(
-        "Result",
-        (),
-        {
-            "h4": type(
-                "H4",
-                (),
-                {
-                    "direction": MarketDirection.BULLISH,
-                    "direction_confidence": 80,
-                },
-            )()
-        },
-    )()
-
-    confirmation = type(
-        "Result",
-        (),
-        {
-            "h4": type(
-                "H4",
-                (),
-                {
-                    "direction": MarketDirection.BULLISH,
-                    "direction_confidence": 80,
-                },
-            )()
-        },
-    )()
-
-    result = run_tdi_mt5.analyze_intermarket(
-        primary=primary,
-        confirmation=confirmation,
-    )
-
-    assert result.state.value == "Confirmed"
-    assert result.score == 100
-
 def analyze_intermarket(
     primary,
     confirmation,

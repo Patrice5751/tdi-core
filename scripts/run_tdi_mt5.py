@@ -519,15 +519,19 @@ def main():
         notification_filter = AlertNotificationFilter()
 
         while True:
+            cycle_results = {}
+
             for symbol in args.symbols:
                 try:
-                    analyze_symbol(
+                    result = analyze_symbol(
                         symbol=symbol,
                         multi_pipeline=multi_pipeline,
                         momentum_pipeline=momentum_pipeline,
                         notification_filter=notification_filter,
                         dashboard_dir=args.dashboard_dir,
                     )
+                    if result is not None:
+                        cycle_results[symbol] = result
 
                 except Exception as exc:
                     print()
@@ -540,6 +544,14 @@ def main():
                         f"{type(exc).__name__}: {exc}"
                     )
 
+            if (
+                "XAUUSD" in cycle_results
+                and "XAGUSD" in cycle_results
+            ):
+                analyze_intermarket(
+                    primary=cycle_results["XAUUSD"],
+                    confirmation=cycle_results["XAGUSD"],
+            )
             if not args.monitor:
                 break
 

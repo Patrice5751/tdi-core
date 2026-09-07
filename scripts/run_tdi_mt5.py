@@ -166,6 +166,29 @@ def analyze_intermarket(
         ),
     )
 
+def print_intermarket_analysis(
+    analysis,
+    primary_symbol: str,
+    confirmation_symbol: str,
+):
+    print()
+    print("=" * 60)
+    print(
+        f"INTERMARKET — "
+        f"{primary_symbol} / {confirmation_symbol}"
+    )
+    print("=" * 60)
+    print(f"State             : {analysis.state.value}")
+    print(
+        f"{primary_symbol} H4         : "
+        f"{analysis.primary_trend.value}"
+    )
+    print(
+        f"{confirmation_symbol} H4         : "
+        f"{analysis.confirmation_trend.value}"
+    )
+    print(f"ICS               : {analysis.score}/100")
+
 def analyze_symbol(
     symbol: str,
     multi_pipeline: MT5MultiTimeframePipeline,
@@ -548,10 +571,16 @@ def main():
                 "XAUUSD" in cycle_results
                 and "XAGUSD" in cycle_results
             ):
-                analyze_intermarket(
+                intermarket_analysis = analyze_intermarket(
                     primary=cycle_results["XAUUSD"],
                     confirmation=cycle_results["XAGUSD"],
-            )
+                )
+
+                print_intermarket_analysis(
+                    analysis=intermarket_analysis,
+                    primary_symbol="XAUUSD",
+                    confirmation_symbol="XAGUSD",
+                )
             if not args.monitor:
                 break
 

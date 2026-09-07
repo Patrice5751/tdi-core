@@ -134,6 +134,13 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         )
         return object()
 
+    def fake_print_intermarket_analysis(
+        analysis,
+        primary_symbol,
+        confirmation_symbol,
+    ):
+        pass
+
     monkeypatch.setattr(
         run_tdi_mt5,
         "MT5MarketDataAdapter",
@@ -164,6 +171,13 @@ def test_main_analyzes_xauusd_xagusd_intermarket(monkeypatch):
         "analyze_intermarket",
         fake_analyze_intermarket,
     )
+
+    monkeypatch.setattr(
+        run_tdi_mt5,
+        "print_intermarket_analysis",
+        fake_print_intermarket_analysis,
+    )
+
     monkeypatch.setattr(
         run_tdi_mt5,
         "parse_args",
@@ -1301,3 +1315,32 @@ def test_analyze_intermarket_confirms_aligned_h4_directions():
 
     assert result.state.value == "Confirmed"
     assert result.score == 100
+
+def test_print_intermarket_analysis_exposes_ics(capsys):
+    from tdi.analysis.intermarket_analysis import (
+        IntermarketAnalysis,
+        IntermarketState,
+    )
+    from tdi.analysis.trend_analysis import Trend
+
+    analysis = IntermarketAnalysis(
+        state=IntermarketState.CONFIRMED,
+        score=100,
+        primary_trend=Trend.BULLISH,
+        confirmation_trend=Trend.BULLISH,
+        reason="Directional trends aligned",
+    )
+
+    run_tdi_mt5.print_intermarket_analysis(
+        analysis=analysis,
+        primary_symbol="XAUUSD",
+        confirmation_symbol="XAGUSD",
+    )
+
+    output = capsys.readouterr().out
+
+    assert "INTERMARKET — XAUUSD / XAGUSD" in output
+    assert "State             : Confirmed" in output
+    assert "XAUUSD H4         : Bullish" in output
+    assert "XAGUSD H4         : Bullish" in output
+    assert "ICS               : 100/100" in output

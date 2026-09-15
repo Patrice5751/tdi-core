@@ -117,7 +117,7 @@ def test_sell_decision_matches_ready_wait_plan():
     assert plan.conditions == []
 
 
-def test_wait_for_structure_matches_non_ready_plan():
+def test_strong_continuation_matches_ready_plan():
     result = MT5MultiTimeframeResult(
         h4=make_context(
             MarketDirection.TRANSITION,
@@ -147,9 +147,9 @@ def test_wait_for_structure_matches_non_ready_plan():
         h1_momentum=h1_momentum,
     )
 
-    assert decision.decision == MultiTimeframeDecision.WAIT
-    assert plan.ready is False
-    assert len(plan.conditions) > 0
+    assert decision.decision == MultiTimeframeDecision.BUY
+    assert plan.ready is True
+    assert plan.conditions == []
 
 
 def test_wait_for_missing_momentum_matches_non_ready_plan():

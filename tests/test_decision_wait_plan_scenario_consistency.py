@@ -150,7 +150,7 @@ def test_sell_flow_ends_ready():
     assert scenario.target_side == "SELL"
 
 
-def test_wait_for_structure_never_ends_ready():
+def test_strong_continuation_ends_ready():
     result = MT5MultiTimeframeResult(
         h4=make_context(
             MarketDirection.TRANSITION,
@@ -186,9 +186,9 @@ def test_wait_for_structure_never_ends_ready():
         bias_readiness=make_readiness("BUY"),
     )
 
-    assert decision.decision == MultiTimeframeDecision.WAIT
-    assert plan.ready is False
-    assert scenario.state != ScenarioState.READY
+    assert decision.decision == MultiTimeframeDecision.BUY
+    assert plan.ready is True
+    assert scenario.state == ScenarioState.READY
 
 
 def test_wait_for_missing_momentum_never_ends_ready():
@@ -227,4 +227,3 @@ def test_wait_for_missing_momentum_never_ends_ready():
     assert decision.decision == MultiTimeframeDecision.WAIT
     assert plan.ready is False
     assert scenario.state != ScenarioState.READY
-    

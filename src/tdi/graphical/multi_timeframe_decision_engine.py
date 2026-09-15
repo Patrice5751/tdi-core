@@ -17,6 +17,7 @@ from tdi.graphical.multi_timeframe_decision_analysis import (
 )
 from tdi.graphical.market_direction import MarketDirection
 
+
 class MultiTimeframeDecisionEngine:
     def decide(
         self,
@@ -94,8 +95,8 @@ class MultiTimeframeDecisionEngine:
                     timing_favorable=timing_favorable,
                     confidence=confidence,
                     reason=(
-                        f"Biais {preferred_side} alignÃ© H4/H1, "
-                        "mais structure opposÃ©e sur au moins un timeframe."
+                        f"Biais {preferred_side} aligné H4/H1, "
+                        "mais structure opposée sur au moins un timeframe."
                     ),
                     momentum_confirmed=momentum_confirmed,
                 )
@@ -120,7 +121,7 @@ class MultiTimeframeDecisionEngine:
                     confidence=confidence,
                     reason=(
                         f"Continuation {preferred_side}: biais H4/H1 fort, "
-                        "momentum confirmÃ© et structure non opposÃ©e."
+                        "momentum confirmé et structure non opposée."
                     ),
                     momentum_confirmed=True,
                 )
@@ -133,8 +134,8 @@ class MultiTimeframeDecisionEngine:
                 timing_favorable=timing_favorable,
                 confidence=confidence,
                 reason=(
-                    f"Biais {preferred_side} alignÃ© H4/H1, "
-                    "mais structure H4/H1 non confirmÃ©e."
+                    f"Biais {preferred_side} aligné H4/H1, "
+                    "mais structure H4/H1 non confirmée."
                 ),
                 momentum_confirmed=momentum_confirmed,
             )
@@ -275,5 +276,3 @@ class MultiTimeframeDecisionEngine:
             result.h4.direction == opposite_direction
             or result.h1.direction == opposite_direction
         )
-
-    

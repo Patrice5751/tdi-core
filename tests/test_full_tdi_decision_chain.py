@@ -151,7 +151,7 @@ def test_full_buy_chain_triggers_high_alert():
     assert "BUY" in alert.message
 
 
-def test_incomplete_buy_chain_never_triggers_high_alert():
+def test_strong_buy_continuation_triggers_high_alert():
     result = MT5MultiTimeframeResult(
         h4=make_context(
             MarketDirection.TRANSITION,
@@ -206,22 +206,22 @@ def test_incomplete_buy_chain_never_triggers_high_alert():
 
     assert (
         decision.decision
-        == MultiTimeframeDecision.WAIT
+        == MultiTimeframeDecision.BUY
     )
 
-    assert wait_plan.ready is False
+    assert wait_plan.ready is True
 
     assert (
         scenario.state
-        != ScenarioState.READY
+        == ScenarioState.READY
     )
 
     assert (
         transition.transition
-        != ScenarioTransition.TRIGGERED
+        == ScenarioTransition.TRIGGERED
     )
 
-    assert alert.level != AlertLevel.HIGH
+    assert alert.level == AlertLevel.HIGH
 
 def test_full_sell_chain_triggers_high_alert():
     result = MT5MultiTimeframeResult(

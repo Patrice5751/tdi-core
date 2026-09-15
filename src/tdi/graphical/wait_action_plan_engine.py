@@ -10,6 +10,12 @@ from tdi.graphical.market_bias_engine import (
     MarketBiasEngine,
 )
 from tdi.graphical.market_direction import MarketDirection
+from tdi.graphical.multi_timeframe_decision import (
+    MultiTimeframeDecision,
+)
+from tdi.graphical.multi_timeframe_decision_engine import (
+    MultiTimeframeDecisionEngine,
+)
 from tdi.graphical.wait_action_plan import WaitActionPlan
 from tdi.graphical.wait_condition import WaitCondition
 
@@ -72,6 +78,18 @@ class WaitActionPlanEngine:
             h1_momentum=h1_momentum,
             conditions=conditions,
         )
+
+        decision = MultiTimeframeDecisionEngine().decide(
+            result=result,
+            h4_momentum=h4_momentum,
+            h1_momentum=h1_momentum,
+        )
+
+        if decision.decision in {
+            MultiTimeframeDecision.BUY,
+            MultiTimeframeDecision.SELL,
+        }:
+            conditions.clear()
 
         ready = len(conditions) == 0
 

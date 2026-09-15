@@ -245,3 +245,33 @@ def test_dashboard_state_builder_identifies_opposed_h1_structure():
 
     assert state.decision_trigger == "H1 structure opposes SELL"
     assert state.scenario_display == "Building"
+
+
+def test_dashboard_state_builder_accepts_result_test_double():
+    decision = SimpleNamespace(
+        decision=value("Wait"),
+        preferred_side="SELL",
+        bias_aligned=True,
+        structure_aligned=False,
+        timing_favorable=True,
+        momentum_confirmed=True,
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="GBPUSD",
+        decision=decision,
+        bias_readiness=SimpleNamespace(
+            convergence=value("Aligned"),
+            readiness=value("High"),
+            score=100,
+        ),
+        scenario=SimpleNamespace(
+            target_side="SELL",
+            state=value("Building"),
+            score=85,
+        ),
+        wait_plan=SimpleNamespace(conditions=[]),
+        result=object(),
+    )
+
+    assert state.decision_trigger == "H4/H1 structure not confirmed"

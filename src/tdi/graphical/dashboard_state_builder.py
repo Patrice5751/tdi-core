@@ -190,7 +190,11 @@ class DashboardStateBuilder:
             return "H4/H1 bias alignment lost"
 
         side = decision.preferred_side
-        if result is not None and side in {"BUY", "SELL"}:
+        if (
+            hasattr(result, "h4")
+            and hasattr(result, "h1")
+            and side in {"BUY", "SELL"}
+        ):
             opposite = (
                 MarketDirection.BEARISH
                 if side == "BUY"
@@ -245,7 +249,10 @@ class DashboardStateBuilder:
 
     @staticmethod
     def _timing_trigger(result, side: str | None) -> str | None:
-        if result is None:
+        if not (
+            hasattr(result, "h4")
+            and hasattr(result, "h1")
+        ):
             return None
 
         for timeframe, context in (

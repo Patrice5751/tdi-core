@@ -2408,6 +2408,23 @@ void OnTimer()
       "h1_momentum_confidence"
    );
 
+   string h4_momentum_short = "?";
+   string h1_momentum_short = "?";
+
+   if(h4_momentum == "Bullish")
+      h4_momentum_short = "B";
+   else if(h4_momentum == "Bearish")
+      h4_momentum_short = "S";
+   else if(h4_momentum == "Neutral")
+      h4_momentum_short = "N";
+
+   if(h1_momentum == "Bullish")
+      h1_momentum_short = "B";
+   else if(h1_momentum == "Bearish")
+      h1_momentum_short = "S";
+   else if(h1_momentum == "Neutral")
+      h1_momentum_short = "N";
+
       string bias_convergence = JsonGetString(
       content,
       "bias_convergence"
@@ -2833,10 +2850,10 @@ void OnTimer()
       0,
       "TDI_CONFIRMATION_MOMENTUM_VALUE",
       OBJPROP_TEXT,
-      h4_momentum + " "
+      h4_momentum_short
       + IntegerToString(h4_momentum_confidence)
       + " / "
-      + h1_momentum + " "
+      + h1_momentum_short
       + IntegerToString(h1_momentum_confidence)
    );
 

@@ -264,14 +264,28 @@ int OnInit()
       0,
       panel_name,
       OBJPROP_BGCOLOR,
-      clrBlack
+      C'8,12,20'
    );
 
    ObjectSetInteger(
       0,
       panel_name,
       OBJPROP_BORDER_COLOR,
-      clrDimGray
+      clrSilver
+   );
+
+   ObjectSetInteger(
+      0,
+      panel_name,
+      OBJPROP_BORDER_TYPE,
+      BORDER_FLAT
+   );
+
+   ObjectSetInteger(
+      0,
+      panel_name,
+      OBJPROP_WIDTH,
+      1
    );
 
    ObjectSetInteger(

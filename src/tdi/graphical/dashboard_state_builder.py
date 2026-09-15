@@ -11,6 +11,8 @@ class DashboardStateBuilder:
         bias_readiness,
         scenario,
         wait_plan,
+        h4_momentum=None,
+        h1_momentum=None,
         global_score=None,
         transition=None,
         alert=None,
@@ -60,6 +62,33 @@ class DashboardStateBuilder:
         global_location_score = (
             0 if global_score is None else global_score.location_score
         )
+
+        h4_momentum_value = DashboardStateBuilder._momentum_value(
+            h4_momentum
+        )
+        h1_momentum_value = DashboardStateBuilder._momentum_value(
+            h1_momentum
+        )
+        h4_momentum_confidence = getattr(
+            h4_momentum,
+            "confidence",
+            0,
+        )
+        h1_momentum_confidence = getattr(
+            h1_momentum,
+            "confidence",
+            0,
+        )
+
+        opportunity, decisive_condition = (
+            DashboardStateBuilder._opportunity(
+                decision=decision,
+                bias_readiness=bias_readiness,
+                h4_momentum=h4_momentum_value,
+                h1_momentum=h1_momentum_value,
+            )
+        )
+
         return DashboardState(
             symbol=symbol,
             decision=decision.decision.value,
@@ -78,6 +107,12 @@ class DashboardStateBuilder:
             transition=transition_value,
             alert_level=alert_level,
             alert_active=alert_active,
+            opportunity=opportunity,
+            decisive_condition=decisive_condition,
+            h4_momentum=h4_momentum_value,
+            h4_momentum_confidence=h4_momentum_confidence,
+            h1_momentum=h1_momentum_value,
+            h1_momentum_confidence=h1_momentum_confidence,
             global_score=global_score_value,
             global_grade=global_grade_value,
             global_bias_score=global_bias_score,
@@ -85,4 +120,36 @@ class DashboardStateBuilder:
             global_momentum_score=global_momentum_score,
             global_location_score=global_location_score,
             updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+
+    @staticmethod
+    def _momentum_value(momentum) -> str:
+        value = getattr(momentum, "momentum", None)
+        return getattr(value, "value", "Unavailable")
+
+    @staticmethod
+    def _opportunity(
+        decision,
+        bias_readiness,
+        h4_momentum: str,
+        h1_momentum: str,
+    ) -> tuple[str, str | None]:
+        side = decision.preferred_side
+
+        if (
+            decision.decision.value != "Wait"
+            or side not in {"BUY", "SELL"}
+            or bias_readiness.readiness.value != "High"
+            or not decision.timing_favorable
+        ):
+            return "None", None
+
+        expected = "Bullish" if side == "BUY" else "Bearish"
+
+        if h4_momentum != expected or h1_momentum != "Neutral":
+            return "None", None
+
+        return (
+            f"{side} WATCH",
+            f"H1 {expected} Momentum Confirmation",
         )

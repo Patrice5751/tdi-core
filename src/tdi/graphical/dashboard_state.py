@@ -26,6 +26,13 @@ class DashboardState:
     alert_level: str | None
     alert_active: bool
 
+    opportunity: str = "None"
+    decisive_condition: str | None = None
+    h4_momentum: str = "Unavailable"
+    h4_momentum_confidence: int = 0
+    h1_momentum: str = "Unavailable"
+    h1_momentum_confidence: int = 0
+
     global_score: int = 0
     global_grade: str = "E"
 

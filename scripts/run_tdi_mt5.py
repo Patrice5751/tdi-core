@@ -328,6 +328,8 @@ def analyze_symbol(
         bias_readiness=bias_readiness,
         scenario=scenario,
         wait_plan=wait_plan,
+        h4_momentum=h4_momentum,
+        h1_momentum=h1_momentum,
         global_score=global_score,
         transition=transition,
         alert=alert,
@@ -401,6 +403,35 @@ def analyze_symbol(
         f"Momentum confirmed: "
         f"{decision.momentum_confirmed}"
     )
+
+    print(
+        f"Momentum H4       : "
+        f"{getattr(getattr(h4_momentum, 'momentum', None), 'value', 'Unavailable')} "
+        f"({getattr(h4_momentum, 'confidence', 0)}/100)"
+    )
+
+    print(
+        f"Momentum H1       : "
+        f"{getattr(getattr(h1_momentum, 'momentum', None), 'value', 'Unavailable')} "
+        f"({getattr(h1_momentum, 'confidence', 0)}/100)"
+    )
+
+    print(
+        f"Opportunity       : "
+        f"{getattr(dashboard_state, 'opportunity', 'None')}"
+    )
+
+    decisive_condition = getattr(
+        dashboard_state,
+        "decisive_condition",
+        None,
+    )
+
+    if decisive_condition is not None:
+        print(
+            f"Decisive condition: "
+            f"{decisive_condition}"
+        )
 
     print(
         f"Scenario          : "

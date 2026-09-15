@@ -118,4 +118,54 @@ def test_dashboard_state_builder_builds_alert_state():
 
     assert state.transition == "Improving"
     assert state.alert_level == "INFO"
-    assert state.alert_active is True 
+    assert state.alert_active is True
+
+
+def test_dashboard_state_builder_marks_sell_watch_opportunity():
+    decision = SimpleNamespace(
+        decision=value("Wait"),
+        preferred_side="SELL",
+        bias_aligned=True,
+        structure_aligned=False,
+        timing_favorable=True,
+        momentum_confirmed=False,
+    )
+    bias_readiness = SimpleNamespace(
+        convergence=value("Aligned"),
+        readiness=value("High"),
+        score=100,
+    )
+    scenario = SimpleNamespace(
+        target_side="SELL",
+        state=value("Building"),
+        score=60,
+    )
+    wait_plan = SimpleNamespace(conditions=[])
+    h4_momentum = SimpleNamespace(
+        momentum=value("Bearish"),
+        confidence=100,
+    )
+    h1_momentum = SimpleNamespace(
+        momentum=value("Neutral"),
+        confidence=40,
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="XAUUSD",
+        decision=decision,
+        bias_readiness=bias_readiness,
+        scenario=scenario,
+        wait_plan=wait_plan,
+        h4_momentum=h4_momentum,
+        h1_momentum=h1_momentum,
+    )
+
+    assert state.decision == "Wait"
+    assert state.opportunity == "SELL WATCH"
+    assert state.decisive_condition == (
+        "H1 Bearish Momentum Confirmation"
+    )
+    assert state.h4_momentum == "Bearish"
+    assert state.h4_momentum_confidence == 100
+    assert state.h1_momentum == "Neutral"
+    assert state.h1_momentum_confidence == 40

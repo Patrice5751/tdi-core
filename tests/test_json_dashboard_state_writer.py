@@ -52,4 +52,6 @@ def test_json_dashboard_state_writer_writes_state(tmp_path):
     assert data["transition"] == "Improving"
     assert data["alert_level"] == "INFO"
     assert data["alert_active"] is True
-    
+    assert data["opportunity"] == "None"
+    assert data["h4_momentum"] == "Unavailable"
+    assert data["h1_momentum"] == "Unavailable"

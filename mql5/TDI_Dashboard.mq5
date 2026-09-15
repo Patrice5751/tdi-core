@@ -2369,6 +2369,31 @@ void OnTimer()
       "target_side"
    );
 
+   string opportunity = JsonGetString(
+      content,
+      "opportunity"
+   );
+
+   string h4_momentum = JsonGetString(
+      content,
+      "h4_momentum"
+   );
+
+   int h4_momentum_confidence = JsonGetInt(
+      content,
+      "h4_momentum_confidence"
+   );
+
+   string h1_momentum = JsonGetString(
+      content,
+      "h1_momentum"
+   );
+
+   int h1_momentum_confidence = JsonGetInt(
+      content,
+      "h1_momentum_confidence"
+   );
+
       string bias_convergence = JsonGetString(
       content,
       "bias_convergence"
@@ -2509,7 +2534,9 @@ void OnTimer()
       "TDI LIVE - "
       + _Symbol
       + "   |   "
-      + decision
+      + (opportunity != "" && opportunity != "None"
+         ? opportunity
+         : decision)
    );
       ObjectSetInteger(
       0,
@@ -2778,7 +2805,7 @@ void OnTimer()
       0,
       "TDI_CONFIRMATION_MOMENTUM",
       OBJPROP_TEXT,
-      "Momentum confirmed"
+      "Momentum H4 / H1"
    );
 
    ObjectSetInteger(
@@ -2792,9 +2819,11 @@ void OnTimer()
       0,
       "TDI_CONFIRMATION_MOMENTUM_VALUE",
       OBJPROP_TEXT,
-      momentum_confirmed == "True"
-      ? "YES"
-      : "NO"
+      h4_momentum + " "
+      + IntegerToString(h4_momentum_confidence)
+      + " / "
+      + h1_momentum + " "
+      + IntegerToString(h1_momentum_confidence)
    );
 
    ObjectSetInteger(

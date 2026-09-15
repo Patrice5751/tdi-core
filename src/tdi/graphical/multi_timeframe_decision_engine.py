@@ -15,7 +15,7 @@ from tdi.graphical.multi_timeframe_decision import (
 from tdi.graphical.multi_timeframe_decision_analysis import (
     MultiTimeframeDecisionAnalysis,
 )
-
+from tdi.graphical.market_direction import MarketDirection
 
 class MultiTimeframeDecisionEngine:
     def decide(
@@ -65,6 +65,11 @@ class MultiTimeframeDecisionEngine:
             preferred_side=preferred_side,
         )
 
+        structure_opposed = self._structure_opposed(
+            result=result,
+            preferred_side=preferred_side,
+        )
+
         if not bias_aligned:
             return MultiTimeframeDecisionAnalysis(
                 decision=MultiTimeframeDecision.WAIT,
@@ -80,6 +85,46 @@ class MultiTimeframeDecisionEngine:
                 momentum_confirmed=False,
             )
         if not result.aligned:
+            if structure_opposed:
+                return MultiTimeframeDecisionAnalysis(
+                    decision=MultiTimeframeDecision.WAIT,
+                    preferred_side=preferred_side,
+                    bias_aligned=True,
+                    structure_aligned=False,
+                    timing_favorable=timing_favorable,
+                    confidence=confidence,
+                    reason=(
+                        f"Biais {preferred_side} alignÃ© H4/H1, "
+                        "mais structure opposÃ©e sur au moins un timeframe."
+                    ),
+                    momentum_confirmed=momentum_confirmed,
+                )
+
+            if (
+                confidence >= 85
+                and timing_favorable
+                and momentum_confirmed
+            ):
+                decision = (
+                    MultiTimeframeDecision.BUY
+                    if preferred_side == "BUY"
+                    else MultiTimeframeDecision.SELL
+                )
+
+                return MultiTimeframeDecisionAnalysis(
+                    decision=decision,
+                    preferred_side=preferred_side,
+                    bias_aligned=True,
+                    structure_aligned=False,
+                    timing_favorable=True,
+                    confidence=confidence,
+                    reason=(
+                        f"Continuation {preferred_side}: biais H4/H1 fort, "
+                        "momentum confirmÃ© et structure non opposÃ©e."
+                    ),
+                    momentum_confirmed=True,
+                )
+
             return MultiTimeframeDecisionAnalysis(
                 decision=MultiTimeframeDecision.WAIT,
                 preferred_side=preferred_side,
@@ -88,8 +133,8 @@ class MultiTimeframeDecisionEngine:
                 timing_favorable=timing_favorable,
                 confidence=confidence,
                 reason=(
-                    f"Biais {preferred_side} aligné H4/H1, "
-                    "mais structure H4/H1 non confirmée."
+                    f"Biais {preferred_side} alignÃ© H4/H1, "
+                    "mais structure H4/H1 non confirmÃ©e."
                 ),
                 momentum_confirmed=momentum_confirmed,
             )
@@ -211,4 +256,24 @@ class MultiTimeframeDecisionEngine:
             return False
 
         return True
+
+    def _structure_opposed(
+        self,
+        result: MT5MultiTimeframeResult,
+        preferred_side: str | None,
+    ) -> bool:
+        if preferred_side is None:
+            return False
+
+        opposite_direction = (
+            MarketDirection.BEARISH
+            if preferred_side == "BUY"
+            else MarketDirection.BULLISH
+        )
+
+        return (
+            result.h4.direction == opposite_direction
+            or result.h1.direction == opposite_direction
+        )
+
     

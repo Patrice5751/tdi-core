@@ -3,6 +3,8 @@ from types import SimpleNamespace
 from tdi.graphical.dashboard_state_builder import (
     DashboardStateBuilder,
 )
+from tdi.graphical.location_type import LocationType
+from tdi.graphical.market_direction import MarketDirection
 
 
 def value(name):
@@ -169,3 +171,77 @@ def test_dashboard_state_builder_marks_sell_watch_opportunity():
     assert state.h4_momentum_confidence == 100
     assert state.h1_momentum == "Neutral"
     assert state.h1_momentum_confidence == 40
+
+
+def test_dashboard_state_builder_marks_early_continuation():
+    decision = SimpleNamespace(
+        decision=value("Sell"),
+        preferred_side="SELL",
+        bias_aligned=True,
+        structure_aligned=False,
+        timing_favorable=True,
+        momentum_confirmed=True,
+    )
+    bias_readiness = SimpleNamespace(
+        convergence=value("Aligned"),
+        readiness=value("High"),
+        score=100,
+    )
+    scenario = SimpleNamespace(
+        target_side="SELL",
+        state=value("Ready"),
+        score=100,
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="GBPUSD",
+        decision=decision,
+        bias_readiness=bias_readiness,
+        scenario=scenario,
+        wait_plan=SimpleNamespace(conditions=[]),
+    )
+
+    assert state.scenario == "Ready"
+    assert state.scenario_display == "Early continuation"
+    assert state.decision_trigger == "Strong continuation confirmed"
+
+
+def test_dashboard_state_builder_identifies_opposed_h1_structure():
+    decision = SimpleNamespace(
+        decision=value("Wait"),
+        preferred_side="SELL",
+        bias_aligned=True,
+        structure_aligned=False,
+        timing_favorable=True,
+        momentum_confirmed=True,
+    )
+    result = SimpleNamespace(
+        h4=SimpleNamespace(
+            direction=MarketDirection.BEARISH,
+            location_type=LocationType.PULLBACK,
+        ),
+        h1=SimpleNamespace(
+            direction=MarketDirection.BULLISH,
+            location_type=LocationType.RESISTANCE,
+        ),
+    )
+
+    state = DashboardStateBuilder.build(
+        symbol="GBPUSD",
+        decision=decision,
+        bias_readiness=SimpleNamespace(
+            convergence=value("Aligned"),
+            readiness=value("High"),
+            score=100,
+        ),
+        scenario=SimpleNamespace(
+            target_side="SELL",
+            state=value("Building"),
+            score=85,
+        ),
+        wait_plan=SimpleNamespace(conditions=[]),
+        result=result,
+    )
+
+    assert state.decision_trigger == "H1 structure opposes SELL"
+    assert state.scenario_display == "Building"

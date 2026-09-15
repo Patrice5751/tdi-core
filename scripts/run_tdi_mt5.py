@@ -328,6 +328,7 @@ def analyze_symbol(
         bias_readiness=bias_readiness,
         scenario=scenario,
         wait_plan=wait_plan,
+        result=result,
         h4_momentum=h4_momentum,
         h1_momentum=h1_momentum,
         global_score=global_score,

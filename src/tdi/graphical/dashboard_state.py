@@ -28,6 +28,8 @@ class DashboardState:
 
     opportunity: str = "None"
     decisive_condition: str | None = None
+    decision_trigger: str | None = None
+    scenario_display: str = ""
     h4_momentum: str = "Unavailable"
     h4_momentum_confidence: int = 0
     h1_momentum: str = "Unavailable"

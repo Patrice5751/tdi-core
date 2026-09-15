@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 
+from tdi.analysis.momentum_analysis import Momentum
 from tdi.graphical.dashboard_state import DashboardState
+from tdi.graphical.location_type import LocationType
+from tdi.graphical.market_direction import MarketDirection
 
 
 class DashboardStateBuilder:
@@ -11,6 +14,7 @@ class DashboardStateBuilder:
         bias_readiness,
         scenario,
         wait_plan,
+        result=None,
         h4_momentum=None,
         h1_momentum=None,
         global_score=None,
@@ -89,6 +93,20 @@ class DashboardStateBuilder:
             )
         )
 
+        decision_trigger = DashboardStateBuilder._decision_trigger(
+            decision=decision,
+            result=result,
+            h4_momentum=h4_momentum,
+            h1_momentum=h1_momentum,
+        )
+
+        scenario_display = scenario.state.value
+        if (
+            decision.decision.value in {"Buy", "Sell"}
+            and not decision.structure_aligned
+        ):
+            scenario_display = "Early continuation"
+
         return DashboardState(
             symbol=symbol,
             decision=decision.decision.value,
@@ -109,6 +127,8 @@ class DashboardStateBuilder:
             alert_active=alert_active,
             opportunity=opportunity,
             decisive_condition=decisive_condition,
+            decision_trigger=decision_trigger,
+            scenario_display=scenario_display,
             h4_momentum=h4_momentum_value,
             h4_momentum_confidence=h4_momentum_confidence,
             h1_momentum=h1_momentum_value,
@@ -153,3 +173,97 @@ class DashboardStateBuilder:
             f"{side} WATCH",
             f"H1 {expected} Momentum Confirmation",
         )
+
+    @staticmethod
+    def _decision_trigger(
+        decision,
+        result,
+        h4_momentum,
+        h1_momentum,
+    ) -> str | None:
+        if decision.decision.value in {"Buy", "Sell"}:
+            if not decision.structure_aligned:
+                return "Strong continuation confirmed"
+            return "All entry conditions confirmed"
+
+        if not decision.bias_aligned:
+            return "H4/H1 bias alignment lost"
+
+        side = decision.preferred_side
+        if result is not None and side in {"BUY", "SELL"}:
+            opposite = (
+                MarketDirection.BEARISH
+                if side == "BUY"
+                else MarketDirection.BULLISH
+            )
+            opposed = [
+                timeframe
+                for timeframe, context in (
+                    ("H4", result.h4),
+                    ("H1", result.h1),
+                )
+                if context.direction == opposite
+            ]
+            if opposed:
+                return f"{'/'.join(opposed)} structure opposes {side}"
+
+        if not decision.timing_favorable:
+            timing_trigger = DashboardStateBuilder._timing_trigger(
+                result=result,
+                side=side,
+            )
+            return timing_trigger or "Entry timing lost"
+
+        if not decision.momentum_confirmed:
+            expected = (
+                Momentum.BULLISH
+                if side == "BUY"
+                else Momentum.BEARISH
+            )
+            mismatched = [
+                timeframe
+                for timeframe, momentum in (
+                    ("H4", h4_momentum),
+                    ("H1", h1_momentum),
+                )
+                if getattr(momentum, "momentum", None) != expected
+            ]
+            if mismatched:
+                return f"Momentum lost on {'/'.join(mismatched)}"
+            return "Momentum confirmation lost"
+
+        if (
+            not decision.structure_aligned
+            and getattr(decision, "confidence", 100) < 85
+        ):
+            return "Bias confidence below 85"
+
+        if not decision.structure_aligned:
+            return "H4/H1 structure not confirmed"
+
+        return getattr(decision, "reason", None)
+
+    @staticmethod
+    def _timing_trigger(result, side: str | None) -> str | None:
+        if result is None:
+            return None
+
+        for timeframe, context in (
+            ("H4", result.h4),
+            ("H1", result.h1),
+        ):
+            location = context.location_type
+            blocked = location in {
+                LocationType.EXTENSION,
+                LocationType.MIDDLE,
+            }
+            blocked = blocked or (
+                side == "BUY" and location == LocationType.RESISTANCE
+            )
+            blocked = blocked or (
+                side == "SELL" and location == LocationType.SUPPORT
+            )
+            if blocked:
+                return f"{timeframe} timing: {location.value}"
+
+        return None

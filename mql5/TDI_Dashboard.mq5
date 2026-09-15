@@ -11,6 +11,12 @@ int g_panel_y = 10;
 
 input int RefreshSeconds = 2;
 input int StaleAfterSeconds = 90;
+input int DecisionChangeSeconds = 15;
+
+string g_previous_decision = "";
+string g_decision_change_summary = "";
+string g_decision_change_reason = "";
+datetime g_decision_change_until = 0;
 
 void CreateGaugeSegment(
    string name,
@@ -2005,6 +2011,38 @@ string JsonGetNullableString(
    );
 }
 
+bool TrackDecisionChange(
+   string current_decision,
+   string decision_trigger
+)
+{
+   if(current_decision == "")
+      return(false);
+
+   if(g_previous_decision == "")
+   {
+      g_previous_decision = current_decision;
+      return(false);
+   }
+
+   if(current_decision != g_previous_decision)
+   {
+      g_decision_change_summary =
+         g_previous_decision + " > " + current_decision;
+      StringToUpper(g_decision_change_summary);
+
+      g_decision_change_reason = decision_trigger;
+      g_decision_change_until =
+         TimeLocal() + DecisionChangeSeconds;
+      g_previous_decision = current_decision;
+   }
+
+   return(
+      g_decision_change_until > TimeLocal()
+      && g_decision_change_reason != ""
+   );
+}
+
 int JsonGetInt(
    const string json,
    const string key
@@ -2380,6 +2418,11 @@ void OnTimer()
       "decision"
    );
 
+   string decision_trigger = JsonGetNullableString(
+      content,
+      "decision_trigger"
+   );
+
       string preferred_side = JsonGetNullableString(
       content,
       "preferred_side"
@@ -2451,6 +2494,14 @@ void OnTimer()
       content,
       "scenario"
    );
+
+   string scenario_display = JsonGetString(
+      content,
+      "scenario_display"
+   );
+
+   if(scenario_display == "")
+      scenario_display = scenario_state;
 
    UpdateBiasSmoothGauge(bias_score);
 
@@ -2599,6 +2650,11 @@ void OnTimer()
    string bias_readiness_display = bias_readiness;
    StringToUpper(bias_readiness_display);
 
+   bool show_decision_change = TrackDecisionChange(
+      decision,
+      decision_trigger
+   );
+
    ObjectSetString(
       0,
       "TDI_DECISION_VALUE",
@@ -2620,25 +2676,57 @@ void OnTimer()
       0,
       "TDI_PREFERRED_SIDE",
       OBJPROP_TEXT,
-      "Preferred side"
+      show_decision_change
+      ? "CHANGE"
+      : "Preferred side"
    );
       ObjectSetString(
       0,
       "TDI_PREFERRED_SIDE_VALUE",
       OBJPROP_TEXT,
-      preferred_side_display
+      show_decision_change
+      ? g_decision_change_summary
+      : preferred_side_display
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_PREFERRED_SIDE_VALUE",
+      OBJPROP_XDISTANCE,
+      show_decision_change ? g_panel_x + 90 : g_panel_x + 195
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_PREFERRED_SIDE_VALUE",
+      OBJPROP_COLOR,
+      show_decision_change ? clrOrange : clrSilver
    );
    ObjectSetString(
       0,
       "TDI_TARGET_SIDE",
       OBJPROP_TEXT,
-      "Target side"
+      show_decision_change
+      ? "CAUSE"
+      : "Target side"
    );
    ObjectSetString(
       0,
       "TDI_TARGET_SIDE_VALUE",
       OBJPROP_TEXT,
-      target_side_display
+      show_decision_change
+      ? g_decision_change_reason
+      : target_side_display
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_TARGET_SIDE_VALUE",
+      OBJPROP_XDISTANCE,
+      show_decision_change ? g_panel_x + 90 : g_panel_x + 195
+   );
+   ObjectSetInteger(
+      0,
+      "TDI_TARGET_SIDE_VALUE",
+      OBJPROP_COLOR,
+      show_decision_change ? clrOrange : clrSilver
    );
       ObjectSetString(
       0,
@@ -2884,7 +2972,23 @@ void OnTimer()
       0,
       "TDI_SCENARIO_STATE_VALUE",
       OBJPROP_TEXT,
-      scenario_state
+      scenario_display
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_SCENARIO_STATE_VALUE",
+      OBJPROP_XDISTANCE,
+      scenario_display == "Early continuation"
+      ? g_panel_x + 155
+      : g_panel_x + 195
+   );
+
+   ObjectSetInteger(
+      0,
+      "TDI_SCENARIO_STATE_VALUE",
+      OBJPROP_FONTSIZE,
+      scenario_display == "Early continuation" ? 9 : 10
    );
 
    ObjectSetString(
@@ -2930,11 +3034,13 @@ void OnTimer()
       0,
       "TDI_SCENARIO_STATE_VALUE",
       OBJPROP_COLOR,
-      StringFind(scenario_state, "Ready") >= 0
+      StringFind(scenario_display, "Early") >= 0
+      ? clrGreenYellow
+      : StringFind(scenario_display, "Ready") >= 0
       ? clrLimeGreen
-      : StringFind(scenario_state, "Building") >= 0
+      : StringFind(scenario_display, "Building") >= 0
         ? clrOrange
-        : StringFind(scenario_state, "Degrading") >= 0
+        : StringFind(scenario_display, "Degrading") >= 0
           ? clrOrangeRed
           : clrSilver
    );
@@ -2943,11 +3049,13 @@ void OnTimer()
       0,
       "TDI_SCENARIO_STATE",
       OBJPROP_COLOR,
-      StringFind(scenario_state, "Ready") >= 0
+      StringFind(scenario_display, "Early") >= 0
+      ? clrGreenYellow
+      : StringFind(scenario_display, "Ready") >= 0
       ? clrLimeGreen
-      : StringFind(scenario_state, "Building") >= 0
+      : StringFind(scenario_display, "Building") >= 0
         ? clrOrange
-        : StringFind(scenario_state, "Degrading") >= 0
+        : StringFind(scenario_display, "Degrading") >= 0
           ? clrOrangeRed
           : clrSilver
    );

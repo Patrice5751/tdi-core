@@ -270,8 +270,15 @@ int OnInit()
    ObjectSetInteger(
       0,
       panel_name,
-      OBJPROP_BORDER_COLOR,
+      OBJPROP_COLOR,
       clrSilver
+   );
+
+   ObjectSetInteger(
+      0,
+      panel_name,
+      OBJPROP_STYLE,
+      STYLE_SOLID
    );
 
    ObjectSetInteger(

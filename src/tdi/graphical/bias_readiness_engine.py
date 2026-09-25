@@ -35,7 +35,7 @@ class BiasReadinessEngine:
             return BiasReadinessAnalysis(
                 target_side=None,
                 readiness=BiasReadiness.LOW,
-                convergence=BiasConvergence.UNDEFINED,
+                convergence=BiasConvergence.NEUTRAL,
                 score=0,
                 reason=(
                     "Aucun biais H4 exploitable pour "

@@ -134,4 +134,24 @@ def test_opposite_h1_bias_moves_away():
     assert analysis.readiness == BiasReadiness.LOW
     assert analysis.convergence == BiasConvergence.AWAY
     assert analysis.score == 0
-    
+
+def test_neutral_h4_bias_is_reported_as_neutral():
+    result = MT5MultiTimeframeResult(
+        h4=make_context(),
+        h1=make_context(
+            ma_bullish=True,
+        ),
+        aligned=False,
+    )
+
+    analysis = BiasReadinessEngine().analyze(
+        result=result,
+        h1_momentum=make_momentum(
+            Momentum.BULLISH
+        ),
+    )
+
+    assert analysis.target_side is None
+    assert analysis.readiness == BiasReadiness.LOW
+    assert analysis.convergence == BiasConvergence.NEUTRAL
+    assert analysis.score == 0

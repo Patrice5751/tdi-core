@@ -12,6 +12,7 @@ class BiasConvergence(Enum):
     TOWARD = "Toward"
     AWAY = "Away"
     ALIGNED = "Aligned"
+    NEUTRAL = "Neutral"
     UNDEFINED = "Undefined"
 
 

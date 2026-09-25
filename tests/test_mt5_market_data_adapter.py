@@ -15,9 +15,11 @@ class FakeMT5:
     def __init__(self):
         self.initialized = False
         self.shutdown_called = False
+        self.terminal_path = None
 
-    def initialize(self):
+    def initialize(self, terminal_path=None):
         self.initialized = True
+        self.terminal_path = terminal_path
         return True
 
     def shutdown(self):
@@ -53,6 +55,25 @@ class FakeMT5:
             ask=102.0,
         )
 
+class HiddenSymbolMT5:
+    def __init__(self):
+        self.selected_symbols = set()
+
+    def symbol_select(self, symbol, enabled):
+        if symbol != "SP500" or not enabled:
+            return False
+
+        self.selected_symbols.add(symbol)
+        return True
+
+    def symbol_info(self, symbol):
+        if symbol in self.selected_symbols:
+            return SimpleNamespace(name=symbol)
+
+        return None
+
+    def symbols_get(self):
+        return []
 
 def test_initialize_mt5():
     fake = FakeMT5()
@@ -63,6 +84,23 @@ def test_initialize_mt5():
 
     assert fake.initialized is True
 
+def test_initialize_mt5_with_explicit_terminal_path():
+    fake = FakeMT5()
+
+    adapter = MT5MarketDataAdapter(fake)
+
+    adapter.initialize(
+        terminal_path=(
+            r"C:\Program Files\MetaTrader 5"
+            r"\terminal64.exe"
+        )
+    )
+
+    assert fake.initialized is True
+    assert fake.terminal_path == (
+        r"C:\Program Files\MetaTrader 5"
+        r"\terminal64.exe"
+    )
 
 def test_get_candles_converts_mt5_rates():
     adapter = MT5MarketDataAdapter(
@@ -122,4 +160,13 @@ def test_zero_count_returns_empty_list():
     )
 
     assert candles == []
+
+def test_resolve_symbol_activates_exact_hidden_symbol():
+    fake = HiddenSymbolMT5()
+    adapter = MT5MarketDataAdapter(fake)
+
+    resolved = adapter.resolve_symbol("SP500")
+
+    assert resolved == "SP500"
+    assert "SP500" in fake.selected_symbols
     

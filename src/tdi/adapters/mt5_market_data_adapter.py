@@ -20,8 +20,18 @@ class MT5MarketDataAdapter:
     def __init__(self, mt5_client):
         self._mt5 = mt5_client
 
-    def initialize(self) -> None:
-        if not self._mt5.initialize():
+    def initialize(
+        self,
+        terminal_path: str | None = None,
+    ) -> None:
+        if terminal_path is None:
+            initialized = self._mt5.initialize()
+        else:
+            initialized = self._mt5.initialize(
+                terminal_path
+            )
+
+        if not initialized:
             raise MT5MarketDataError(
                 "Impossible d'initialiser MetaTrader 5."
             )
@@ -116,9 +126,12 @@ class MT5MarketDataAdapter:
         self,
         symbol: str,
     ) -> str:
-        if self._mt5.symbol_info(symbol) is not None:
-            self._mt5.symbol_select(symbol, True)
-            return symbol
+        if self._mt5.symbol_select(
+            symbol,
+            True,
+        ):
+            if self._mt5.symbol_info(symbol) is not None:
+                return symbol
 
         symbols = self._mt5.symbols_get()
 

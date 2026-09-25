@@ -560,7 +560,16 @@ def main():
     adapter = MT5MarketDataAdapter(mt5)
 
     try:
-        adapter.initialize()
+        terminal_path = os.getenv(
+            "TDI_MT5_TERMINAL_PATH"
+        )
+
+        if terminal_path:
+            adapter.initialize(
+                terminal_path=terminal_path
+            )
+        else:
+            adapter.initialize()
 
         analysis_pipeline = MT5AnalysisPipeline(
             adapter=adapter

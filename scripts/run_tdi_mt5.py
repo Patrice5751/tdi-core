@@ -71,6 +71,10 @@ from tdi.engines.intermarket_engine import IntermarketEngine
 from tdi.graphical.intermarket_direction_adapter import (
     IntermarketDirectionAdapter,
 )
+from tdi.engines.intermarket_v2_engine import IntermarketV2Engine
+from tdi.graphical.json_intermarket_v2_state_writer import (
+    JsonIntermarketV2StateWriter,
+)
 
 SCENARIO_STATE_PATH = (
     Path("data")
@@ -554,6 +558,69 @@ def parse_args():
 
     return parser.parse_args()
 
+def write_intermarket_v2(cycle_results, analysis_pipeline, dashboard_dir):
+    primary = cycle_results.get("XAUUSD")
+    if primary is None:
+        from tdi.analysis.trend_analysis import Trend
+
+        analysis = IntermarketV2Engine().analyze(
+            primary=Trend.NEUTRAL,
+            silver=None,
+            dollar=None,
+        )
+        JsonIntermarketV2StateWriter.write(
+            analysis=analysis,
+            path=dashboard_dir / "intermarket_XAUUSD_v2.json",
+        )
+        print("ICS V2 — Unavailable: XAUUSD analysis unavailable")
+        return
+
+    silver = cycle_results.get("XAGUSD")
+    silver_trend = (
+        IntermarketDirectionAdapter.to_trend(silver.h4.direction)
+        if silver is not None
+        else None
+    )
+
+    dollar_trend = None
+    try:
+        dollar = analysis_pipeline.analyze(
+            symbol="USDX",
+            timeframe="H4",
+            count=DEFAULT_COUNT,
+        )
+        dollar_trend = IntermarketDirectionAdapter.to_trend(
+            dollar.direction
+        )
+    except Exception as exc:
+        print(
+            f"ICS V2 — USDX unavailable: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
+    analysis = IntermarketV2Engine().analyze(
+        primary=IntermarketDirectionAdapter.to_trend(
+            primary.h4.direction
+        ),
+        silver=silver_trend,
+        dollar=dollar_trend,
+    )
+
+    JsonIntermarketV2StateWriter.write(
+        analysis=analysis,
+        path=dashboard_dir / "intermarket_XAUUSD_v2.json",
+    )
+
+    score_text = (
+        f"{analysis.score}/100"
+        if analysis.score is not None
+        else "Unavailable"
+    )
+    print(
+        f"ICS V2 — {analysis.state.value} | "
+        f"Score: {score_text} | Coverage: {analysis.coverage}%"
+    )
+
 def main():
     args = parse_args()
 
@@ -635,6 +702,20 @@ def main():
                     primary_symbol="XAUUSD",
                     confirmation_symbol="XAGUSD",
                 )
+
+            if "XAUUSD" in args.symbols:
+                try:
+                    write_intermarket_v2(
+                        cycle_results=cycle_results,
+                        analysis_pipeline=analysis_pipeline,
+                        dashboard_dir=args.dashboard_dir,
+                    )
+                except Exception as exc:
+                    print(
+                        f"ICS V2 — update failed: "
+                        f"{type(exc).__name__}: {exc}"
+                    )
+                    
             if not args.monitor:
                 break
 

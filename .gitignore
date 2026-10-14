@@ -28,3 +28,5 @@ data/dashboard/
 
 # MetaTrader compiled files
 *.ex5
+# ICS V2 local verification output
+data/ics_v2_check/

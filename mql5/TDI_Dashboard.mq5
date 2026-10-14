@@ -263,7 +263,7 @@ int OnInit()
       0,
       panel_name,
       OBJPROP_YSIZE,
-      850
+      870
    );
 
    ObjectSetInteger(
@@ -1848,7 +1848,7 @@ int OnInit()
       0,
       intermarket_name,
       OBJPROP_FONTSIZE,
-      10
+      9
    );
 
    ObjectSetString(
@@ -2242,80 +2242,107 @@ void UpdateIntermarketDisplay()
    string object_name = "TDI_INTERMARKET";
 
    ObjectSetString(
-      0,
-      object_name,
-      OBJPROP_TEXT,
-      "INTERMARKET   -   -/100"
+      0, object_name, OBJPROP_TEXT,
+      _Symbol == "XAUUSD"
+      ? "ICS V2 | UNAVAILABLE"
+      : ""
    );
-
    ObjectSetInteger(
-      0,
-      object_name,
-      OBJPROP_COLOR,
-      clrSilver
+      0, object_name, OBJPROP_COLOR, clrSilver
    );
 
-   string file_name =
-      "intermarket_XAUUSD_XAGUSD.json";
+   // ICS V2 concerne uniquement XAUUSD.
+   if(_Symbol != "XAUUSD")
+      return;
 
    int handle = FileOpen(
-      file_name,
-      FILE_READ | FILE_TXT | FILE_ANSI
+      "intermarket_XAUUSD_v2.json",
+      FILE_READ | FILE_TXT | FILE_ANSI,
+      0,
+      CP_UTF8
    );
 
    if(handle == INVALID_HANDLE)
       return;
 
    string content = "";
-
    while(!FileIsEnding(handle))
-   {
       content += FileReadString(handle);
-   }
 
    FileClose(handle);
 
-   string state = JsonGetString(
-      content,
-      "state"
+   if(
+      JsonGetInt(content, "version") != 2
+      || JsonGetString(content, "primary_symbol") != "XAUUSD"
+   )
+      return;
+
+   datetime updated_time = IsoUtcToDatetime(
+      JsonGetString(content, "updated_at")
    );
 
-   int score = JsonGetInt(
-      content,
-      "score"
+   long age_seconds = (
+      updated_time > 0
+      ? (long)(TimeGMT() - updated_time)
+      : -1
    );
 
-   if(state == "")
+   if(
+      age_seconds < 0
+      || age_seconds > StaleAfterSeconds
+   )
+   {
+      ObjectSetString(
+         0, object_name, OBJPROP_TEXT,
+         "ICS V2 | STALE"
+      );
+      ObjectSetInteger(
+         0, object_name, OBJPROP_COLOR, clrTomato
+      );
+      return;
+   }
+
+   string state = JsonGetString(content, "state");
+   int coverage = JsonGetInt(content, "coverage");
+
+   if(
+      state == "Unavailable"
+      || coverage <= 0
+      || coverage > 100
+   )
+      return;
+
+   if(
+      state != "Confirmed"
+      && state != "Mixed"
+      && state != "Divergent"
+   )
+      return;
+
+   int score = JsonGetInt(content, "score");
+   if(score < 0 || score > 100)
       return;
 
    string state_upper = state;
    StringToUpper(state_upper);
 
    ObjectSetString(
-      0,
-      object_name,
-      OBJPROP_TEXT,
-      "INTERMARKET   "
-      + state_upper
-      + "   "
-      + IntegerToString(score)
-      + "/100"
+      0, object_name, OBJPROP_TEXT,
+      "ICS " + IntegerToString(score) + "/100"
+      + " | " + state_upper
+      + " | COV " + IntegerToString(coverage) + "%"
    );
 
    color state_color = clrSilver;
-
-   if(state_upper == "CONFIRMED")
+   if(state == "Confirmed")
       state_color = clrLimeGreen;
-   else if(state_upper == "MIXED")
+   else if(state == "Mixed")
       state_color = clrYellow;
-   else if(state_upper == "DIVERGENT")
+   else if(state == "Divergent")
       state_color = clrTomato;
 
    ObjectSetInteger(
-      0,
-      object_name,
-      OBJPROP_COLOR,
-      state_color
+      0, object_name, OBJPROP_COLOR, state_color
    );
 }
 
